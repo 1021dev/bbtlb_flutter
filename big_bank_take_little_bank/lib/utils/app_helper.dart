@@ -70,7 +70,7 @@ class AppHelper {
   }
 
   static String emailValidate(String email) {
-    String error = '';
+    String error;
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
@@ -78,6 +78,16 @@ class AppHelper {
       error = 'Email is required.';
     } else if (!regex.hasMatch(email)) {
       error = 'Your email format is invalid. Please check again';
+    }
+    return error;
+  }
+
+  static String passwordValid(String password) {
+    String error;
+    if (password.isEmpty || password == '' || password == null) {
+      error = 'Password is required.';
+    } else if (password.length < 8) {
+      error = 'Password length must be equal or longer than 8.';
     }
     return error;
   }

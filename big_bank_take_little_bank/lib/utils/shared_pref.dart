@@ -21,4 +21,25 @@ class SharedPrefService {
     return prefs.setString(AppConstant.kDeviceToken, token);
   }
 
+  //USER CREDENTIAL
+  Future<String> getUserEmail() async {
+    final SharedPreferences preferences = await _prefs;
+    return preferences.get(AppConstant.kEmail) ?? '';
+  }
+
+  Future<String> getUserPassword() async {
+    final SharedPreferences preferences = await _prefs;
+    return preferences.get(AppConstant.kPassword) ?? '';
+  }
+
+  Future<bool> saveUserEmail(String email) async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.setString(AppConstant.kEmail, email);
+  }
+
+  Future<bool> saveUserPassword(String password) async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.setString(AppConstant.kPassword, password);
+  }
+
 }

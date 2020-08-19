@@ -2,9 +2,16 @@ import 'dart:ui' as ui;
 import 'package:big_bank_take_little_bank/provider/store/store.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+final FirebaseAuth auth = FirebaseAuth.instance;
+final Firestore firestore = Firestore.instance;
+final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
 Future<void> myMain() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -94,6 +101,22 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     contextNo = context;
     return MaterialApp(
+      builder: (context, child) {
+        var data = MediaQuery.of(context);
+        var textScaleFactor = data.textScaleFactor;
+        if (textScaleFactor > 1.25) {
+          textScaleFactor = 1.25;
+          data = data.copyWith(textScaleFactor: textScaleFactor);
+        }
+        if (textScaleFactor < 0.9) {
+          textScaleFactor = 0.9;
+          data = data.copyWith(textScaleFactor: textScaleFactor);
+        }
+        return MediaQuery(
+          child: child,
+          data: data,
+        );
+      },
       locale: Locale(ui.window.locale?.languageCode ?? ' en'),
       supportedLocales: [
         const Locale('en'),

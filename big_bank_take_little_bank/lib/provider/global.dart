@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 /// Environment declare here
@@ -16,6 +17,7 @@ class Global {
   Global._private();
 
   static final Global instance = Global._private();
+  DocumentReference userRef;
 
   factory Global({Env environment}) {
     if (environment != null) {

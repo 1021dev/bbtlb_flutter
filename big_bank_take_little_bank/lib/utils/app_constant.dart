@@ -13,4 +13,8 @@ class AppConstant {
       'Bearer _oa9-bpC0eTNSZ5UCMCAfD9T96YZjnQX0SKA-b5R65B2In7ZESphftSHS1VPN6s18ZzIU16rY6EwOCcivVByKsESDrpmuiaFbvdPXbSRqv_BK_TaFEzNLvOPltnDXnYx';
   static const kKeyServerFireBase =
       "key=AAAADYuzths:APA91bH1bFAAmV6-egnrrrn54F8mzAfaEA_kwHIfnNDlkEnX3W4RzjyC6-Zv4ON6p4p5uQQ4ldnN-0ynYPxSMlEXMKGAdMq3IBPiUdOzq1x2hOaGFO5JA6kdhsOCfPI9R3wOkFWBJ5c0";
+
+
+  static const kEmail = 'email';
+  static const kPassword = 'password';
 }
