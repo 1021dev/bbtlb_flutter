@@ -84,14 +84,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: Image.asset('assets/images/bg_stats.png',),
-              ),
-              Positioned(
-                top: 100,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Image.asset('assets/images/bg_stats.png',),
+                child: Image.asset('assets/images/bg_stats.png', fit: BoxFit.fill, ),
               ),
               Positioned(
                 top: 124,
@@ -524,11 +517,13 @@ class _StatsScreenState extends State<StatsScreen> {
                                                 SizedBox(
                                                   height: 8,
                                                 ),
-                                                Text(
-                                                  'LOSSES',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15,
+                                                Flexible(
+                                                  child: Text(
+                                                    'LOSSES',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                    ),
                                                   ),
                                                 ),
                                               ],
@@ -562,11 +557,13 @@ class _StatsScreenState extends State<StatsScreen> {
                                                 SizedBox(
                                                   height: 8,
                                                 ),
-                                                Text(
-                                                  'WINS',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15,
+                                                Flexible(
+                                                  child: Text(
+                                                    'WINS',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                    ),
                                                   ),
                                                 ),
                                               ],

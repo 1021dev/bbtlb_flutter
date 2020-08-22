@@ -106,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
           right: 0,
           left: 0,
           bottom: 0,
-          child: Image.asset('assets/images/bg_home.png',),
+          child: Image.asset('assets/images/bg_home.png', fit: BoxFit.fill,),
         ),
         Positioned(
           top: 0,
@@ -610,9 +610,11 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                         ),
                       ),
                       SizedBox(height: 8,),
-                      Text(
-                        'WINS',
-                        style: Theme.of(context).textTheme.bodyText1,
+                      Flexible(
+                        child: Text(
+                          'WINS',
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
                       ),
                     ],
                   ),
@@ -657,9 +659,11 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                         ),
                       ),
                       SizedBox(height: 8,),
-                      Text(
-                        'LOSSES',
-                        style: Theme.of(context).textTheme.bodyText1,
+                      Flexible(
+                        child: Text(
+                          'LOSSES',
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
                       ),
                     ],
                   ),
