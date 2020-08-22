@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_contact/contacts.dart';
 
 class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
 
@@ -17,6 +18,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   ProfileScreenBloc(ProfileScreenState initialState, {@required this.mainScreenBloc}) : super(initialState);
   StreamSubscription _userSubscription;
   FirestoreService service = FirestoreService();
+  ContactService _contactService = UnifiedContacts;
 
   ProfileScreenState get initialState {
     return ProfileScreenState(isLoading: true);
@@ -34,6 +36,10 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       yield* uploadProfileImage(event.image);
     } else if (event is ProfileScreenLogoutEvent) {
       yield* logout();
+    } else if (event is GetContactsEvent) {
+      yield* getContacts();
+    } else if (event is UpdatePasswordEvent) {
+      yield* updatePassword(event.oldPassword, event.newPassword);
     }
   }
 
@@ -76,7 +82,6 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     yield ProfileScreenSuccess();
   }
 
-
   Stream<ProfileScreenState> logout() async* {
     yield state.copyWith(isLoading: true);
 
@@ -85,11 +90,48 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     yield ProfileScreenLogout();
   }
 
+  Stream<ProfileScreenState> getContacts() async* {
+    yield state.copyWith(isLoading: true);
+
+    final contacts = _contactService.listContacts(
+        withUnifyInfo: true,
+        withThumbnails: true,
+        withHiResPhoto: true,
+        sortBy: ContactSortOrder.firstName());
+    final tmp = <Contact>[];
+    while (await contacts.moveNext()) {
+      tmp.add(await contacts.current);
+    }
+
+    yield state.copyWith(isLoading: false, contacts: tmp);
+  }
+
+  Stream<ProfileScreenState> updatePassword(String oldPassword, String newPassword) async* {
+    yield state.copyWith(isLoading: true);
+    AuthResult result = await auth.signInWithEmailAndPassword(email: state.currentUser.email, password: oldPassword);
+    if (result.user != null) {
+      FirebaseUser user = result.user;
+      try {
+        await user.updatePassword(newPassword);
+        yield UpdatePasswordSuccess();
+      } catch (error) {
+        print("Password can't be changed" + error.toString());
+        yield ProfileScreenFailure(error: 'This might happen, when the wrong password is in, the user isn\'t found, or if the user hasn\'t logged in recently');
+      }
+    } else {
+      yield ProfileScreenFailure(error: 'This might happen, when the wrong password is in, the user isn\'t found, or if the user hasn\'t logged in recently');
+    }
+  }
+
   @override
   Future<void> close() {
     _userSubscription?.cancel();
     return super.close();
   }
+}
 
-
+extension DateComponentsFormat on DateComponents {
+  String format() {
+    return [year, month, day].where((d) => d != null).join('-');
+  }
 }

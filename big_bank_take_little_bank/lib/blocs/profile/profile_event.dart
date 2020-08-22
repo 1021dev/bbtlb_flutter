@@ -37,3 +37,14 @@ class UploadProfileImageEvent extends ProfileScreenEvent {
 }
 
 class ProfileScreenLogoutEvent extends ProfileScreenEvent{}
+
+class GetContactsEvent extends ProfileScreenEvent{}
+
+class SendInviteFriendsEvent extends ProfileScreenEvent{}
+
+class UpdatePasswordEvent extends ProfileScreenEvent {
+  final String oldPassword;
+  final String newPassword;
+
+  UpdatePasswordEvent({this.newPassword, this.oldPassword});
+}

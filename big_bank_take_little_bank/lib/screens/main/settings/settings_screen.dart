@@ -1,5 +1,6 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/settings/change_password_dialog.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/invite_friends_screen.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/setting_cell.dart';
@@ -152,7 +153,15 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
                           icon: 'setting_lock',
                           text: 'CHANGE PASSWORD',
                           onTap: () {
-
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ChangePasswordDialog(
+                                  screenBloc: profileScreenBloc,
+                                  userModel: state.currentUser,
+                                );
+                              },
+                            );
                           },
                         ),
                         SettingCellView(

@@ -43,6 +43,8 @@
     <string>BigBankTakeLittleBank needs to access to your photo library to upload your profile photo</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>BigBankTakeLittleBank needs to access to your photo library to upload your profile photo</string>
+    <key>NSContactsUsageDescription</key>
+    <string>BigBankTakeLittleBank needs to access to your contacts to invite your friends</string>
     <key>UIBackgroundModes</key>
     <array>
         <string>processing</string>

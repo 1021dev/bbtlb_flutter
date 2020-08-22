@@ -1,7 +1,9 @@
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
 import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:big_bank_take_little_bank/widgets/radial_menu.dart';
 import 'package:circular_menu/circular_menu.dart';
@@ -109,9 +111,13 @@ class _MainScreenState extends State<MainScreen> {
     print(state.currentScreen);
     switch(state.currentScreen) {
       case 1:
-        return Container();
+        return StatsScreen(
+          screenBloc: screenBloc,
+        );
       case 2:
-        return Container();
+        return FriendsScreen(
+          screenBloc: screenBloc,
+        );
       case 3:
         return Container();
       case 4:

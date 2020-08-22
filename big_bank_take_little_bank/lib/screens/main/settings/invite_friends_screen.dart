@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_contact/contact.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -26,6 +29,7 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
   @override
   void initState() {
     super.initState();
+    widget.screenBloc.add(GetContactsEvent());
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     curvedAnimation =
@@ -86,6 +90,7 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
   Widget _body(ProfileScreenState state) {
     return Stack(
       fit: StackFit.expand,
+      alignment: Alignment.topCenter,
       children: [
         Positioned(
           top: 0,
@@ -99,23 +104,163 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
           left: 0,
           child: Image.asset('assets/images/bg_top.png',),
         ),
-        SafeArea(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: double.infinity,
-            padding: EdgeInsets.all(8),
-            child: Column(
+        Positioned(
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+          child: SafeArea(
+            child: Stack(
+              alignment: Alignment.topCenter,
               children: [
                 Positioned(
-                  top: 25,
+                  top: 20,
+                  height: 64,
                   width: 200,
                   child: TitleBackgroundWidget(
                     title: 'Invite Friends',
                   ),
                 ),
-                SizedBox(height: 16,),
-                Expanded(
-                  child: Container(),
+                Positioned(
+                  top: 84,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: double.infinity,
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 16,),
+                        Expanded(
+                          child: ListView.separated(
+                            itemBuilder: (context, index) {
+                              Contact contact = state.contacts[index];
+                              String contactInfo = '';
+                              if (contact.phones.length > 0) {
+                                contactInfo = contact.phones.first.value;
+                              } else if (contact.emails.length > 0) {
+                                contactInfo = contact.emails.first.value;
+                              }
+                              Uint8List image;
+                              if (contact.hasAvatar) {
+                                image = contact.avatar;
+                              }
+                              return Container(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(25),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Color(0xff07282D),
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: (contact.avatar != null && contact.avatar.isNotEmpty) ? CircleAvatar(
+                                        backgroundImage: MemoryImage(contact.avatar),
+                                      ) : CircleAvatar(
+                                        child: Text(
+                                          contact.initials(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'BackToSchool',
+                                            fontSize: 24
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8,),
+                                    Flexible(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(16),
+                                          color: Color(0xff1B505E),
+                                        ),
+                                        padding: EdgeInsets.all(8),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(8),
+                                            color: Color(0xFF256979),
+                                          ),
+                                          padding: EdgeInsets.all(6),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Flexible(
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      contact.displayName ?? contact.familyName ?? '',
+                                                      style: TextStyle(
+                                                        fontFamily: 'BackToSchool',
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      contactInfo,
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        fontFamily: 'BackToSchool',
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(width: 8,),
+                                              Container(
+                                                height: 44,
+                                                width: 100,
+                                                child: SizedBox.expand(
+                                                  child: MaterialButton(
+                                                    onPressed: () {
+                                                    },
+                                                    minWidth: 0,
+                                                    padding: EdgeInsets.zero,
+                                                    child: Stack(
+                                                      fit: StackFit.expand,
+                                                      alignment: Alignment.center,
+                                                      children: [
+                                                        Image.asset('assets/images/btn_bg_yellow.png', fit: BoxFit.fill,),
+                                                        Center(
+                                                          child: Text(
+                                                            'INVITE',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index){
+                              return Divider(
+                                color: Colors.transparent,
+                              );
+                            },
+                            itemCount: state.contacts.length,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
