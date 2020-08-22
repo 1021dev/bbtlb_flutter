@@ -1,21 +1,24 @@
+import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:big_bank_take_little_bank/provider/store/store.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
-final Firestore firestore = Firestore.instance;
+final FirebaseFirestore firestore = FirebaseFirestore.instance;
 final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
 Future<void> myMain() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DefaultStore.instance.init();
+  Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -77,7 +80,7 @@ class _MyAppState extends State<MyApp> {
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
       },
-      onBackgroundMessage: myBackgroundMessageHandler,
+      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
       },

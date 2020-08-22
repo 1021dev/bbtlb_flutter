@@ -3,6 +3,7 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/login/login_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -23,12 +24,13 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void checkAuth(BuildContext context) async {
-    final currentUser = auth.currentUser;
+    await auth.signOut();
+    User currentUser = auth.currentUser;
     if (currentUser != null) {
-      await auth.signOut();
       Global.instance.userRef = firestore.collection('users').doc(currentUser.uid);
       Global.instance.uid = currentUser.uid;
     }
+    print(currentUser);
     Navigator.pushReplacement(
         context, CupertinoPageRoute(builder: (context) => currentUser != null ? MainScreen(): LoginScreen()));
 
@@ -38,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     contextNo = context;
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.black,
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
