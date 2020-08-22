@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "216981814626",
+    "firebase_url": "https://bigbanktakelittlebank-95940.firebaseio.com",
+    "project_id": "bigbanktakelittlebank-95940",
+    "storage_bucket": "bigbanktakelittlebank-95940.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216981814626:android:f62625414749b514bf403b",
+        "android_client_info": {
+          "package_name": "com.saigais.big_bank_take_little_bank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216981814626-lhug35j0iamv58shangl4jaoa3pi33jc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSWCzUmsRBG_4mnF79vjNZ03UOWvbAP-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216981814626-lhug35j0iamv58shangl4jaoa3pi33jc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "216981814626-okc56gk3unsgpsuguvl0nhajcigmbpg0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.saigais.BBTLB"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
