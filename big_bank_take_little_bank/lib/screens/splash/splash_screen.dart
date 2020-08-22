@@ -25,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void checkAuth(BuildContext context) async {
     final currentUser = auth.currentUser;
     if (currentUser != null) {
+      await auth.signOut();
       Global.instance.userRef = firestore.collection('users').doc(currentUser.uid);
       Global.instance.uid = currentUser.uid;
     }

@@ -1,6 +1,7 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/shared_pref.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,6 +44,8 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
           await result.user.sendEmailVerification();
           yield LoginScreenFailure(error: 'Email verification link sent, please check your inbox');
         } else {
+          Global.instance.userRef = firestore.collection('users').doc(result.user.uid);
+          Global.instance.uid = result.user.uid;
           yield state.copyWith(isLoading: false);
           SharedPrefService prefService = SharedPrefService.internal();
           await prefService.saveUserEmail(email);
