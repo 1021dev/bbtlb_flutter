@@ -35,11 +35,11 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
   Stream<LoginScreenState> loginUser(String email, String password) async* {
     try {
       yield state.copyWith(isLoading: true);
-      AuthResult result = await auth.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential result = await auth.signInWithEmailAndPassword(email: email, password: password);
       if (result.user == null) {
         yield LoginScreenFailure(error: '$result');
       } else {
-        if (!result.user.isEmailVerified) {
+        if (!result.user.emailVerified) {
           await result.user.sendEmailVerification();
           yield LoginScreenFailure(error: 'Email verification link sent, please check your inbox');
         } else {
@@ -50,7 +50,7 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
           yield LoginScreenSuccess();
         }
       }
-    } on AuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
         yield LoginScreenFailure(error: 'No user found for that email.');

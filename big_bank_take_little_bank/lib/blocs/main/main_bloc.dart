@@ -32,7 +32,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   Stream<MainScreenState> init() async* {
     yield state.copyWith(currentScreen: 4);
     SharedPrefService prefService = SharedPrefService.internal();
-    FirebaseUser user = await auth.currentUser();
+    User user = auth.currentUser;
 
     await _userSubscription?.cancel();
     _userSubscription = service.streamUser(user.uid).listen((event) {

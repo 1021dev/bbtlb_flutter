@@ -44,7 +44,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   }
 
   Stream<ProfileScreenState> init() async* {
-    FirebaseUser user = await auth.currentUser();
+    User user = auth.currentUser;
 
     await _userSubscription?.cancel();
     _userSubscription = service.streamUser(user.uid).listen((event) {
@@ -108,9 +108,9 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
 
   Stream<ProfileScreenState> updatePassword(String oldPassword, String newPassword) async* {
     yield state.copyWith(isLoading: true);
-    AuthResult result = await auth.signInWithEmailAndPassword(email: state.currentUser.email, password: oldPassword);
+    UserCredential result = await auth.signInWithEmailAndPassword(email: state.currentUser.email, password: oldPassword);
     if (result.user != null) {
-      FirebaseUser user = result.user;
+      User user = result.user;
       try {
         await user.updatePassword(newPassword);
         yield UpdatePasswordSuccess();

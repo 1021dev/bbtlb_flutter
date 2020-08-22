@@ -29,7 +29,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
   Stream<AuthScreenState> registerUser(RegisterUserEvent event) async* {
     try {
       yield state.copyWith(isLoading: true);
-      AuthResult result = await auth.createUserWithEmailAndPassword(
+      UserCredential result = await auth.createUserWithEmailAndPassword(
         email: event.email,
         password: event.password,
       );
@@ -51,7 +51,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
           print(progress);
         }).onError((error) async* {
           print(error.toString());
-          if (!result.user.isEmailVerified) {
+          if (!result.user.emailVerified) {
             await result.user.sendEmailVerification();
             yield state.copyWith(isLoading: false);
             yield AuthEmailVerification();
@@ -63,7 +63,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
               'image': url.toString(),
             });
           }).then((snap) async* {
-            if (!result.user.isEmailVerified) {
+            if (!result.user.emailVerified) {
               await result.user.sendEmailVerification();
               yield state.copyWith(isLoading: false);
               yield AuthEmailVerification();
@@ -71,7 +71,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
           });
         });
       } else {
-        if (!result.user.isEmailVerified) {
+        if (!result.user.emailVerified) {
           await result.user.sendEmailVerification();
           yield state.copyWith(isLoading: false);
           yield AuthEmailVerification();
@@ -80,7 +80,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
           yield AuthScreenSuccess();
         }
       }
-    } on AuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       yield state.copyWith(isLoading: false);
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
