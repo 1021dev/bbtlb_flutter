@@ -119,7 +119,6 @@ class RadialAnimation extends StatelessWidget {
             (translation.value) * cos(rad),
             (translation.value) * sin(rad)
         ),
-
         child: MaterialButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(iconSize / 2),

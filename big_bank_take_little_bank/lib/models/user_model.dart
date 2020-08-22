@@ -111,7 +111,7 @@ class UserModel {
   Map<String, dynamic> toJson() => _userModelToJson(this);
 
   @override
-  String toString() => "Vaccination<$name>";
+  String toString() => "FirebaseUser <$name>";
 
 
   Map<String, dynamic> _userModelToJson(UserModel instance) =>

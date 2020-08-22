@@ -123,7 +123,23 @@ class _MyAppState extends State<MyApp> {
       ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        primarySwatch: Colors.yellow,
+        primaryColor: Colors.white,
+        accentColor: Color(0xFF0E3D47),
+          fontFamily: 'Lucky',
+        backgroundColor: Color(0xFF0E3D47),
+        textTheme: TextTheme(
+          headline1: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold, fontFamily: 'BackToSchool'),
+          headline2: TextStyle(fontSize: 24.0, fontWeight: FontWeight.normal, fontFamily: 'BackToSchool'),
+          headline3: TextStyle(fontSize: 20.0, fontWeight: FontWeight.normal, fontFamily: 'BackToSchool'),
+          headline4: TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal, fontFamily: 'BackToSchool'),
+          headline5: TextStyle(fontSize: 14.0, fontWeight: FontWeight.normal, fontFamily: 'BackToSchool'),
+          headline6: TextStyle(fontSize: 14.0, fontWeight: FontWeight.normal, fontFamily: 'BackToSchool'),
+          button: TextStyle(fontSize: 20.0, fontFamily: 'Lucky'),
+          bodyText1: TextStyle(fontSize: 20.0, fontFamily: 'Lucky'),
+          bodyText2: TextStyle(fontSize: 16.0, fontFamily: 'Lucky'),
+        )
       ),
       home: AppContent(),
     );

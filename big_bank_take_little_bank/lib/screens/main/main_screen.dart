@@ -1,18 +1,14 @@
-import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
-import 'package:big_bank_take_little_bank/screens/rigister/register_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/utils/app_color.dart';
-import 'package:big_bank_take_little_bank/utils/app_helper.dart';
 import 'package:big_bank_take_little_bank/widgets/radial_menu.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:toast/toast.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({Key key}) : super(key: key);
@@ -22,13 +18,11 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  MainScreenBloc screenBloc;
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  MainScreenBloc screenBloc = MainScreenBloc(MainScreenState());
   final GlobalKey<CircularMenuState> key = GlobalKey<CircularMenuState>();
 
   @override
   void initState() {
-    screenBloc = new MainScreenBloc(MainScreenState());
     screenBloc.add(MainScreenInitEvent());
     super.initState();
   }
@@ -84,10 +78,7 @@ class _MainScreenState extends State<MainScreen> {
           width: MediaQuery.of(context).size.width,
           child: Image.asset('assets/images/bg_home.png', fit: BoxFit.fill,),
         ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.all(16),
-        ),
+        _getBody(state),
         Positioned(
           bottom: MediaQuery.of(context).padding.bottom,
           left: 0,
@@ -95,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
           top: 0,
           child: RadialMenu(
             onTapMenu: (index) {
-
+              screenBloc.add(UpdateScreenEvent(screenIndex: index));
             },
           ),
         ),
@@ -111,6 +102,33 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ): Container()
       ],
+    );
+  }
+
+  Widget _getBody(MainScreenState state) {
+    print(state.currentScreen);
+    switch(state.currentScreen) {
+      case 1:
+        return Container();
+      case 2:
+        return Container();
+      case 3:
+        return Container();
+      case 4:
+        return HomeScreen(
+          screenBloc: screenBloc,
+        );
+      case 5:
+        return Container();
+      case 6:
+        return Container();
+      case 7:
+        return SettingsScreen(
+          screenBloc: screenBloc,
+        );
+    }
+    return HomeScreen(
+      screenBloc: screenBloc,
     );
   }
 

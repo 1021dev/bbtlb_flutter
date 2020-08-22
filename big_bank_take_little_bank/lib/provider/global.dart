@@ -18,6 +18,7 @@ class Global {
 
   static final Global instance = Global._private();
   DocumentReference userRef;
+  String uid;
 
   factory Global({Env environment}) {
     if (environment != null) {

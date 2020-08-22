@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/my_app.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/login/login_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,11 +24,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void checkAuth(BuildContext context) async {
     final currentUser = await auth.currentUser();
-//    if (currentUser != null) {
-//      await auth.signOut();
-//    }
-    // mainBloc.navigateReplace(currentUser != null ? SignUpProfileScreen() : WelcomeScreen());
-    print('login screen');
+    if (currentUser != null) {
+      Global.instance.userRef = firestore.collection('users').document(currentUser.uid);
+      Global.instance.uid = currentUser.uid;
+    }
     Navigator.pushReplacement(
         context, CupertinoPageRoute(builder: (context) => currentUser != null ? MainScreen(): LoginScreen()));
 
