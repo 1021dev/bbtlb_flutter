@@ -23,3 +23,8 @@ class LoginUserEvent extends LoginScreenEvent {
 
   LoginUserEvent({this.email, this.password});
 }
+
+class ForgetPasswordEvent extends LoginScreenEvent {
+  final String email;
+  ForgetPasswordEvent({this.email});
+}

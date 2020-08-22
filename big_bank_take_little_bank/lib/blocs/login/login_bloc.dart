@@ -22,6 +22,8 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
       yield* initLogin();
     } else if (event is LoginUserEvent) {
       yield* loginUser(event.email, event.password);
+    } else if (event is ForgetPasswordEvent) {
+      yield* forgetPassword(event.email);
     }
   }
 
@@ -65,5 +67,12 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
       print(e.toString());
       yield LoginScreenFailure(error: e.toString());
     }
+  }
+
+  Stream<LoginScreenState> forgetPassword(String email) async* {
+    yield state.copyWith(isLoading: true);
+    await auth.sendPasswordResetEmail(email: email);
+    yield state.copyWith(isLoading: false);
+    yield LoginScreenPasswordResetSent();
   }
 }

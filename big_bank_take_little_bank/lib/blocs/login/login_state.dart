@@ -35,6 +35,8 @@ class LoginScreenState extends Equatable {
 
 class LoginScreenSuccess extends LoginScreenState {}
 
+class LoginScreenPasswordResetSent extends LoginScreenState {}
+
 class LoginScreenFailure extends LoginScreenState {
   final String error;
 

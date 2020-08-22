@@ -66,6 +66,21 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             );
           });
+        } else if (state is LoginScreenPasswordResetSent) {
+          showCupertinoDialog(context: context, builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text('Reset Password'),
+              content: Text('Reset password link sent, please check your mailbox.'),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            );
+          });
         }
       },
       child: BlocBuilder<LoginScreenBloc, LoginScreenState>(
@@ -185,6 +200,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: FlatButton(
                         onPressed: () {
+                          String emailValid = AppHelper.emailValidate(emailController.text);
+                          if (emailValid != null) {
+                            Toast.show(emailValid, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+                            return;
+                          }
+                          screenBloc.add(ForgetPasswordEvent(email: emailController.text));
 
                         },
                         child: Text(
