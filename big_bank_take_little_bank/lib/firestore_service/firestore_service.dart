@@ -43,11 +43,11 @@ class FirestoreService {
         .snapshots();
   }
 
-  Future<void> updateUser(String id, Map body) async {
+  Future<void> updateUser(String id, Map<String, dynamic> body) async {
     return userCollection.doc(id).update(body);
   }
 
-  Future<void> updateCurrentUser(Map body) async {
+  Future<void> updateCurrentUser(Map<String, dynamic> body) async {
     body['updatedAt'] = Timestamp.now();
     return Global.instance.userRef.update(
       body,
