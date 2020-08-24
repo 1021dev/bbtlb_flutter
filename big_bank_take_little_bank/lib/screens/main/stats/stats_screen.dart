@@ -93,6 +93,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 bottom: 24,
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: 100),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisSize: MainAxisSize.max,

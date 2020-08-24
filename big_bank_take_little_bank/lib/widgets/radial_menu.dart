@@ -96,17 +96,23 @@ class RadialAnimation extends StatelessWidget {
               Transform.scale(
                 scale: 1.5 - scale.value, // subtract the beginning value to run the opposite animation
                 child: InkWell(
-                  child: Image.asset('assets/images/home_menu_iconn.png', width: iconSize * 1.2, height: iconSize * 1.2,),
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: iconSize * 0.3),
+                    child: Image.asset('assets/images/home_menu_iconn.png', width: iconSize * 1.2, height: iconSize * 1.2,),
+                  ),
                   onTap: _close,
                 ),
               ),
               Transform.scale(
                 scale: scale.value,
                 child: InkWell(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: iconSize * 0.3),
                     child: Image.asset('assets/images/home_menu_iconn.png', width: iconSize * 1.2, height: iconSize * 1.2,),
-                    onTap: _open,
+                  ),
+                  onTap: _open,
                 ),
-              )
+              ),
             ],
           );
         });
@@ -125,7 +131,10 @@ class RadialAnimation extends StatelessWidget {
           ),
           minWidth: 0,
           padding: EdgeInsets.zero,
-          child: icon,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: iconSize * 0.3),
+            child: icon,
+          ),
           onPressed: () {
             onTapMenu(index);
             _close();
