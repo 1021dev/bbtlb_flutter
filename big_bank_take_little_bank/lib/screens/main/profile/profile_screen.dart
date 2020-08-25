@@ -139,9 +139,12 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                         ),
                         Align(
                           alignment: Alignment.center,
-                          child: ProfileImageView(
-                            imageUrl: userModel.image ?? '',
-                            avatarSize: avatarSize - 16,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 4, bottom: 4),
+                            child: ProfileImageView(
+                              imageUrl: userModel.image ?? '',
+                              avatarSize: avatarSize - 16,
+                            ),
                           ),
                         ),
                         Align(

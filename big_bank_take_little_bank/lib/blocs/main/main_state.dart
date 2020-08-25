@@ -1,17 +1,25 @@
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class MainScreenState extends Equatable {
+abstract class MainScreenState extends Equatable {
+  const MainScreenState();
+
+  @override
+  List<Object> get props => [];
+}
+
+class MainScreenLoadState extends MainScreenState {
   final bool isLoading;
   final int currentScreen;
   final UserModel currentUser;
+  final List<UserModel> activeUsers;
 
-  MainScreenState({
+  MainScreenLoadState({
     this.isLoading = false,
     this.currentScreen,
     this.currentUser,
+    this.activeUsers = const [],
   });
 
   @override
@@ -19,22 +27,25 @@ class MainScreenState extends Equatable {
     isLoading,
     currentScreen,
     currentUser,
+    activeUsers,
   ];
 
-  MainScreenState copyWith({
+  MainScreenLoadState copyWith({
     bool isLoading,
     int currentScreen,
     UserModel currentUser,
+    List<UserModel> activeUsers,
   }) {
-    return MainScreenState(
+    return MainScreenLoadState(
       isLoading: isLoading ?? this.isLoading,
       currentScreen: currentScreen ?? this.currentScreen,
       currentUser: currentUser ?? this.currentUser,
+      activeUsers: activeUsers ?? this.activeUsers,
     );
   }
 }
 
-class MainScreenSuccess extends MainScreenState {}
+class MainScreenInitState extends MainScreenState {}
 
 class MainScreenFailure extends MainScreenState {
   final String error;

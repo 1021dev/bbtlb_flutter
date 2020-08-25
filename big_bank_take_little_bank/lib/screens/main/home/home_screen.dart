@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
 import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,89 +60,113 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _body(MainScreenState state) {
+  Widget _body(MainScreenLoadState state) {
+    print('users ${state.activeUsers.length}');
     return Stack(
       fit: StackFit.expand,
       children: [
         Container(
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.all(8),
-          child: Stack(
-            alignment: Alignment.topCenter,
+          child: Column(
             children: [
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                height: 60,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    InkWell(
-                      onTap: () {
+              Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    height: 60,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
 
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width / 4,
-                        child: Image.asset(
-                          'assets/images/btn_nearby.png',
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width / 4,
+                            child: Image.asset(
+                              'assets/images/btn_nearby.png',
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 4,
-                    ),
-                    InkWell(
-                      onTap: () {
-
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width / 4,
-                        child: Image.asset(
-                          'assets/images/btn_live.png',
-                          height: MediaQuery.of(context).size.width,
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              InkWell(
-                onTap: () {
+                        InkWell(
+                          onTap: () {
 
-                },
-                child: Container(
-                  height: 100,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/bg_points.png',
-                        width: MediaQuery.of(context).size.width / 3,
-                      ),
-                      Column(
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width / 4,
+                            child: Image.asset(
+                              'assets/images/btn_live.png',
+                              height: MediaQuery.of(context).size.width,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+
+                    },
+                    child: Container(
+                      height: 100,
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Image.asset('assets/images/level_1_user_profile.png', width: 36,),
-                          SizedBox(height: 4,),
-                          Text(
-                            state.currentUser != null ? '${state.currentUser.points}': '0',
-                            style: TextStyle(
-                              fontFamily: 'BackToSchool',
-                              fontSize: 16,
-                              color: Color(0xffF39B27),
-                            ),
+                          Image.asset(
+                            'assets/images/bg_points.png',
+                            width: MediaQuery.of(context).size.width / 3,
                           ),
-                          Text(
-                            state.currentUser != null ? 'Level ${state.currentUser.level}': 'Level 1',
-                            style: TextStyle(
-                              fontFamily: 'BackToSchool',
-                              fontSize: 13,
-                            ),
-                          ),
+                          Column(
+                            children: [
+                              Image.asset('assets/images/level_1_user_profile.png', width: 36,),
+                              SizedBox(height: 4,),
+                              Text(
+                                state.currentUser != null ? '${state.currentUser.points}': '0',
+                                style: TextStyle(
+                                  fontFamily: 'BackToSchool',
+                                  fontSize: 16,
+                                  color: Color(0xffF39B27),
+                                ),
+                              ),
+                              Text(
+                                state.currentUser != null ? 'Level ${state.currentUser.level}': 'Level 1',
+                                style: TextStyle(
+                                  fontFamily: 'BackToSchool',
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.6,
+                  mainAxisSpacing: 16,
+                  children: List.generate(
+                    state.activeUsers.length,
+                        (index) {
+                      return HomeCell(
+                        userModel: state.activeUsers[index],
+                        onTap: () {
+
+                        },
+                      );
+                    },
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),

@@ -145,9 +145,12 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                       ),
                       Align(
                         alignment: Alignment.center,
-                        child: ProfileImageView(
-                          imageUrl: imageUrl,
-                          avatarSize: avatarSize - 16,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 4, bottom: 4),
+                          child: ProfileImageView(
+                            imageUrl: imageUrl ?? '',
+                            avatarSize: avatarSize - 16,
+                          ),
                         ),
                       ),
                       Align(

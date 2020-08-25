@@ -12,10 +12,6 @@ class ProfileImageView extends StatelessWidget {
     return Container(
       height: avatarSize,
       width: avatarSize,
-      margin: EdgeInsets.only(
-        right: 4,
-        bottom: 4,
-      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(avatarSize / 2),
         color: Colors.white,
@@ -30,6 +26,7 @@ class ProfileImageView extends StatelessWidget {
             borderRadius: BorderRadius.circular(avatarSize / 2),
             image: DecorationImage(
               image: imageProvider,
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -51,7 +48,7 @@ class ProfileImageView extends StatelessWidget {
               color: Colors.white,
               image: DecorationImage(
                 image: Image.asset('assets/images/ic_person.png',).image,
-                fit: BoxFit.contain,
+                fit: BoxFit.fill,
               ),
             ),
           );

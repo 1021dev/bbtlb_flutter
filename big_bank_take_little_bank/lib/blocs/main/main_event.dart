@@ -22,9 +22,20 @@ class MainScreenUserLoadedEvent extends MainScreenEvent {
   MainScreenUserLoadedEvent({this.user});
 }
 
+class MainScreenUsersLoadEvent extends MainScreenEvent {
+  final List<UserModel> users;
+  MainScreenUsersLoadEvent({this.users});
+}
+
 @immutable
 class UpdateScreenEvent extends MainScreenEvent {
   final int screenIndex;
 
   UpdateScreenEvent({this.screenIndex,});
 }
+
+class LoadActiveUsersEvent extends MainScreenEvent {}
+
+class UserOnlineEvent extends MainScreenEvent {}
+
+class UserOfflineEvent extends MainScreenEvent {}

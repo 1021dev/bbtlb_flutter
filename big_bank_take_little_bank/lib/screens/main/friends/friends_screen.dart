@@ -58,7 +58,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     );
   }
 
-  Widget _body(MainScreenState state) {
+  Widget _body(MainScreenLoadState state) {
     double itemWidth = ((MediaQuery.of(context).size.width - 56) / 2);
     double itemHeight = itemWidth / 526 * 624;
     return Stack(
