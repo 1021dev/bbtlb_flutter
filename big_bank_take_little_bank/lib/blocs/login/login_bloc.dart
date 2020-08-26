@@ -47,7 +47,7 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
           yield LoginScreenFailure(error: 'Email verification link sent, please check your inbox');
         } else {
           Global.instance.userRef = firestore.collection('users').doc(result.user.uid);
-          Global.instance.uid = result.user.uid;
+          Global.instance.userId = result.user.uid;
           yield state.copyWith(isLoading: false);
           SharedPrefService prefService = SharedPrefService.internal();
           await prefService.saveUserEmail(email);

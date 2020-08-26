@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     User currentUser = auth.currentUser;
     if (currentUser != null) {
       Global.instance.userRef = firestore.collection('users').doc(currentUser.uid);
-      Global.instance.uid = currentUser.uid;
+      Global.instance.userId = currentUser.uid;
     }
     print(currentUser);
     Navigator.pushReplacement(

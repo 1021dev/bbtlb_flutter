@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
@@ -16,16 +17,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
-class ProfileScreen extends StatefulWidget {
-  final ProfileScreenBloc screenBloc;
-  ProfileScreen({Key key, this.screenBloc}) : super(key: key);
+class OtherUserProfileScreen extends StatefulWidget {
+  final MainScreenBloc screenBloc;
+  final UserModel userModel;
+  OtherUserProfileScreen({Key key, this.screenBloc, this.userModel,}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _OtherUserProfileScreenState createState() => _OtherUserProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProviderStateMixin {
+class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with SingleTickerProviderStateMixin {
 
+  final FriendsBloc friendsBloc = FriendsBloc(FriendsInitState());
   bool isHelp = false;
   AnimationController controller;
   Animation<double> translation;
@@ -35,7 +38,6 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
   @override
   void initState() {
     super.initState();
-    userModel = UserModel(id: Global.instance.userId);
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     curvedAnimation =
@@ -43,23 +45,24 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
     scaleAnim = Tween(begin: 0.0, end: 1.0).animate(controller)..addListener(() { setState(() {
 
     });});
-
+    userModel = widget.userModel;
+    friendsBloc.add(LoadFriends(friendId: userModel.id));
   }
 
   @override
   void dispose() {
     controller.dispose();
+    friendsBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: widget.screenBloc,
-      listener: (BuildContext context, ProfileScreenState state) async {
-        if (state is ProfileScreenSuccess) {
-          widget.screenBloc.add(ProfileScreenInitEvent());
-        } else if (state is ProfileScreenFailure) {
+      cubit: friendsBloc,
+      listener: (BuildContext context, FriendsState state) async {
+        if (state is FriendsSuccess) {
+        } else if (state is FriendsFailure) {
           showCupertinoDialog(context: context, builder: (BuildContext context) {
             return CupertinoAlertDialog(
               title: Text('Oops'),
@@ -82,9 +85,9 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
           ));
         }
       },
-      child: BlocBuilder<ProfileScreenBloc, ProfileScreenState>(
-        cubit: widget.screenBloc,
-        builder: (BuildContext context, ProfileScreenState state) {
+      child: BlocBuilder<FriendsBloc, FriendsState>(
+        cubit: friendsBloc,
+        builder: (BuildContext context, FriendsState state) {
           return Scaffold(
             body: _body(state),
           );
@@ -93,11 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
     );
   }
 
-  Widget _body(ProfileScreenState state) {
+  Widget _body(FriendsState state) {
     double avatarSize = MediaQuery.of(context).size.width * 0.3;
-    if (state.currentUser != null) {
-      userModel = state.currentUser;
-    }
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -106,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
           right: 0,
           left: 0,
           bottom: 0,
-          child: Image.asset('assets/images/bg_home.png', fit: BoxFit.fill,),
+          child: Image.asset('assets/images/bg_other_user.png', fit: BoxFit.fill,),
         ),
         Positioned(
           top: 0,
@@ -147,30 +147,6 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                             ),
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: MaterialButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-
-                                  return EditProfileDialog(
-                                    screenBloc: widget.screenBloc,
-                                    userModel: userModel,
-                                  );
-                                },
-                              );
-                            },
-                            minWidth: 0,
-                            height: 44,
-                            shape: CircleBorder(),
-                            child: Image.asset(
-                              'assets/images/profile_pencil.png',
-                              height: 32,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -184,14 +160,6 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                     ),
                   ),
                   SizedBox(height: 8,),
-                  Text(
-                    userModel.email ?? '',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontFamily: 'BackToSchool'
-                    ),
-                  ),
                   _badgeSection(state),
                   SizedBox(
                     height: 16,
@@ -220,13 +188,6 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                     child: SizedBox.expand(
                       child: MaterialButton(
                         onPressed: () {
-                          Navigator.push(context, PageTransition(
-                            child: GalleryScreen(
-                              screenBloc: widget.screenBloc,
-                            ),
-                            type: PageTransitionType.fade,
-                            duration: Duration(microseconds: 300),
-                          ));
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -331,7 +292,103 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
             },
           ),
         ),
-        state.isLoading ? Positioned(
+        (state is FriendsLoadState) ?  Positioned(
+          top: 44,
+          right: 16,
+          width: 55,
+          height: 55,
+          child: MaterialButton(
+            child: getFriendImage(state.friendsModel),
+            shape: CircleBorder(),
+            minWidth: 0,
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              if (state.friendsModel.status == 'pending') {
+                showCupertinoModalPopup(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoActionSheet(
+                    title: const Text('Friends Request Received'),
+                    message: const Text('Your options are '),
+                    actions: <Widget>[
+                      CupertinoActionSheetAction(
+                        child: const Text('Accept Friends'),
+                        onPressed: () {
+                          Navigator.pop(context, 'accept');
+                          friendsBloc.add(AcceptFriends(friendsModel: state.friendsModel));
+                        },
+                      ),
+                      CupertinoActionSheetAction(
+                        child: const Text('Reject Friends'),
+                        onPressed: () {
+                          Navigator.pop(context, 'decline');
+                          friendsBloc.add(DeclineFriends(friendsModel: state.friendsModel));
+                        },
+                      )
+                    ],
+                    cancelButton: CupertinoActionSheetAction(
+                      child: const Text('Cancel'),
+                      isDefaultAction: true,
+                      onPressed: () {
+                        Navigator.pop(context, 'Cancel');
+                      },
+                    ),
+                  ),
+                );
+              } else if (state.friendsModel.status == 'accept') {
+                showCupertinoModalPopup(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoActionSheet(
+                    title: Text('${userModel.name} is your Friend now.'),
+                    message: const Text('Your options are '),
+                    actions: <Widget>[
+                      CupertinoActionSheetAction(
+                        child: const Text('Block this Friend'),
+                        onPressed: () {
+                          Navigator.pop(context, 'remove');
+                          friendsBloc.add(BlockFriends(friendsModel: state.friendsModel));
+                        },
+                      ),
+                    ],
+                    cancelButton: CupertinoActionSheetAction(
+                      child: const Text('Cancel'),
+                      isDefaultAction: true,
+                      onPressed: () {
+                        Navigator.pop(context, 'Cancel');
+                      },
+                    ),
+                  ),
+                );
+              } else if (state.friendsModel.status == 'decline') {
+                showCupertinoModalPopup(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoActionSheet(
+                    title: Text('You rejected ${userModel.name}\'s Friend request'),
+                    message: const Text('Your options are '),
+                    actions: <Widget>[
+                      CupertinoActionSheetAction(
+                        child: const Text('Add Friends'),
+                        onPressed: () {
+                          Navigator.pop(context, 'add');
+                          friendsBloc.add(AcceptFriends(friendsModel: state.friendsModel));
+                        },
+                      ),
+                    ],
+                    cancelButton: CupertinoActionSheetAction(
+                      child: const Text('Cancel'),
+                      isDefaultAction: true,
+                      onPressed: () {
+                        Navigator.pop(context, 'Cancel');
+                      },
+                    ),
+                  ),
+                );
+              } else {
+                friendsBloc.add(RequestFriends(userModel: userModel));
+              }
+            },
+          ),
+        ): Container(),
+        state is FriendsInitState ? Positioned(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Container(
@@ -346,7 +403,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
     );
   }
 
-  Widget _badgeSection(ProfileScreenState state) {
+  Widget _badgeSection(FriendsState state) {
     return SizedBox(
       height: 250,
       child: Stack(
@@ -385,7 +442,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
     );
   }
 
-  Widget _detailSection(ProfileScreenState state) {
+  Widget _detailSection(FriendsState state) {
     return SizedBox(
       height: 320,
       child: Stack(
@@ -679,7 +736,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
     );
   }
 
-  Widget _challengesSection(ProfileScreenState state) {
+  Widget _challengesSection(FriendsState state) {
     return SizedBox(
       height: 200,
       child: Stack(
@@ -774,5 +831,36 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
         ],
       ),
     );
+  }
+
+  Image getFriendImage(FriendsModel friendsModel) {
+    switch (friendsModel.status) {
+      case 'notFriends':
+        return Image.asset('assets/images/friend_add.png');
+        break;
+      case 'pending':
+        if (friendsModel.sender == auth.currentUser.uid) {
+          return Image.asset('assets/images/friend_pending.png');
+        } else {
+          return Image.asset('assets/images/friend_waiting.png');
+        }
+        break;
+      case 'accept':
+        if (friendsModel.sender == auth.currentUser.uid) {
+          return Image.asset('assets/images/friend_sent.png');
+        } else {
+          return Image.asset('assets/images/friend_sent.png');
+        }
+        break;
+      case 'decline':
+        if (friendsModel.sender == auth.currentUser.uid) {
+          return Image.asset('assets/images/friend_reject.png');
+        } else {
+          return Image.asset('assets/images/friend_remove.png');
+        }
+        break;
+      default:
+        return Image.asset('assets/images/friend_add.png');
+    }
   }
 }

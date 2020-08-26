@@ -41,6 +41,8 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
         num consecutive = lastRewards.consecutive ?? 0;
         DateTime rewardsAt = lastRewards.rewardsAt;
         DateTime now = DateTime.now();
+        print('rewards date => $rewardsAt');
+        print('now => $now');
         if (rewardsAt.year == now.year && rewardsAt.month == now.month && rewardsAt.day == now.day) {
 
         } else {

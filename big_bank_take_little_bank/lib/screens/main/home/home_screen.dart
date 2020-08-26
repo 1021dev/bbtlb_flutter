@@ -1,10 +1,12 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
 import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
@@ -160,7 +162,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       return HomeCell(
                         userModel: state.activeUsers[index],
                         onTap: () {
-
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: OtherUserProfileScreen(
+                                screenBloc: widget.screenBloc,
+                                userModel: state.activeUsers[index],
+                              ),
+                              type: PageTransitionType.downToUp,
+                            ),
+                          );
                         },
                       );
                     },

@@ -42,7 +42,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
       userModel.age = event.age;
       await service.createUser(userModel);
       Global.instance.userRef = firestore.collection('users').doc(result.user.uid);
-      Global.instance.uid = result.user.uid;
+      Global.instance.userId = result.user.uid;
       if (state.file != null) {
         StorageReference ref = firebaseStorage.ref().child('users').child(result.user.uid);
         StorageUploadTask task = ref.putFile(state.file);

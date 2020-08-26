@@ -1,3 +1,4 @@
+import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
@@ -53,16 +54,15 @@ class FirestoreService {
   }
 
   Stream<QuerySnapshot> streamLastRewards(String uid) {
-    print(uid);
     return userCollection
         .doc(uid)
         .collection('rewards')
-        .orderBy('rewardsAt')
+        .orderBy('rewardsAt', descending: true)
         .limit(1)
         .snapshots();
   }
 
-  Future<DocumentReference> addRewards(RewardsModel rewardsModel) {
+  Future<DocumentReference> addRewards(RewardsModel rewardsModel) async {
     return userCollection
         .doc(rewardsModel.id)
         .collection('rewards')
@@ -76,11 +76,59 @@ class FirestoreService {
         .snapshots().map((event) {
          List<UserModel> users = [];
        event.docs.forEach((element) {
-         users.add(UserModel.fromJson(element.data()));
+         if (element.id != auth.currentUser.uid) {
+           users.add(UserModel.fromJson(element.data()));
+         }
        });
 
        return users;
     });
+  }
+
+  Stream<List<FriendsModel>> streamFriends(String uid) {
+    return userCollection
+        .doc(uid)
+        .collection('friends')
+        .orderBy('createdAt', descending: true)
+        .snapshots().map((event) {
+      List<FriendsModel> friends = [];
+      event.docs.forEach((element) {
+        friends.add(FriendsModel.fromJson(element.data()));
+      });
+
+      return friends;
+    });
+  }
+
+  Future<DocumentSnapshot> getFriend(String uid) async {
+    return userCollection
+        .doc(uid)
+        .collection('friends')
+        .doc(Global.instance.userId)
+        .get();
+  }
+
+  Stream<DocumentSnapshot> streamFriend(String uid, String friendId) {
+    return userCollection
+        .doc(uid)
+        .collection('friends')
+        .doc(friendId)
+        .snapshots();
+  }
+
+  Future<DocumentReference> addFriends(String userId, FriendsModel friendsModel) async {
+    return userCollection
+        .doc(userId)
+        .collection('friends')
+        .add(friendsModel.toJson());
+  }
+
+  Future<void> updateFriends(String userId, FriendsModel friendsModel) async {
+    return userCollection
+        .doc(userId)
+        .collection('friends')
+        .doc(friendsModel.id)
+        .update(friendsModel.toJson());
   }
 
 

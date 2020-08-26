@@ -1,3 +1,5 @@
+import 'package:big_bank_take_little_bank/models/user_model.dart';
+import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -13,12 +15,13 @@ class Env {
 }
 
 /// Global env
-class Global {
+class Global extends ChangeNotifier{
   Global._private();
 
   static final Global instance = Global._private();
   DocumentReference userRef;
-  String uid;
+  String userId = auth.currentUser.uid;
+  UserModel userModel;
 
   factory Global({Env environment}) {
     if (environment != null) {
