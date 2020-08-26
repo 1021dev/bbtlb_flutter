@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
@@ -18,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  TextEditingController searchController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -25,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    searchController.dispose();
     super.dispose();
   }
 
@@ -149,6 +153,46 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+                padding: EdgeInsets.only(left: 16,),
+                height: 50,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/bg_search_field.png'),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                child: Transform.rotate(
+                  angle: -pi / 100.0,
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Search people'
+                          ),
+                          style: TextStyle(
+                            fontFamily: 'BackToSchool',
+                          ),
+                        ),
+                      ),
+                      MaterialButton(
+                        onPressed: (){
+
+                        },
+                        minWidth: 0,
+                        shape: CircleBorder(),
+                        height: 44,
+                        child: Image.asset('assets/images/searchicon.png',
+                          width: 32, height: 32,),
+                      )
+                    ],
+                  ),
+                ),
               ),
               Expanded(
                 child: GridView.count(

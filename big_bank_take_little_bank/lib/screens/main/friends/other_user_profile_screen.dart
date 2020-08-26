@@ -3,6 +3,7 @@ import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/friends/friends_request_sent_dialog.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/edit_profile_dialog.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
@@ -304,36 +305,63 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
             padding: EdgeInsets.zero,
             onPressed: () {
               if (state.friendsModel.status == 'pending') {
-                showCupertinoModalPopup(
-                  context: context,
-                  builder: (BuildContext context) => CupertinoActionSheet(
-                    title: const Text('Friends Request Received'),
-                    message: const Text('Your options are '),
-                    actions: <Widget>[
-                      CupertinoActionSheetAction(
-                        child: const Text('Accept Friends'),
+                if (state.friendsModel.sender == Global.instance.userId) {
+                  showCupertinoModalPopup(
+                    context: context,
+                    builder: (BuildContext context) => CupertinoActionSheet(
+                      title: Text('You sent Friend request'),
+                      message: const Text('Your options are '),
+                      actions: <Widget>[
+                        CupertinoActionSheetAction(
+                          child: const Text('Cancel Friend Request'),
+                          onPressed: () {
+                            Navigator.pop(context, 'cancel');
+                            friendsBloc.add(CancelFriends(friendsModel: state.friendsModel));
+                          },
+                        ),
+                      ],
+                      cancelButton: CupertinoActionSheetAction(
+                        child: const Text('Cancel'),
+                        isDefaultAction: true,
                         onPressed: () {
-                          Navigator.pop(context, 'accept');
-                          friendsBloc.add(AcceptFriends(friendsModel: state.friendsModel));
+                          Navigator.pop(context, 'Cancel');
                         },
                       ),
-                      CupertinoActionSheetAction(
-                        child: const Text('Reject Friends'),
-                        onPressed: () {
-                          Navigator.pop(context, 'decline');
-                          friendsBloc.add(DeclineFriends(friendsModel: state.friendsModel));
-                        },
-                      )
-                    ],
-                    cancelButton: CupertinoActionSheetAction(
-                      child: const Text('Cancel'),
-                      isDefaultAction: true,
-                      onPressed: () {
-                        Navigator.pop(context, 'Cancel');
-                      },
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  showCupertinoModalPopup(
+                    context: context,
+                    builder: (BuildContext context) => CupertinoActionSheet(
+                      title: const Text('Friends Request Received'),
+                      message: const Text('Your options are '),
+                      actions: <Widget>[
+                        CupertinoActionSheetAction(
+                          child: const Text('Accept Friends'),
+                          onPressed: () {
+                            Navigator.pop(context, 'accept');
+                            friendsBloc.add(AcceptFriends(friendsModel: state.friendsModel));
+                          },
+                        ),
+                        CupertinoActionSheetAction(
+                          child: const Text('Reject Friends'),
+                          onPressed: () {
+                            Navigator.pop(context, 'decline');
+                            friendsBloc.add(DeclineFriends(friendsModel: state.friendsModel));
+                          },
+                        )
+                      ],
+                      cancelButton: CupertinoActionSheetAction(
+                        child: const Text('Cancel'),
+                        isDefaultAction: true,
+                        onPressed: () {
+                          Navigator.pop(context, 'Cancel');
+                        },
+                      ),
+                    ),
+                  );
+
+                }
               } else if (state.friendsModel.status == 'accept') {
                 showCupertinoModalPopup(
                   context: context,
@@ -359,6 +387,9 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                   ),
                 );
               } else if (state.friendsModel.status == 'decline') {
+                if (state.friendsModel.sender == Global.instance.userId) {
+                  return;
+                }
                 showCupertinoModalPopup(
                   context: context,
                   builder: (BuildContext context) => CupertinoActionSheet(
@@ -383,6 +414,13 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                   ),
                 );
               } else {
+                // showDialog(
+                //   context: context,
+                //   child: FriendsRequestSentDialog(
+                //     image: userModel.image,
+                //     name: userModel.name,
+                //   ),
+                // );
                 friendsBloc.add(RequestFriends(userModel: userModel));
               }
             },

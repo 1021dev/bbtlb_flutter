@@ -40,7 +40,7 @@ class FriendsListLoadState extends FriendsState {
   final List<FriendsModel> friendsList;
 
   FriendsListLoadState({
-    this.friendsList,
+    this.friendsList = const [],
   });
 
   @override
@@ -80,7 +80,7 @@ class FriendsListSuccess extends FriendsState {
   final List<FriendsModel> friendsList;
 
   FriendsListSuccess({
-    this.friendsList,
+    this.friendsList = const [],
   });
 
   @override

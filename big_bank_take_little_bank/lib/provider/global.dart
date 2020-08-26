@@ -20,7 +20,7 @@ class Global extends ChangeNotifier{
 
   static final Global instance = Global._private();
   DocumentReference userRef;
-  String userId = auth.currentUser.uid;
+  String userId = '';
   UserModel userModel;
 
   factory Global({Env environment}) {

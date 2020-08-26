@@ -116,11 +116,12 @@ class FirestoreService {
         .snapshots();
   }
 
-  Future<DocumentReference> addFriends(String userId, FriendsModel friendsModel) async {
+  Future<void> addFriends(String userId, FriendsModel friendsModel) async {
     return userCollection
         .doc(userId)
         .collection('friends')
-        .add(friendsModel.toJson());
+        .doc(friendsModel.id)
+        .set(friendsModel.toJson(), SetOptions(merge: true));
   }
 
   Future<void> updateFriends(String userId, FriendsModel friendsModel) async {
@@ -129,6 +130,14 @@ class FirestoreService {
         .collection('friends')
         .doc(friendsModel.id)
         .update(friendsModel.toJson());
+  }
+
+  Future<void> deleteFriends(String userId, FriendsModel friendsModel) async {
+    return userCollection
+        .doc(userId)
+        .collection('friends')
+        .doc(friendsModel.id)
+        .delete();
   }
 
 

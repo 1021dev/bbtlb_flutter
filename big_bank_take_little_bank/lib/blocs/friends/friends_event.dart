@@ -61,3 +61,10 @@ class BlockFriends extends FriendsEvent {
 
   BlockFriends({this.friendsModel,});
 }
+
+@immutable
+class CancelFriends extends FriendsEvent {
+  final FriendsModel friendsModel;
+
+  CancelFriends({this.friendsModel,});
+}

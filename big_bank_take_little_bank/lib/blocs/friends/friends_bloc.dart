@@ -32,6 +32,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       yield* updateFriends(event.friendsModel, 'accept');
     } else if (event is DeclineFriends) {
       yield* updateFriends(event.friendsModel, 'decline');
+    } else if (event is CancelFriends) {
+      yield* updateFriends(event.friendsModel, 'cancel');
     } else if (event is BlockFriends) {
       yield* updateFriends(event.friendsModel, 'block');
     } else if (event is LoadedFriendsEvent) {
@@ -62,7 +64,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     });
   }
 
-  Stream<FriendsState> requestFriends(UserModel userModel) async* {
+  Stream<FriendsLoadState> requestFriends(UserModel userModel) async* {
     FriendsModel friendsModel = FriendsModel(id: userModel.id);
     friendsModel.name = userModel.name;
     friendsModel.image = userModel.image;
@@ -76,19 +78,36 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     userFriendsModel.sender = Global.instance.userId;
     userFriendsModel.status = 'pending';
     await service.addFriends(userModel.id, userFriendsModel);
+    final currentState = state;
+    if (currentState is FriendsLoadState) {
+      yield currentState.copyWith(friendsModel: friendsModel);
+    } else {
+      yield FriendsLoadState(friendsModel: friendsModel);
+    }
   }
 
   Stream<FriendsState> updateFriends(FriendsModel friendsModel, String status) async* {
-    friendsModel.status = status;
+    if (status == 'cancel') {
+      await service.deleteFriends(Global.instance.userId, friendsModel);
 
-    await service.updateFriends(Global.instance.userId, friendsModel);
+      DocumentSnapshot friendsDoc = await service.getFriend(friendsModel.id);
+      FriendsModel userFriends = FriendsModel.fromJson(friendsDoc.data());
 
-    DocumentSnapshot friendsDoc = await service.getFriend(friendsModel.id);
-    FriendsModel userFriends = FriendsModel.fromJson(friendsDoc.data());
+      if (userFriends != null) {
+        await service.deleteFriends(friendsModel.id, userFriends);
+      }
+    } else {
+      friendsModel.status = status;
 
-    if (userFriends != null) {
-      userFriends.status = status;
-      await service.updateFriends(friendsModel.id, userFriends);
+      await service.updateFriends(Global.instance.userId, friendsModel);
+
+      DocumentSnapshot friendsDoc = await service.getFriend(friendsModel.id);
+      FriendsModel userFriends = FriendsModel.fromJson(friendsDoc.data());
+
+      if (userFriends != null) {
+        userFriends.status = status;
+        await service.updateFriends(friendsModel.id, userFriends);
+      }
     }
   }
 
