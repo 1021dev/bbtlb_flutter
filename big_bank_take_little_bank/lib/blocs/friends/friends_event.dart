@@ -22,6 +22,12 @@ class LoadFriends extends FriendsEvent {
 }
 
 @immutable
+class LoadOtherUserProfile extends FriendsEvent {
+  final String friendId;
+  LoadOtherUserProfile({this.friendId});
+}
+
+@immutable
 class LoadedFriendsEvent extends FriendsEvent {
   final FriendsModel friendsModel;
   LoadedFriendsEvent({this.friendsModel});
@@ -34,6 +40,12 @@ class LoadFriendsList extends FriendsEvent {}
 class LoadedFriendsListEvent extends FriendsEvent {
   final List<FriendsModel> friendsList;
   LoadedFriendsListEvent({this.friendsList});
+}
+
+@immutable
+class LoadedRequestListEvent extends FriendsEvent {
+  final List<FriendsModel> requestList;
+  LoadedRequestListEvent({this.requestList});
 }
 
 class RequestFriends extends FriendsEvent {

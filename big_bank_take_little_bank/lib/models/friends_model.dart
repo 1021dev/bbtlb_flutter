@@ -9,6 +9,7 @@ class FriendsModel {
   String image;
   String name;
   String sender;
+  String receiver;
   String status;
 
   DocumentReference reference;
@@ -20,6 +21,7 @@ class FriendsModel {
     this.image,
     this.name,
     this.sender,
+    this.receiver,
     this.status = 'notFriends',
   });
 
@@ -29,6 +31,7 @@ class FriendsModel {
       image: json['image'] as String ?? '',
       name: json['name'] as String ?? '',
       sender: json['sender'] as String ?? '',
+      receiver: json['receiver'] as String ?? '',
       status: json['status'] as String ?? 'notFriends',
       createdAt: (json['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
       updatedAt: (json['updatedAt'] as Timestamp).toDate() ?? DateTime.now(),
@@ -49,7 +52,24 @@ class FriendsModel {
         'image': instance.image ?? '',
         'name': instance.name ?? '',
         'sender': instance.sender ?? '',
+        'receiver': instance.receiver ?? '',
         'status': instance.status ?? 'notFriends',
       };
 
+  String getGroup() {
+    if (name != null && name != '') {
+      return '${name.toUpperCase()[0]}';
+    }
+    return '';
+  }
+}
+
+class FriendsGroupModel {
+  FriendsModel friendsModel;
+  String group;
+
+  FriendsGroupModel({
+   this.friendsModel,
+   this.group,
+  });
 }

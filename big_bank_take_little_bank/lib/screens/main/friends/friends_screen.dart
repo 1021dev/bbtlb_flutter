@@ -2,12 +2,19 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/models/friends_model.dart';
+import 'package:big_bank_take_little_bank/screens/main/friends/friends_cell.dart';
 import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:grouped_list/grouped_list.dart';
+import 'package:page_transition/page_transition.dart';
+
+import 'friends_request_cell.dart';
+import 'other_user_profile_screen.dart';
 
 class FriendsScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
@@ -161,15 +168,65 @@ class _FriendsScreenState extends State<FriendsScreen> {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Container();
+            child: GroupedListView<FriendsGroupModel, String>(
+              padding: EdgeInsets.only(bottom: 100),
+              groupBy: (element) => element.group,
+              elements: state.friendsGroupList,
+              order: GroupedListOrder.ASC,
+              useStickyGroupSeparators: false,
+              floatingHeader: true,
+              groupSeparatorBuilder: (String value) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: AppButtonLabel(
+                  title: value == '' ? 'Friends Requests' : value,
+                  shadow: true,
+                  fontSize: 24,
+                ),
+              ),
+              itemBuilder: (c, element) {
+                return element.group == '' ? FriendsRequestCell(
+                  groupModel: element,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        child: OtherUserProfileScreen(
+                          screenBloc: widget.screenBloc,
+                          friendsModel: element.friendsModel,
+                        ),
+                        type: PageTransitionType.downToUp,
+                      ),
+                    );
+                  },
+                  onAccept: () {
+
+                  },
+                  onDecline: () {
+
+                  },
+                )
+                    :FriendsCell(
+                  groupModel: element,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        child: OtherUserProfileScreen(
+                          screenBloc: widget.screenBloc,
+                          friendsModel: element.friendsModel,
+                        ),
+                        type: PageTransitionType.downToUp,
+                      ),
+                    );
+                  },
+                  onChat: () {
+
+                  },
+                  onChallenge: () {
+
+                  },
+                );
               },
-              separatorBuilder: (context, index) {
-                return Container();
-              },
-              itemCount: 0,
             ),
           )
         ],

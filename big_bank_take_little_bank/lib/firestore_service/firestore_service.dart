@@ -85,19 +85,23 @@ class FirestoreService {
     });
   }
 
-  Stream<List<FriendsModel>> streamFriends(String uid) {
+  Stream<QuerySnapshot> streamFriends(String uid) {
     return userCollection
         .doc(uid)
         .collection('friends')
-        .orderBy('createdAt', descending: true)
-        .snapshots().map((event) {
-      List<FriendsModel> friends = [];
-      event.docs.forEach((element) {
-        friends.add(FriendsModel.fromJson(element.data()));
-      });
+        .where('status', isEqualTo: 'accept')
+        .orderBy('name', descending: true)
+        .snapshots(includeMetadataChanges: true);
+  }
 
-      return friends;
-    });
+  Stream<QuerySnapshot> streamFriendsRequests(String uid) {
+    return userCollection
+        .doc(uid)
+        .collection('friends')
+        .where('status', isEqualTo: 'pending')
+        .where('receiver', isEqualTo: uid)
+        .orderBy('createdAt')
+        .snapshots(includeMetadataChanges: true);
   }
 
   Future<DocumentSnapshot> getFriend(String uid) async {

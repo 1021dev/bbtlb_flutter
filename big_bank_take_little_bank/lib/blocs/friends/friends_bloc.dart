@@ -14,6 +14,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   FriendsBloc(FriendsState initialState) : super(initialState);
   StreamSubscription _friendsSubscription;
   StreamSubscription _friendsListSubscription;
+  StreamSubscription _friendsRequestSubscription;
   FriendsState get initialState {
     return FriendsInitState();
   }
@@ -24,6 +25,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   Stream<FriendsState> mapEventToState(FriendsEvent event) async* {
     if (event is LoadFriends) {
       yield* checkFriends(event.friendId);
+    } else if (event is LoadOtherUserProfile) {
+      yield* loadFriendProfile(event.friendId);
     } else if (event is LoadFriendsList) {
       yield* loadFriendsList();
     } else if (event is RequestFriends) {
@@ -40,13 +43,14 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       yield* loadedFriends(event.friendsModel);
     } else if (event is LoadedFriendsListEvent) {
       yield* loadedFriendsList(event.friendsList);
+    } else if (event is LoadedRequestListEvent) {
+      yield* loadedRequestList(event.requestList);
     }
   }
 
   Stream<FriendsState> checkFriends(String friendId) async* {
-    String userId = auth.currentUser.uid;
     await _friendsSubscription?.cancel();
-    _friendsSubscription = service.streamFriend(userId, friendId).listen((event) {
+    _friendsSubscription = service.streamFriend(Global.instance.userId, friendId).listen((event) {
       print(event);
       if (event.data() != null) {
         add(LoadedFriendsEvent(friendsModel: FriendsModel.fromJson(event.data())));
@@ -57,10 +61,29 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   }
 
   Stream<FriendsState> loadFriendsList() async* {
-    String userId = auth.currentUser.uid;
     await _friendsListSubscription?.cancel();
-    _friendsListSubscription = service.streamFriends(userId).listen((event) {
-      add(LoadedFriendsListEvent(friendsList: event));
+    _friendsListSubscription = service.streamFriends(Global.instance.userId).listen((event) {
+      if (event.size > 0) {
+        List<FriendsModel> friends = [];
+        event.docs.forEach((element) {
+          friends.add(FriendsModel.fromJson(element.data()));
+        });
+        add(LoadedFriendsListEvent(friendsList: friends));
+      } else {
+        add(LoadedFriendsListEvent(friendsList: []));
+      }
+    });
+    await _friendsRequestSubscription?.cancel();
+    _friendsListSubscription = service.streamFriendsRequests(Global.instance.userId).listen((event) {
+      if (event.size > 0) {
+        List<FriendsModel> friends = [];
+        event.docs.forEach((element) {
+          friends.add(FriendsModel.fromJson(element.data()));
+        });
+        add(LoadedRequestListEvent(requestList: friends));
+      } else {
+        add(LoadedRequestListEvent(requestList: []));
+      }
     });
   }
 
@@ -69,6 +92,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     friendsModel.name = userModel.name;
     friendsModel.image = userModel.image;
     friendsModel.sender = Global.instance.userId;
+    friendsModel.receiver = userModel.id;
     friendsModel.status = 'pending';
     await service.addFriends(Global.instance.userId, friendsModel);
 
@@ -76,6 +100,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     userFriendsModel.name = Global.instance.userModel.name;
     userFriendsModel.image = Global.instance.userModel.image;
     userFriendsModel.sender = Global.instance.userId;
+    friendsModel.receiver = userModel.id;
     userFriendsModel.status = 'pending';
     await service.addFriends(userModel.id, userFriendsModel);
     final currentState = state;
@@ -113,26 +138,83 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
 
   Stream<FriendsState> loadedFriends(FriendsModel friendsModel) async* {
     final currentState = state;
+    UserModel userModel;
+    if (currentState is FriendsInitState) {
+      userModel = currentState.userModel;
+    }
     if (currentState is FriendsLoadState) {
       yield currentState.copyWith(friendsModel: friendsModel);
     } else {
-      yield FriendsLoadState(friendsModel: friendsModel);
+      if (userModel != null) {
+        yield FriendsLoadState(friendsModel: friendsModel, userModel: userModel);
+      } else {
+        yield FriendsLoadState(friendsModel: friendsModel);
+      }
     }
   }
 
-  Stream<FriendsState> loadedFriendsList(List<FriendsModel> list) async* {
+  Stream<FriendsState> loadedFriendsList(List<FriendsModel> friends) async* {
     final currentState = state;
     if (currentState is FriendsListLoadState) {
-      yield currentState.copyWith(friendsList: list);
+      List<FriendsGroupModel> groupList = [];
+      List<FriendsModel> requests = [];
+      requests.addAll(currentState.requestList);
+      requests.forEach((element) {
+        groupList.add(FriendsGroupModel(group: '', friendsModel: element));
+      });
+      friends.forEach((element) {
+        groupList.add(FriendsGroupModel(group: element.getGroup(), friendsModel: element));
+      });
+      groupList.sort((g1, g2) => g1.group.compareTo(g2.group));
+      yield currentState.copyWith(friendsList: friends, friendsGroupList: groupList);
     } else {
-      yield FriendsListLoadState(friendsList: list);
+      List<FriendsGroupModel> groupList = [];
+      friends.forEach((element) {
+        groupList.add(FriendsGroupModel(group: element.getGroup(), friendsModel: element));
+      });
+      yield FriendsListLoadState(friendsList: friends, friendsGroupList: groupList);
     }
+  }
+
+  Stream<FriendsState> loadedRequestList(List<FriendsModel> requests) async* {
+    final currentState = state;
+    if (currentState is FriendsListLoadState) {
+      List<FriendsGroupModel> groupList = [];
+      List<FriendsModel> friends = [];
+      friends.addAll(currentState.friendsList);
+      requests.forEach((element) {
+        groupList.add(FriendsGroupModel(group: '', friendsModel: element));
+      });
+      friends.forEach((element) {
+        groupList.add(FriendsGroupModel(group: element.getGroup(), friendsModel: element));
+      });
+      groupList.sort((g1, g2) => g1.group.compareTo(g2.group));
+      yield currentState.copyWith(requestList: requests, friendsGroupList: groupList);
+    } else {
+      List<FriendsGroupModel> groupList = [];
+      requests.forEach((element) {
+        groupList.add(FriendsGroupModel(group: '', friendsModel: element));
+      });
+      yield FriendsListLoadState(requestList: requests, friendsGroupList: groupList);
+    }
+  }
+
+  Stream<FriendsState> loadFriendProfile(String userId) async* {
+    UserModel userModel = await service.getUserWithId(userId);
+    final currentState = state;
+    if (currentState is FriendsLoadState) {
+      yield currentState.copyWith(userModel: userModel);
+    } else {
+      yield FriendsLoadState(userModel: userModel);
+    }
+    add(LoadFriends(friendId: userId));
   }
 
   @override
   Future<void> close() {
     _friendsSubscription?.cancel();
     _friendsListSubscription?.cancel();
+    _friendsRequestSubscription?.cancel();
     return super.close();
   }
 

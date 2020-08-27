@@ -21,7 +21,8 @@ import 'package:page_transition/page_transition.dart';
 class OtherUserProfileScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
   final UserModel userModel;
-  OtherUserProfileScreen({Key key, this.screenBloc, this.userModel,}) : super(key: key);
+  final FriendsModel friendsModel;
+  OtherUserProfileScreen({Key key, this.screenBloc, this.userModel, this.friendsModel}) : super(key: key);
 
   @override
   _OtherUserProfileScreenState createState() => _OtherUserProfileScreenState();
@@ -29,7 +30,7 @@ class OtherUserProfileScreen extends StatefulWidget {
 
 class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with SingleTickerProviderStateMixin {
 
-  final FriendsBloc friendsBloc = FriendsBloc(FriendsInitState());
+  FriendsBloc friendsBloc;
   bool isHelp = false;
   AnimationController controller;
   Animation<double> translation;
@@ -39,6 +40,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
   @override
   void initState() {
     super.initState();
+    friendsBloc = FriendsBloc(FriendsInitState(userModel: widget.userModel));
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     curvedAnimation =
@@ -46,8 +48,12 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
     scaleAnim = Tween(begin: 0.0, end: 1.0).animate(controller)..addListener(() { setState(() {
 
     });});
-    userModel = widget.userModel;
-    friendsBloc.add(LoadFriends(friendId: userModel.id));
+    if (widget.userModel == null) {
+      friendsBloc.add(LoadOtherUserProfile(friendId: widget.friendsModel.id));
+    } else {
+      userModel = widget.userModel;
+      friendsBloc.add(LoadFriends(friendId: userModel.id));
+    }
   }
 
   @override
@@ -78,12 +84,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
               ],
             );
           });
-        } else if (state is ProfileScreenLogout) {
-          Navigator.pushReplacement(context, PageTransition(
-            child: SplashScreen(),
-            type: PageTransitionType.leftToRightWithFade,
-            duration: Duration(microseconds: 500),
-          ));
+        } else if (state is FriendsLoadState) {
+          userModel = state.userModel;
         }
       },
       child: BlocBuilder<FriendsBloc, FriendsState>(
@@ -143,7 +145,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                           child: Padding(
                             padding: EdgeInsets.only(right: 4, bottom: 4),
                             child: ProfileImageView(
-                              imageUrl: userModel.image ?? '',
+                              imageUrl: userModel != null ? userModel.image ?? '': '',
                               avatarSize: avatarSize - 16,
                             ),
                           ),
@@ -153,7 +155,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                   ),
                   SizedBox(height: 16,),
                   Text(
-                    userModel.name ?? '',
+                    userModel != null ? userModel.name ?? '': '',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -517,7 +519,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${userModel.points}',
+                        userModel != null ? '${userModel.points}' : '',
                         style: TextStyle(
                           color: Color(0xFFF8A828),
                           fontSize: 20,
@@ -545,7 +547,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${userModel.totalPlayed}',
+                        userModel != null ? '${userModel.totalPlayed}': '',
                         style: TextStyle(
                           color: Color(0xFF3AC3DC),
                           fontSize: 20,
@@ -589,7 +591,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        '${userModel.age}',
+                        userModel != null ? '${userModel.age}': '',
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 18,
@@ -619,7 +621,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        userModel.location ?? '',
+                        userModel != null ? userModel.location ?? '': '',
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 18,
@@ -649,7 +651,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        userModel.profession ?? '',
+                        userModel != null ? userModel.profession ?? '': '',
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 18,
@@ -700,7 +702,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        '${userModel.totalWin}',
+                        userModel != null ? '${userModel.totalWin}': '',
                         style: TextStyle(
                           color: Color(0xFF84B65B),
                           fontSize: 20,
@@ -749,7 +751,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        '${userModel.totalLoss}',
+                        userModel != null ? '${userModel.totalLoss}': '',
                         style: TextStyle(
                           color: Color(0xFFD741D9),
                           fontSize: 20,
@@ -809,7 +811,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                 children: [
                   SizedBox(height: 16,),
                   Text(
-                    '${userModel.totalRequest}',
+                    userModel != null ? '${userModel.totalRequest}': '',
                     style: TextStyle(
                       color: Color(0xFF19DC47),
                       fontSize: 20,
@@ -840,7 +842,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                 children: [
                   SizedBox(height: 16,),
                   Text(
-                    '${userModel.totalDecline}',
+                    userModel != null ? '${userModel.totalDecline}': '',
                     style: TextStyle(
                       color: Color(0xFFF3422E),
                       fontSize: 20,
@@ -872,6 +874,9 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
   }
 
   Image getFriendImage(FriendsModel friendsModel) {
+    if (friendsModel == null) {
+      return null;
+    }
     switch (friendsModel.status) {
       case 'notFriends':
         return Image.asset('assets/images/friend_add.png');
