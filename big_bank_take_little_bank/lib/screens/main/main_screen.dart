@@ -5,9 +5,11 @@ import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.da
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
+import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:big_bank_take_little_bank/widgets/radial_menu.dart';
 import 'package:circular_menu/circular_menu.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -137,6 +139,7 @@ class _MainScreenContentState extends State<MainScreenContent> {
   @override
   void initState() {
     // TODO: implement initState
+    _initAdMob();
     super.initState();
   }
 
@@ -228,6 +231,7 @@ class _MainScreenContentState extends State<MainScreenContent> {
         return Container();
       case 4:
         return HomeScreen(
+          homeContext: context,
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
       case 5:
@@ -236,12 +240,19 @@ class _MainScreenContentState extends State<MainScreenContent> {
         return Container();
       case 7:
         return SettingsScreen(
+          homeContext: context,
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
     }
     return HomeScreen(
+      homeContext: context,
       screenBloc: BlocProvider.of<MainScreenBloc>(context),
     );
+  }
+
+  Future<void> _initAdMob() {
+    // TODO: Initialize AdMob SDK
+    return FirebaseAdMob.instance.initialize(appId: AdManager.appId);
   }
 
 }

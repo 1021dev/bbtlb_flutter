@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
-import 'package:big_bank_take_little_bank/utils/app_color.dart';
+import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,8 +11,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
+  final BuildContext homeContext;
   final MainScreenBloc screenBloc;
-  HomeScreen({Key key, this.screenBloc}) : super(key: key);
+  HomeScreen({Key key, this.screenBloc, this.homeContext,}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -116,7 +117,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   InkWell(
                     onTap: () {
-
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          child: ProfileScreen(
+                            homeContext: widget.homeContext,
+                            screenBloc: ProfileScreenBloc(ProfileScreenState(isLoading: true), mainScreenBloc: widget.screenBloc,)..add(ProfileScreenInitEvent()),
+                          ),
+                          type: PageTransitionType.fade,
+                          duration: Duration(microseconds: 300),
+                        ),
+                      );
                     },
                     child: Container(
                       height: 100,

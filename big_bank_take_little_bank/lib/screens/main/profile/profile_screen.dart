@@ -19,7 +19,8 @@ import 'package:page_transition/page_transition.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ProfileScreenBloc screenBloc;
-  ProfileScreen({Key key, this.screenBloc}) : super(key: key);
+  final BuildContext homeContext;
+  ProfileScreen({Key key, this.screenBloc, this.homeContext}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -36,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
   @override
   void initState() {
     super.initState();
-    userModel = UserModel(id: Global.instance.userId);
+    userModel = Global.instance.userModel;
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     curvedAnimation =
@@ -260,7 +261,9 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                           Navigator.push(
                             context,
                             PageTransition(
-                              child: AddPointsScreen(),
+                              child: AddPointsScreen(
+                                homeContext: widget.homeContext,
+                              ),
                               type: PageTransitionType.fade,
                               duration: Duration(microseconds: 300),
                             ),

@@ -12,17 +12,24 @@ abstract class AdsRewardsState extends Equatable {
 
 class AdsRewardsInitState extends AdsRewardsState {}
 
-class AdsRewardsAcceptState extends AdsRewardsState{
-  final RewardsModel rewardsModel;
+class AdsRewardsLoadState extends AdsRewardsState{
+  final List<RewardsModel> rewardsList;
 
-  AdsRewardsAcceptState({
-    this.rewardsModel,
+  AdsRewardsLoadState({
+    this.rewardsList,
   });
 
   @override
   List<Object> get props => [
-    rewardsModel,
+    rewardsList,
   ];
+  AdsRewardsLoadState copyWith({
+    List<RewardsModel> rewardsList,
+  }) {
+    return AdsRewardsLoadState(
+      rewardsList: rewardsList ?? this.rewardsList,
+    );
+  }
 }
 
 class AdsRewardsSuccess extends AdsRewardsState {}

@@ -201,7 +201,7 @@ class AppGradientLabel extends StatelessWidget {
         shadows: shadow ? [
           Shadow(
             color: shadowColor,
-            offset: Offset(4.0, 4.0),
+            offset: Offset(fontSize * 0.1, fontSize * 0.1),
           ),
         ] : [],
         foreground: Paint()..shader = linearGradient,

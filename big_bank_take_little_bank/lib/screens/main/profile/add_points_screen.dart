@@ -1,17 +1,18 @@
-import 'package:big_bank_take_little_bank/blocs/ads_rewards/ads_rewards.dart';
 import 'package:big_bank_take_little_bank/widgets/add_coin_cell.dart';
-import 'package:big_bank_take_little_bank/widgets/app_button.dart';
-import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:page_transition/page_transition.dart';
+
+import 'ads_points_screen.dart';
 
 class AddPointsScreen extends StatefulWidget {
+  final BuildContext homeContext;
+
+  AddPointsScreen({this.homeContext});
 
   @override
-  State<StatefulWidget> createState() {
+  State<AddPointsScreen> createState() {
     return _AddPointsScreenState();
   }
 }
@@ -129,7 +130,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                           Flexible(
                             child: AddCoinCell(
                               onTap: () {
-
+                                Navigator.push(context, PageTransition(
+                                  child: AdsPointsScreen(
+                                    homeContext: widget.homeContext,
+                                  ),
+                                  type: PageTransitionType.fade,
+                                  duration: Duration(microseconds: 300),
+                                ),
+                                );
                               },
                               type: 'ads',
                             ),

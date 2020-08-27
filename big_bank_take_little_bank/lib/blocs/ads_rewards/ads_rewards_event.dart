@@ -17,9 +17,9 @@ abstract class AdsRewardsEvent extends Equatable {
 @immutable
 class CheckAdsRewards extends AdsRewardsEvent {}
 
-class AvailableAdsRewards extends AdsRewardsEvent {
-  final RewardsModel rewardsModel;
-  AvailableAdsRewards({this.rewardsModel});
+class AdsLoadSedEvent extends AdsRewardsEvent {
+  final List<RewardsModel> rewardsList;
+  AdsLoadSedEvent({this.rewardsList});
 }
 
 @immutable

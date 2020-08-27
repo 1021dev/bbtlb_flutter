@@ -57,6 +57,7 @@ class FirestoreService {
     return userCollection
         .doc(uid)
         .collection('rewards')
+        .where('type', isEqualTo: 'daily')
         .orderBy('rewardsAt', descending: true)
         .limit(1)
         .snapshots();
@@ -142,6 +143,15 @@ class FirestoreService {
         .collection('friends')
         .doc(friendsModel.id)
         .delete();
+  }
+
+  Stream<QuerySnapshot> streamAdsRewards(String uid) {
+    return userCollection
+        .doc(uid)
+        .collection('rewards')
+        .where('type', isEqualTo: 'ads')
+        .orderBy('rewardsAt', descending: true)
+        .snapshots();
   }
 
 

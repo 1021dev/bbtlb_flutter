@@ -6,13 +6,21 @@ class AppButton extends StatelessWidget {
   final String title;
   final String colorStyle;
   final Image image;
+  final double height;
+  final Widget titleWidget;
 
-  AppButton({this.title, this.colorStyle = 'green', this.image,});
+  AppButton({
+    this.title,
+    this.colorStyle = 'green',
+    this.image,
+    this.height = 50,
+    this.titleWidget,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
+      height: height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: getBackgroundColor(colorStyle),
@@ -53,13 +61,27 @@ class AppButton extends StatelessWidget {
             ),
           ),
           Center(
-            child: title != null ? Text(
-              title,
-            ): (image != null ? image: Container()),
+            child: getChild(),
           ),
         ],
       ),
     );
+  }
+
+  Widget getChild() {
+    if (titleWidget != null) {
+      return titleWidget;
+    }
+    if (title != null) {
+      return Text(
+        title,
+      );
+    }
+    if (image != null) {
+      return image;
+    }
+
+    return Container();
   }
 }
 

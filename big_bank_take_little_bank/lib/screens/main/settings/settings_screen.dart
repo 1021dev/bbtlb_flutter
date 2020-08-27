@@ -14,7 +14,8 @@ import 'package:page_transition/page_transition.dart';
 
 class SettingsScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
-  SettingsScreen({Key key, this.screenBloc}) : super(key: key);
+  final BuildContext homeContext;
+  SettingsScreen({Key key, this.screenBloc, this.homeContext}) : super(key: key);
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -125,6 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
                               context,
                               PageTransition(
                                 child: ProfileScreen(
+                                  homeContext: widget.homeContext,
                                   screenBloc: profileScreenBloc,
                                 ),
                                 type: PageTransitionType.fade,
