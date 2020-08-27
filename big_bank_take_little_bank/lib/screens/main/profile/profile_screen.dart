@@ -2,6 +2,7 @@ import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/edit_profile_dialog.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
@@ -256,6 +257,14 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                     child: SizedBox.expand(
                       child: MaterialButton(
                         onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: AddPointsScreen(),
+                              type: PageTransitionType.fade,
+                              duration: Duration(microseconds: 300),
+                            ),
+                          );
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

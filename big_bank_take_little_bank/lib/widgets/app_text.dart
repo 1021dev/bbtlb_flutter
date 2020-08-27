@@ -171,3 +171,42 @@ class BackgroundButton extends StatelessWidget {
   }
 }
 
+class AppGradientLabel extends StatelessWidget {
+  final String title;
+  final Gradient gradient;
+  final bool shadow;
+  final Color shadowColor;
+  final String fontFamily;
+  final double fontSize;
+
+  AppGradientLabel({
+    this.title = '',
+    this.gradient,
+    this.shadow = false,
+    this.shadowColor = Colors.black87,
+    this.fontFamily = 'Lucky',
+    this.fontSize = 18,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Shader linearGradient = LinearGradient(
+      colors: <Color>[Color(0xffff8d1e), Color(0xffffc412)],
+    ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
+    return Text(
+      title,
+      style: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: fontSize,
+        shadows: shadow ? [
+          Shadow(
+            color: shadowColor,
+            offset: Offset(4.0, 4.0),
+          ),
+        ] : [],
+        foreground: Paint()..shader = linearGradient,
+      ),
+    );
+  }
+}
+

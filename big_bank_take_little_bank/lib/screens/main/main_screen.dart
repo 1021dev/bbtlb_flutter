@@ -53,6 +53,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
     final DailyRewardsBloc dailyRewardsBloc = DailyRewardsBloc(DailyRewardsInitState());
     // ignore: close_sinks
     final MainScreenBloc mainScreenBloc = MainScreenBloc(MainScreenInitState());
+    // ignore: close_sinks
+    final AdsRewardsBloc adsRewardsBloc = AdsRewardsBloc(AdsRewardsInitState());
     return MultiBlocProvider(
       providers: [
         BlocProvider<DailyRewardsBloc>(
@@ -65,6 +67,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
           create: (BuildContext context) {
             return mainScreenBloc
               ..add(MainScreenInitEvent());
+          },
+        ),
+        BlocProvider<AdsRewardsBloc>(
+          create: (BuildContext context) {
+            return adsRewardsBloc
+              ..add(CheckAdsRewards());
           },
         ),
       ],
