@@ -1,6 +1,3 @@
-import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
-import 'package:flutter/cupertino.dart';
 
 class AppConstant {
   static const kNavigateConfirm = 'k_Navigate_Confirm';

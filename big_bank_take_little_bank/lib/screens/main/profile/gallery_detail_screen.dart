@@ -1,22 +1,20 @@
 import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
-import 'package:big_bank_take_little_bank/screens/main/profile/edit_profile_dialog.dart';
+import 'package:big_bank_take_little_bank/models/gallery_model.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
-import 'package:big_bank_take_little_bank/widgets/background_widget.dart';
-import 'package:big_bank_take_little_bank/widgets/setting_cell.dart';
-import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GalleryDetailScreen extends StatefulWidget {
-  final ProfileScreenBloc screenBloc;
-  GalleryDetailScreen({Key key, this.screenBloc}) : super(key: key);
+  final GalleryModel galleryModel;
+  final UserModel userModel;
+  GalleryDetailScreen({Key key, this.galleryModel, this.userModel}) : super(key: key);
 
   @override
   _GalleryDetailScreenState createState() => _GalleryDetailScreenState();
@@ -32,8 +30,11 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
   TextEditingController messageController = TextEditingController();
   FocusNode messageNode = FocusNode();
 
+  GalleryDetailBloc galleryDetailBloc;
   @override
   void initState() {
+    galleryDetailBloc = GalleryDetailBloc(GalleryDetailInitState());
+    galleryDetailBloc.add(CheckGalleryDetail(userModel: widget.userModel, galleryModel: widget.galleryModel));
     super.initState();
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
@@ -56,11 +57,10 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: widget.screenBloc,
-      listener: (BuildContext context, ProfileScreenState state) async {
-        if (state is ProfileScreenSuccess) {
-          widget.screenBloc.add(ProfileScreenInitEvent());
-        } else if (state is ProfileScreenFailure) {
+      cubit: galleryDetailBloc,
+      listener: (BuildContext context, GalleryDetailState state) async {
+        if (state is GalleryDetailSuccess) {
+        } else if (state is GalleryDetailFailure) {
           showCupertinoDialog(context: context, builder: (BuildContext context) {
             return CupertinoAlertDialog(
               title: Text('Oops'),
@@ -77,9 +77,9 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
           });
         }
       },
-      child: BlocBuilder<ProfileScreenBloc, ProfileScreenState>(
-        cubit: widget.screenBloc,
-        builder: (BuildContext context, ProfileScreenState state) {
+      child: BlocBuilder<GalleryDetailBloc, GalleryDetailState>(
+        cubit: galleryDetailBloc,
+        builder: (BuildContext context, GalleryDetailState state) {
           return Scaffold(
             resizeToAvoidBottomInset: true,
             body: _body(state),
@@ -89,7 +89,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
     );
   }
 
-  Widget _body(ProfileScreenState state) {
+  Widget _body(GalleryDetailState state) {
     return SafeArea(
       top: false,
       bottom: false,
@@ -208,7 +208,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                           },
                                           minWidth: 0,
                                           padding: EdgeInsets.zero,
-                                          child: Image.asset('assets/images/heart.png', width: 24, height: 24,),
+                                          child: Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
                                         ),
                                         Text(
                                           '0 Likes',
@@ -447,7 +447,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
               },
             ),
           ),
-          state.isLoading ? Positioned(
+          state is GalleryDetailInitState ? Positioned(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Container(

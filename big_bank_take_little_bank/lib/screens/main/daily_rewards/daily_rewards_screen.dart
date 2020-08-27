@@ -1,11 +1,9 @@
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
-import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class DailyRewardsDialog extends StatefulWidget {
   final BuildContext homeContext;

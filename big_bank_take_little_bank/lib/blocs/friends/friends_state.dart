@@ -1,5 +1,4 @@
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
-import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';

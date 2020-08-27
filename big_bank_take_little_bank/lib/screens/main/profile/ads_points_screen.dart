@@ -2,20 +2,15 @@ import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/ads_rewards/ads_rewards.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
-import 'package:big_bank_take_little_bank/widgets/add_coin_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/stripe_widget.dart';
-import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:page_transition/page_transition.dart';
 
 class AdsPointsScreen extends StatefulWidget {
   final BuildContext homeContext;
@@ -56,7 +51,7 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
       cubit: BlocProvider.of<AdsRewardsBloc>(homeContext),
       listener: (context, state) {
         if (state is AdsRewardsLoadState ) {
-          if (count != state.rewardsList.length); {
+          if (count != state.rewardsList.length) {
             setState(() {
               count = state.rewardsList.length;
             });

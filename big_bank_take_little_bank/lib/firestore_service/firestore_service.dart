@@ -1,4 +1,7 @@
+import 'package:big_bank_take_little_bank/models/comment_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
+import 'package:big_bank_take_little_bank/models/gallery_model.dart';
+import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
@@ -152,6 +155,80 @@ class FirestoreService {
         .where('type', isEqualTo: 'ads')
         .orderBy('rewardsAt', descending: true)
         .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamGalleryList(String uid) {
+    return userCollection
+        .doc(uid)
+        .collection('gallery')
+        .orderBy('updatedAt', descending: true)
+        .snapshots();
+  }
+
+  Stream<GalleryModel> streamGalleryDetail(String uid, String galleryId) {
+    return userCollection
+        .doc(uid)
+        .collection('gallery')
+        .doc(galleryId)
+        .snapshots().map((event) {
+          GalleryModel galleryModel = GalleryModel.fromJson(event.data());
+          galleryModel.reference = event.reference;
+          return galleryModel;
+    });
+  }
+
+  Stream<QuerySnapshot> streamLikes(String uid, String galleryId) {
+    return userCollection
+        .doc(uid)
+        .collection('gallery')
+        .doc(galleryId)
+        .collection('likes')
+        .orderBy('updatedAt', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamComments(String uid, String galleryId) {
+    return userCollection
+        .doc(uid)
+        .collection('gallery')
+        .doc(galleryId)
+        .collection('comments')
+        .orderBy('updatedAt', descending: true)
+        .snapshots();
+  }
+
+  Future<void> addComment(String uid, String galleryId, CommentModel commentModel) async {
+    await userCollection
+        .doc(uid)
+        .collection('gallery')
+        .doc(galleryId)
+        .collection('comments')
+        .add(commentModel.toJson());
+  }
+
+  Future<void> updateLike(String uid, String galleryId, LikeModel likeModel) async {
+    return userCollection
+        .doc(uid)
+        .collection('gallery')
+        .doc(galleryId)
+        .collection('likes')
+        .doc(Global.instance.userId)
+        .set(likeModel.toJson());
+  }
+
+  Future<void> createGallery(String uid, GalleryModel galleryModel) async {
+    return userCollection
+        .doc(uid)
+        .collection('gallery')
+        .add(galleryModel.toJson());
+  }
+
+  Future<void> updateGallery(GalleryModel galleryModel) async {
+    return galleryModel.reference.update(galleryModel.toJson());
+  }
+
+  Future<void> deleteGallery(GalleryModel galleryModel) async {
+    return galleryModel.reference.delete();
   }
 
 

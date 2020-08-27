@@ -1,6 +1,5 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/edit_profile_dialog.dart';
@@ -8,11 +7,9 @@ import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.da
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/background_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_image_view.dart';
-import 'package:big_bank_take_little_bank/widgets/setting_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
@@ -224,7 +221,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                         onPressed: () {
                           Navigator.push(context, PageTransition(
                             child: GalleryScreen(
-                              screenBloc: widget.screenBloc,
+                              userModel: userModel,
                             ),
                             type: PageTransitionType.fade,
                             duration: Duration(microseconds: 300),

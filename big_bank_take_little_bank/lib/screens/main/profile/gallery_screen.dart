@@ -1,15 +1,11 @@
 import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
-import 'package:big_bank_take_little_bank/screens/main/profile/edit_profile_dialog.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_detail_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
-import 'package:big_bank_take_little_bank/widgets/background_widget.dart';
-import 'package:big_bank_take_little_bank/widgets/setting_cell.dart';
-import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -17,8 +13,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 
 class GalleryScreen extends StatefulWidget {
-  final ProfileScreenBloc screenBloc;
-  GalleryScreen({Key key, this.screenBloc}) : super(key: key);
+  final UserModel userModel;
+  GalleryScreen({Key key, this.userModel}) : super(key: key);
 
   @override
   _GalleryScreenState createState() => _GalleryScreenState();
@@ -32,10 +28,14 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
   Animation<double> scaleAnim;
   CurvedAnimation curvedAnimation;
 
+  GalleryBloc galleryBloc;
+
   bool isDeleteMode = false;
   @override
   void initState() {
     super.initState();
+    galleryBloc = GalleryBloc(GalleryInitState(userModel: widget.userModel));
+    galleryBloc.add(CheckGallery(userModel: widget.userModel));
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     curvedAnimation =
@@ -49,17 +49,17 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
   @override
   void dispose() {
     controller.dispose();
+    galleryBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: widget.screenBloc,
-      listener: (BuildContext context, ProfileScreenState state) async {
-        if (state is ProfileScreenSuccess) {
-          widget.screenBloc.add(ProfileScreenInitEvent());
-        } else if (state is ProfileScreenFailure) {
+      cubit: galleryBloc,
+      listener: (BuildContext context, GalleryState state) async {
+        if (state is GallerySuccess) {
+        } else if (state is GalleryFailure) {
           showCupertinoDialog(context: context, builder: (BuildContext context) {
             return CupertinoAlertDialog(
               title: Text('Oops'),
@@ -76,9 +76,9 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
           });
         }
       },
-      child: BlocBuilder<ProfileScreenBloc, ProfileScreenState>(
-        cubit: widget.screenBloc,
-        builder: (BuildContext context, ProfileScreenState state) {
+      child: BlocBuilder<GalleryBloc, GalleryState>(
+        cubit: galleryBloc,
+        builder: (BuildContext context, GalleryState state) {
           return Scaffold(
             resizeToAvoidBottomInset: false,
             body: _body(state),
@@ -88,7 +88,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
     );
   }
 
-  Widget _body(ProfileScreenState state) {
+  Widget _body(GalleryState state) {
 
     double avatarSize = MediaQuery.of(context).size.width * 0.4;
     return Stack(
@@ -208,10 +208,10 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                           minWidth: 0,
                           shape: CircleBorder(),
                           padding: EdgeInsets.zero,
-                          child: Image.asset('assets/images/btn_dust.png'),
+                          child: isDeleteMode ? Image.asset('assets/images/ic_delete_selected.png') : Image.asset('assets/images/ic_delete.png'),
                         ),
                       ),
-                      Positioned(
+                      state is GalleryLoadState ? Positioned(
                         top: 56,
                         right: 40,
                         left: 30,
@@ -226,16 +226,20 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                             childAspectRatio: 0.8,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8,
-                            children: List.generate(10, (index) {
+                            children: List.generate((state as GalleryLoadState).galleryList.length, (index) {
                               return GestureDetector(
                                 onTap: () {
-                                  Navigator.push(context, PageTransition(
-                                    child: GalleryDetailScreen(
-                                      screenBloc: widget.screenBloc,
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      child: GalleryDetailScreen(
+                                        galleryModel: (state as GalleryLoadState).galleryList[index],
+                                        userModel: widget.userModel,
+                                      ),
+                                      type: PageTransitionType.fade,
+                                      duration: Duration(microseconds: 300),
                                     ),
-                                    type: PageTransitionType.fade,
-                                    duration: Duration(microseconds: 300),
-                                  ));
+                                  );
                                 },
                                 child: Stack(
                                   fit: StackFit.expand,
@@ -282,7 +286,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                                         },
                                                         minWidth: 0,
                                                         padding: EdgeInsets.zero,
-                                                        child: Image.asset('assets/images/heart.png', width: 24, height: 24,),
+                                                        child: Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
                                                       ),
                                                       Text(
                                                         '0',
@@ -339,7 +343,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                             }),
                           ),
                         ),
-                      ),
+                      ): Container(),
                     ],
                   ),
                 ),
@@ -362,7 +366,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
             },
           ),
         ),
-        state.isLoading ? Positioned(
+        state is GalleryInitState ? Positioned(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Container(

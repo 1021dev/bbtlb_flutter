@@ -1,15 +1,12 @@
 import 'dart:math';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_cell.dart';
-import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:page_transition/page_transition.dart';
 
