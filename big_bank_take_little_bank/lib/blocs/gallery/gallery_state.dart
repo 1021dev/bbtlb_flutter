@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
+import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +22,14 @@ class GalleryLoadState extends GalleryState{
   final UserModel userModel;
   final double uploadProgress;
   final bool isUploading;
+  final List<LikeModel> userLikeList;
 
   GalleryLoadState({
     this.galleryList = const [],
     this.userModel,
     this.uploadProgress = 0.0,
     this.isUploading = false,
+    this.userLikeList = const [],
   });
 
   @override
@@ -35,18 +38,21 @@ class GalleryLoadState extends GalleryState{
     userModel,
     uploadProgress,
     isUploading,
+    userLikeList,
   ];
   GalleryLoadState copyWith({
     List<GalleryModel> galleryList,
     UserModel userModel,
     double uploadProgress,
     bool isUploading,
+    List<LikeModel> userLikeList,
   }) {
     return GalleryLoadState(
       galleryList: galleryList ?? this.galleryList,
       userModel: userModel ?? this.userModel,
       uploadProgress: uploadProgress ?? this.uploadProgress,
       isUploading: isUploading ?? this.isUploading,
+      userLikeList: userLikeList ?? this.userLikeList,
     );
   }
 }

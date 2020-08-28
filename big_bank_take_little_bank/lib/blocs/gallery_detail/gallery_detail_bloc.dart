@@ -27,7 +27,7 @@ class GalleryDetailBloc extends Bloc<GalleryDetailEvent, GalleryDetailState> {
     } else if (event is GalleryDetailLoadedEvent) {
       yield* loadedGallery(event);
     } else if (event is UpdateGalleryEvent) {
-      yield* updateGallery(event.galleryModel);
+      yield* updateGallery(event.uid, event.galleryModel);
     } else if (event is AddCommentEvent) {
       yield* addComment(event.uid, event.galleryId, event.commentModel);
     } else if (event is LikeEvent) {
@@ -82,23 +82,30 @@ class GalleryDetailBloc extends Bloc<GalleryDetailEvent, GalleryDetailState> {
         yield GalleryDetailLoadState(likeList: event.likeList, );
       }
     }
-
   }
 
-  Stream<GalleryDetailState> updateGallery(GalleryModel galleryModel) async* {
-    await service.updateGallery(galleryModel);
-  }
-
-  Stream<GalleryDetailState> deleteGallery(GalleryModel galleryModel) async* {
-    await service.deleteGallery(galleryModel);
+  Stream<GalleryDetailState> updateGallery(String uid, GalleryModel galleryModel) async* {
+    await service.updateGallery(uid, galleryModel);
   }
 
   Stream<GalleryDetailState> addComment(String uid, String galleryId, CommentModel commentModel) async* {
     await service.addComment(uid, galleryId, commentModel);
+    final currentState = state;
+    if (currentState is GalleryDetailLoadState) {
+      GalleryModel galleryModel = currentState.galleryModel;
+      galleryModel.commentCount = galleryModel.commentCount + 1;
+      await service.updateGallery(uid, galleryModel);
+    }
   }
 
   Stream<GalleryDetailState> updateLike(String uid, String galleryId, LikeModel likeModel) async* {
     await service.updateLike(uid, galleryId, likeModel);
+    final currentState = state;
+    if (currentState is GalleryDetailLoadState) {
+      GalleryModel galleryModel = currentState.galleryModel;
+      galleryModel.likeCount = galleryModel.likeCount + (likeModel.like ? 1: -1);
+      await service.updateGallery(uid, galleryModel);
+    }
   }
 
   @override

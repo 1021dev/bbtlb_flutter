@@ -48,3 +48,5 @@ class UpdatePasswordEvent extends ProfileScreenEvent {
 
   UpdatePasswordEvent({this.newPassword, this.oldPassword});
 }
+
+class GetBlockListEvent extends ProfileScreenEvent{}

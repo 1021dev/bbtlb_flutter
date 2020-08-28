@@ -32,15 +32,9 @@ class GalleryDetailLoadedEvent extends GalleryDetailEvent {
 @immutable
 class UpdateGalleryEvent extends GalleryDetailEvent {
   final GalleryModel galleryModel;
+  final String uid;
 
-  UpdateGalleryEvent({this.galleryModel,});
-}
-
-@immutable
-class DeleteGalleryEvent extends GalleryDetailEvent {
-  final GalleryModel galleryModel;
-
-  DeleteGalleryEvent({this.galleryModel,});
+  UpdateGalleryEvent({this.galleryModel, this.uid});
 }
 
 @immutable

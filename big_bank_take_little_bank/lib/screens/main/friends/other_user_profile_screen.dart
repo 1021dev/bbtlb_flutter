@@ -206,80 +206,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Container(
-                    height: 55,
-                    width: 725 / 175 * 55,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: Image.asset(
-                          'assets/images/btn_bg_yellow.png',
-                          width: 725 / 175 * 55,
-                          height: 55,
-                          fit: BoxFit.fill,
-                        ).image,
-                      ),
-                    ),
-                    child: SizedBox.expand(
-                      child: MaterialButton(
-                        onPressed: () {
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        minWidth: 0,
-                        height: 50,
-                        padding: EdgeInsets.all(0),
-                        child: Text(
-                          'ADD POINTS',
-                          style: TextStyle(
-                            color: Color(0xFFFFFFFF),
-                            fontSize: 24,
-                            fontFamily: 'Lucky',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Container(
-                    height: 55,
-                    width: 725 / 175 * 55,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: Image.asset(
-                          'assets/images/btn_bg_yellow.png',
-                          width: 725 / 175 * 55,
-                          height: 55,
-                          fit: BoxFit.fill,
-                        ).image,
-                      ),
-                    ),
-                    child: SizedBox.expand(
-                      child: MaterialButton(
-                        onPressed: () {
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        minWidth: 0,
-                        height: 50,
-                        padding: EdgeInsets.all(0),
-                        child: Text(
-                          'STATS',
-                          style: TextStyle(
-                            color: Color(0xFFFFFFFF),
-                            fontSize: 24,
-                            fontFamily: 'Lucky',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -421,13 +347,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                   ),
                 );
               } else {
-                // showDialog(
-                //   context: context,
-                //   child: FriendsRequestSentDialog(
-                //     image: userModel.image,
-                //     name: userModel.name,
-                //   ),
-                // );
                 friendsBloc.add(RequestFriends(userModel: userModel));
               }
             },

@@ -7,7 +7,7 @@ class LikeModel {
   String userId;
   String userName;
   String userImage;
-  bool ike;
+  bool like;
 
   DocumentReference reference;
 
@@ -18,7 +18,7 @@ class LikeModel {
     this.userName,
     this.userImage,
     this.userId,
-    this.ike,
+    this.like,
     this.reference,
   });
 
@@ -29,7 +29,7 @@ class LikeModel {
       userName: json['userName'] as String ?? '',
       userId: json['userId'] as String ?? '',
       userImage: json['userImage'] as String ?? '',
-      ike: json['comment'] as bool ?? false,
+      like: json['like'] as bool ?? false,
       createdAt: (json['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
       updatedAt: (json['updatedAt'] as Timestamp).toDate() ?? DateTime.now(),
     );
@@ -50,7 +50,7 @@ class LikeModel {
         'userId': instance.userId ?? '',
         'userName': instance.userName ?? '',
         'userImage': instance.userImage ?? '',
-        'ike': instance.ike ?? false,
+        'like': instance.like ?? false,
       };
 
 }

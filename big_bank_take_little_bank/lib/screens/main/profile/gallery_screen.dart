@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
+import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_detail_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
 import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
@@ -133,7 +135,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                           width: avatarSize,
                         ),
                       ),
-                      Align(
+                      widget.userModel.id == Global.instance.userId ? Align(
                         alignment: Alignment.topRight,
                         child: MaterialButton(
                           onPressed: () {
@@ -176,7 +178,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                             height: 32,
                           ),
                         ),
-                      ),
+                      ): Container(),
                     ],
                   ),
                 ),
@@ -196,7 +198,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                         height: 50,
                         child: Image.asset('assets/images/gallery_head.png', fit: BoxFit.fill,),
                       ),
-                      Positioned(
+                      widget.userModel.id == Global.instance.userId ? Positioned(
                         top: 0,
                         right: 24,
                         width: 44,
@@ -212,7 +214,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                           padding: EdgeInsets.zero,
                           child: isDeleteMode ? Image.asset('assets/images/ic_delete_selected.png') : Image.asset('assets/images/ic_delete.png'),
                         ),
-                      ),
+                      ): Container(),
                       state is GalleryLoadState ? Positioned(
                         top: 56,
                         right: 40,
@@ -280,14 +282,15 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                                     children: [
                                                       MaterialButton(
                                                         onPressed: () {
-
+                                                          _likeGallery(state, galleryModel);
                                                         },
                                                         minWidth: 0,
                                                         padding: EdgeInsets.zero,
-                                                        child: Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
+                                                        child: isLike(state) ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
+                                                            : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
                                                       ),
                                                       Text(
-                                                        '0',
+                                                        '${galleryModel.likeCount}',
                                                         style: TextStyle(
                                                           fontFamily: 'BackToSchool',
                                                         ),
@@ -300,15 +303,12 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                                   child: Row(
                                                     children: [
                                                       MaterialButton(
-                                                        onPressed: () {
-
-                                                        },
                                                         minWidth: 0,
                                                         padding: EdgeInsets.zero,
                                                         child: Image.asset('assets/images/ic_comment.png', width: 24, height: 24,),
                                                       ),
                                                       Text(
-                                                        '0',
+                                                        '${galleryModel.commentCount}',
                                                         style: TextStyle(
                                                           fontFamily: 'BackToSchool',
                                                         ),
@@ -327,6 +327,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                       right: 0,
                                       child: MaterialButton(
                                         onPressed: () {
+                                          _deleteGallery(galleryModel);
                                         },
                                         child: Image.asset('assets/images/btn_remove.png', width: 24, height: 24,),
                                         shape: CircleBorder(),
@@ -377,6 +378,53 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
         ): Container()
       ],
     );
+  }
+
+  bool isLike(GalleryLoadState state) {
+    List<LikeModel> likes = [];
+    likes.addAll(state.userLikeList);
+    List like = likes.where((element) => element.id == Global.instance.userId).toList();
+    if (like.length > 0) {
+      return like.first.like;
+    } else {
+      return false;
+    }
+  }
+
+  _likeGallery(GalleryLoadState state, GalleryModel galleryModel) {
+    List<LikeModel> likes = [];
+    likes.addAll(state.userLikeList);
+    List like = likes.where((element) => element.id == Global.instance.userId).toList();
+    if (like.length > 0) {
+      LikeModel likeModel = like.first;
+      likeModel.like = !likeModel.like;
+      galleryBloc.add(
+          GalleryLikeEvent(
+            galleryModel: galleryModel,
+            uid: widget.userModel.id,
+            likeModel: likeModel,
+          )
+      );
+    } else {
+      LikeModel likeModel = LikeModel(
+          id: Global.instance.userId,
+          userId: Global.instance.userId,
+          like: true,
+          userImage: Global.instance.userModel.image,
+          userName: Global.instance.userModel.name
+      );
+      galleryBloc.add(
+          GalleryLikeEvent(
+            galleryModel: galleryModel,
+            uid: widget.userModel.id,
+            likeModel: likeModel,
+          )
+      );
+    }
+  }
+
+  _deleteGallery(GalleryModel galleryModel) {
+    galleryBloc.add(DeleteGalleryEvent(uid: widget.userModel.id, galleryModel: galleryModel));
   }
 
   Future getImage(int type) async {

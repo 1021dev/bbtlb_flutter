@@ -217,20 +217,54 @@ class FirestoreService {
   }
 
   Future<void> createGallery(String uid, GalleryModel galleryModel) async {
+    if (galleryModel.id != '') {
+      return userCollection
+          .doc(uid)
+          .collection('gallery')
+          .doc(galleryModel.id)
+          .set(galleryModel.toJson());
+    } else {
+      return userCollection
+          .doc(uid)
+          .collection('gallery')
+          .add(galleryModel.toJson());
+    }
+  }
+
+  Future<void> updateGallery(String userId, GalleryModel galleryModel) async {
+    if (galleryModel.reference != null) {
+      return galleryModel.reference.update(galleryModel.toJson());
+    } else {
+      return userCollection.doc(userId).collection('gallery').doc(galleryModel.id).update(galleryModel.toJson());
+    }
+  }
+
+  Future<void> deleteGallery(String userId, GalleryModel galleryModel) async {
+    if (galleryModel.reference != null) {
+      return galleryModel.reference.delete();
+    } else {
+      return userCollection.doc(userId).collection('gallery').doc(galleryModel.id).delete();
+    }
+  }
+
+  Stream<DocumentSnapshot> streamUserLike(String uid, String galleryId) {
     return userCollection
         .doc(uid)
         .collection('gallery')
-        .add(galleryModel.toJson());
+        .doc(galleryId)
+        .collection('likes')
+        .doc(Global.instance.userId)
+        .snapshots();
   }
 
-  Future<void> updateGallery(GalleryModel galleryModel) async {
-    return galleryModel.reference.update(galleryModel.toJson());
+  Future<DocumentSnapshot> getUserLike(String uid, String galleryId) async {
+    return userCollection
+        .doc(uid)
+        .collection('gallery')
+        .doc(galleryId)
+        .collection('likes')
+        .doc(Global.instance.userId).get();
   }
-
-  Future<void> deleteGallery(GalleryModel galleryModel) async {
-    return galleryModel.reference.delete();
-  }
-
 
 
 }

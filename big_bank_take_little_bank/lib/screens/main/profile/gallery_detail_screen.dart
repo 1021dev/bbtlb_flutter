@@ -1,10 +1,15 @@
 import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/models/comment_model.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
+import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
 import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
+import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,380 +97,435 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
   }
 
   Widget _body(GalleryDetailState state) {
-    return SafeArea(
-      top: false,
-      bottom: false,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            top: 0,
-            right: 0,
-            left: 0,
-            bottom: 0,
-            child: Image.asset('assets/images/bg_home.png', width: double.infinity, height: double.infinity, fit: BoxFit.fitWidth,),
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            left: 0,
-            child: Image.asset('assets/images/bg_top.png',),
-          ),
-          SafeArea(
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: Color(0xff0C343A),
-                      ),
-                      padding: EdgeInsets.all(16),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+          child: Image.asset('assets/images/bg_home.png', width: double.infinity, height: double.infinity, fit: BoxFit.fitWidth,),
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          left: 0,
+          child: Image.asset('assets/images/bg_top.png',),
+        ),
+        SafeArea(
+          child: Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onPanDown: (_) {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Container(
-                            height: MediaQuery.of(context).size.height * 0.2,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: Color(0xff174951),
-                            ),
+                            height: MediaQuery.of(context).size.height * 0.5,
                             padding: EdgeInsets.all(16),
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-                                color: Colors.white,
+                                color: Color(0xff0C343A),
                               ),
-                              clipBehavior: Clip.antiAlias,
-                              child: GalleryImageView(
-                                imageUrl: widget.galleryModel.image,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 16),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.1,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: Color(0xff07282D),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Description',
-                                      style: TextStyle(
-                                          fontFamily: 'BackToSchool',
-                                          color: Colors.white70
-                                      ),
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height * 0.2,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      color: Color(0xff174951),
                                     ),
-                                    Text(
-                                      timeago.format(widget.galleryModel.createdAt),
-                                      style: TextStyle(
-                                        fontFamily: 'BackToSchool',
-                                        color: Colors.white60,
-                                        fontSize: 14,
+                                    padding: EdgeInsets.all(16),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.white,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    widget.galleryModel.description,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      fontFamily: 'BackToSchool',
+                                      clipBehavior: Clip.antiAlias,
+                                      child: GalleryImageView(
+                                        imageUrl: (state as GalleryDetailLoadState).galleryModel.image,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 64,
-                            padding: EdgeInsets.only(top: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: Container(
-                                    height: 50,
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 16),
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height * 0.1,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(16),
                                       color: Color(0xff07282D),
                                     ),
-                                    child: Row(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
                                       children: [
-                                        MaterialButton(
-                                          onPressed: () {
-
-                                          },
-                                          minWidth: 0,
-                                          padding: EdgeInsets.zero,
-                                          child: Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Description',
+                                              style: TextStyle(
+                                                  fontFamily: 'BackToSchool',
+                                                  color: Colors.white70
+                                              ),
+                                            ),
+                                            Text(
+                                              timeago.format((state as GalleryDetailLoadState).galleryModel.createdAt),
+                                              style: TextStyle(
+                                                fontFamily: 'BackToSchool',
+                                                color: Colors.white60,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        Text(
-                                          '${widget.galleryModel.likeCount} Likes',
-                                          style: TextStyle(
-                                            fontFamily: 'BackToSchool',
+                                        Flexible(
+                                          child: Text(
+                                            (state as GalleryDetailLoadState).galleryModel.description,
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              fontFamily: 'BackToSchool',
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 8),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: Container(
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: Color(0xff07282D),
-                                    ),
+                                  Container(
+                                    height: 64,
+                                    padding: EdgeInsets.only(top: 8),
                                     child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        MaterialButton(
-                                          onPressed: () {
-
-                                          },
-                                          minWidth: 0,
-                                          padding: EdgeInsets.zero,
-                                          child: Image.asset('assets/images/ic_comment.png', width: 24, height: 24,),
+                                        Flexible(
+                                          flex: 1,
+                                          child: Container(
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(8),
+                                              color: Color(0xff07282D),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                MaterialButton(
+                                                  onPressed: () {
+                                                    _likeGallery(state);
+                                                  },
+                                                  minWidth: 0,
+                                                  padding: EdgeInsets.zero,
+                                                  child: isLike(state) ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
+                                                      : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
+                                                ),
+                                                Text(
+                                                  '${(state as GalleryDetailLoadState).galleryModel.likeCount} Likes',
+                                                  style: TextStyle(
+                                                    fontFamily: 'BackToSchool',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                        Text(
-                                          '${widget.galleryModel.likeCount} Comments',
-                                          style: TextStyle(
-                                            fontFamily: 'BackToSchool',
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 8),
+                                        ),
+                                        Flexible(
+                                          flex: 1,
+                                          child: Container(
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(8),
+                                              color: Color(0xff07282D),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                MaterialButton(
+                                                  minWidth: 0,
+                                                  padding: EdgeInsets.zero,
+                                                  child: Image.asset('assets/images/ic_comment.png', width: 24, height: 24,),
+                                                ),
+                                                Text(
+                                                  '${(state as GalleryDetailLoadState).galleryModel.commentCount} Comments',
+                                                  style: TextStyle(
+                                                    fontFamily: 'BackToSchool',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.5 - 100,
+                            padding: EdgeInsets.only(left: 16, right: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Color(0xff0C343A),
+                              ),
+                              padding: EdgeInsets.all(12),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Color(0xff174951),
                                 ),
-                              ],
+                                padding: EdgeInsets.all(12),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  padding: EdgeInsets.only(bottom: 16),
+                                  child: ListView.separated(
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      CommentModel commentModel = (state as GalleryDetailLoadState).commentList[index];
+                                      return _commentCell(commentModel);
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return Divider(
+                                        height: 8,
+                                        thickness: 0,
+                                        color: Colors.transparent,
+                                      );
+                                    },
+                                    itemCount: (state as GalleryDetailLoadState).commentList.length,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16, right: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Color(0xff0C343A),
-                        ),
-                        padding: EdgeInsets.all(12),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Color(0xff174951),
-                          ),
-                          padding: EdgeInsets.all(12),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            padding: EdgeInsets.only(bottom: 16),
-                            child: ListView.separated(
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(25),
-                                            color: Colors.white,
-                                            border: Border.all(
-                                              color: Color(0xff07282D),
-                                              width: 2,
-                                            )
-                                        ),
-                                        child: Container(),
-                                      ),
-                                      SizedBox(width: 8,),
-                                      Flexible(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(16),
-                                            color: Color(0xff1B505E),
-                                          ),
-                                          padding: EdgeInsets.all(8),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(8),
-                                              color: Color(0xFF256979),
-                                            ),
-                                            padding: EdgeInsets.all(6),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      'John',
-                                                      style: TextStyle(
-                                                        fontFamily: 'BackToSchool',
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '11/01/1011',
-                                                      style: TextStyle(
-                                                        fontFamily: 'BackToSchool',
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Text(
-                                                  'This is cool',
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                    fontFamily: 'BackToSchool',
-                                                    fontSize: 14,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                );
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 16, right: 16),
+                  height: 50,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    alignment: Alignment.centerRight,
+                    children: [
+                      Image.asset('assets/images/bg_text_field.png', width: double.infinity, fit: BoxFit.fill,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: TextField(
+                              focusNode: messageNode,
+                              controller: messageController,
+                              keyboardType: TextInputType.text,
+                              textInputAction: TextInputAction.send,
+                              style: TextStyle(
+                                fontFamily: 'BackToSchool',
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all( 16),
+                                prefixIcon: Image.asset('assets/images/pencil.png'),
+                                hintText: 'Add comment',
+                                hintStyle: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                                border: InputBorder.none,
+                              ),
+                              onSubmitted: (val) {
                               },
-                              separatorBuilder: (context, index) {
-                                return Divider(
-                                  height: 8,
-                                  thickness: 0,
-                                  color: Colors.transparent,
-                                );
-                              },
-                              itemCount: 10,
                             ),
                           ),
-                        ),
-                      ),
-                    ),
+                          MaterialButton(
+                            onPressed: () {
+                              if (messageController.text != '') {
+                                CommentModel commentModel = CommentModel();
+                                commentModel.comment = messageController.text;
+                                commentModel.userId = Global.instance.userId;
+                                commentModel.userName = Global.instance.userModel.name;
+                                commentModel.userImage = Global.instance.userModel.image;
+                                commentModel.id = FirebaseFirestore.instance.collection('users')
+                                    .doc(Global.instance.userId).collection('gallery')
+                                    .doc(widget.galleryModel.id).collection('comments')
+                                    .doc().id;
+                                galleryDetailBloc.add(
+                                    AddCommentEvent(
+                                      uid: Global.instance.userId,
+                                      galleryId: widget.galleryModel.id,
+                                      commentModel: commentModel,
+                                    )
+                                );
+                              }
+                              messageController.clear();
+                            },
+                            padding: EdgeInsets.zero,
+                            minWidth: 0,
+                            height: 50,
+                            shape: CircleBorder(),
+                            child: Image.asset('assets/images/btn_send.png'),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              top: false,
+        ),
+        Positioned(
+          top: 44,
+          left: 8,
+          width: 44,
+          height: 44,
+          child: MaterialButton(
+            child: Image.asset('assets/images/ic_back.png', ),
+            shape: CircleBorder(),
+            minWidth: 0,
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        state is GalleryDetailInitState ? Positioned(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Container(
+            color: Colors.black12,
+            child: SpinKitDoubleBounce(
+              color: Colors.red,
+              size: 50.0,
+            ),
+          ),
+        ): Container()
+      ],
+    );
+  }
+
+  Widget _commentCell(CommentModel commentModel) {
+    return Container(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ProfileAvatar(
+            image: commentModel.userImage ?? '',
+            avatarSize: 50,
+          ),
+          SizedBox(width: 8,),
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Color(0xff1B505E),
+              ),
+              padding: EdgeInsets.all(8),
               child: Container(
-                padding: EdgeInsets.only(left: 16, right: 16),
-                height: 50,
-                child: Stack(
-                  fit: StackFit.expand,
-                  alignment: Alignment.centerRight,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Color(0xFF256979),
+                ),
+                padding: EdgeInsets.all(6),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Image.asset('assets/images/bg_text_field.png', width: double.infinity, fit: BoxFit.fill,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
-                          child: TextField(
-                            focusNode: messageNode,
-                            onChanged: (val) {
-
-                            },
-                            controller: messageController,
-                            keyboardType: TextInputType.text,
-                            textInputAction: TextInputAction.send,
-                            style: TextStyle(
-                              fontFamily: 'BackToSchool',
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all( 16),
-                              prefixIcon: Image.asset('assets/images/pencil.png'),
-                              hintText: 'Add comment',
-                              hintStyle: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                              border: InputBorder.none,
-                            ),
-                            onSubmitted: (val) {
-                            },
+                        Text(
+                          commentModel.userName,
+                          style: TextStyle(
+                            fontFamily: 'BackToSchool',
+                            fontSize: 14,
                           ),
                         ),
-                        MaterialButton(
-                          onPressed: () {
-
-                          },
-                          padding: EdgeInsets.zero,
-                          minWidth: 0,
-                          height: 50,
-                          shape: CircleBorder(),
-                          child: Image.asset('assets/images/btn_send.png'),
+                        Text(
+                          timeago.format(commentModel.createdAt),
+                          style: TextStyle(
+                            fontFamily: 'BackToSchool',
+                            fontSize: 12,
+                          ),
                         ),
                       ],
-                    )
+                    ),
+                    Text(
+                      commentModel.comment,
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontFamily: 'BackToSchool',
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
-          Positioned(
-            top: 44,
-            left: 8,
-            width: 44,
-            height: 44,
-            child: MaterialButton(
-              child: Image.asset('assets/images/ic_back.png', ),
-              shape: CircleBorder(),
-              minWidth: 0,
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-          state is GalleryDetailInitState ? Positioned(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Container(
-              color: Colors.black12,
-              child: SpinKitDoubleBounce(
-                color: Colors.red,
-                size: 50.0,
-              ),
-            ),
-          ): Container()
         ],
       ),
     );
+  }
+
+  bool isLike(GalleryDetailLoadState state) {
+    List<LikeModel> likes = [];
+    likes.addAll(state.likeList);
+    List like = likes.where((element) => element.id == Global.instance.userId).toList();
+    if (like.length > 0) {
+      return like.first.like;
+    } else {
+      return false;
+    }
+  }
+
+  _likeGallery(GalleryDetailLoadState state) {
+    List<LikeModel> likes = [];
+    likes.addAll(state.likeList);
+    List like = likes.where((element) => element.id == Global.instance.userId).toList();
+    if (like.length > 0) {
+      LikeModel likeModel = like.first;
+      likeModel.like = !likeModel.like;
+      galleryDetailBloc.add(
+          LikeEvent(
+            galleryId: widget.galleryModel.id,
+            uid: widget.userModel.id,
+            likeModel: likeModel,
+          )
+      );
+    } else {
+      LikeModel likeModel = LikeModel(
+        id: Global.instance.userId,
+        userId: Global.instance.userId,
+        like: true,
+        userImage: Global.instance.userModel.image,
+        userName: Global.instance.userModel.name
+      );
+      galleryDetailBloc.add(
+          LikeEvent(
+            galleryId: widget.galleryModel.id,
+            uid: widget.userModel.id,
+            likeModel: likeModel,
+          )
+      );
+    }
   }
 
   Future getImage(int type) async {

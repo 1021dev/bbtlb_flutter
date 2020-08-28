@@ -39,6 +39,8 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       yield* getContacts();
     } else if (event is UpdatePasswordEvent) {
       yield* updatePassword(event.oldPassword, event.newPassword);
+    } else if (event is GetBlockListEvent) {
+      yield* getBlockList();
     }
   }
 
@@ -120,6 +122,11 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     } else {
       yield ProfileScreenFailure(error: 'This might happen, when the wrong password is in, the user isn\'t found, or if the user hasn\'t logged in recently');
     }
+  }
+
+  Stream<ProfileScreenState> getBlockList() async* {
+    yield state.copyWith(isLoading: true);
+
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,13 @@ class ProfileScreenState extends Equatable {
   final bool isLoading;
   final UserModel currentUser;
   final List<Contact> contacts;
+  final List<FriendsModel> blockList;
 
   ProfileScreenState({
     this.isLoading = false,
     this.currentUser,
     this.contacts = const [],
+    this.blockList = const [],
   });
 
   @override
@@ -19,17 +22,20 @@ class ProfileScreenState extends Equatable {
     isLoading,
     currentUser,
     contacts,
+    blockList,
   ];
 
   ProfileScreenState copyWith({
     bool isLoading,
     UserModel currentUser,
     List<Contact> contacts,
+    List<FriendsModel> blockList,
   }) {
     return ProfileScreenState(
       isLoading: isLoading ?? this.isLoading,
       currentUser: currentUser ?? this.currentUser,
       contacts: contacts ?? this.contacts,
+      blockList: blockList ?? this.blockList,
     );
   }
 }
@@ -40,11 +46,13 @@ class ProfileScreenSuccess extends ProfileScreenState {
     bool isLoading,
     UserModel currentUser,
     List<Contact> contacts,
+    List<FriendsModel> blockList,
   }) {
     ProfileScreenSuccess(
       isLoading: isLoading ?? this.isLoading,
       currentUser: currentUser ?? this.currentUser,
       contacts: contacts ?? this.contacts,
+      blockList: blockList ?? this.blockList,
     );
 
     return super.copyWith(
@@ -56,11 +64,12 @@ class ProfileScreenSuccess extends ProfileScreenState {
   final bool isLoading;
   final UserModel currentUser;
   final List<Contact> contacts;
-
+  final List<FriendsModel> blockList;
   ProfileScreenSuccess({
     this.isLoading = false,
     this.currentUser,
     this.contacts = const [],
+    this.blockList = const [],
   });
 
   @override
@@ -68,6 +77,7 @@ class ProfileScreenSuccess extends ProfileScreenState {
     isLoading,
     currentUser,
     contacts,
+    blockList,
   ];
 
 }
