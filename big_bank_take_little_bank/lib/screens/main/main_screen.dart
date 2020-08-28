@@ -151,36 +151,39 @@ class _MainScreenContentState extends State<MainScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.background,
-      resizeToAvoidBottomInset: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Image.asset('assets/images/bg_home.png', fit: BoxFit.fill,),
-          ),
-          BlocBuilder<MainScreenBloc, MainScreenState>(
-            builder: (BuildContext context, MainScreenState state) {
-              if (state is MainScreenLoadState) {
-                return _body(state, context);
-              }
-              return Positioned(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Container(
-                  color: Colors.black12,
-                  child: SpinKitDoubleBounce(
-                    color: Colors.red,
-                    size: 50.0,
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/bg_home.png"),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        resizeToAvoidBottomInset: true,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            BlocBuilder<MainScreenBloc, MainScreenState>(
+              builder: (BuildContext context, MainScreenState state) {
+                if (state is MainScreenLoadState) {
+                  return _body(state, context);
+                }
+                return Positioned(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Container(
+                    color: Colors.black12,
+                    child: SpinKitDoubleBounce(
+                      color: Colors.red,
+                      size: 50.0,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

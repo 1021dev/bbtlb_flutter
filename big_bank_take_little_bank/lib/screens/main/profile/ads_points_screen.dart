@@ -4,6 +4,7 @@ import 'package:big_bank_take_little_bank/blocs/ads_rewards/ads_rewards.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
+import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/stripe_widget.dart';
@@ -61,8 +62,17 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
       child: BlocBuilder<AdsRewardsBloc, AdsRewardsState>(
         cubit: BlocProvider.of<AdsRewardsBloc>(homeContext),
         builder: (BuildContext context, AdsRewardsState state) {
-          return Scaffold(
-            body: _body(state),
+          return Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg_home.png'),
+                )
+            ),
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              backgroundColor: Colors.transparent,
+              body: _body(state),
+            ),
           );
         },
       ),
@@ -74,13 +84,6 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          bottom: 0,
-          child: Image.asset('assets/images/bg_home.png', fit: BoxFit.fill,),
-        ),
         SafeArea(
           child: Stack(
             alignment: Alignment.topCenter,
@@ -186,13 +189,11 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
                           ),
                         ],
                       ),
-                      MaterialButton(
-                        onPressed: () {
+                      AnimatedButton(
+                        onTap: () {
                           RewardedVideoAd.instance.show();
                         },
-                        minWidth: 0,
-                        padding: EdgeInsets.zero,
-                        child: Container(
+                        content: Container(
                           width: 120,
                           child:  AppButton(
                             colorStyle: 'green',
@@ -204,6 +205,24 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
                           ),
                         ),
                       ),
+                      // MaterialButton(
+                      //   onPressed: () {
+                      //     RewardedVideoAd.instance.show();
+                      //   },
+                      //   minWidth: 0,
+                      //   padding: EdgeInsets.zero,
+                      //   child: Container(
+                      //     width: 120,
+                      //     child:  AppButton(
+                      //       colorStyle: 'green',
+                      //       titleWidget: AppGradientLabel(
+                      //         title: 'WATCH AD',
+                      //         shadow: true,
+                      //         fontSize: 20,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       AppButtonLabel(
                         title: '$count/10',
                         fontSize: 20,
@@ -220,14 +239,13 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
           left: 8,
           width: 44,
           height: 44,
-          child: MaterialButton(
-            child: Image.asset('assets/images/ic_back.png', ),
-            shape: CircleBorder(),
-            minWidth: 0,
-            padding: EdgeInsets.zero,
-            onPressed: () {
+          child: AnimatedButton(
+            onTap: () {
               Navigator.pop(context);
             },
+            content: Container(
+              child:  Image.asset('assets/images/ic_back.png', ),
+            ),
           ),
         ),
       ],

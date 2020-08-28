@@ -50,3 +50,8 @@ class UpdatePasswordEvent extends ProfileScreenEvent {
 }
 
 class GetBlockListEvent extends ProfileScreenEvent{}
+
+class UpdateNotificationSetting extends ProfileScreenEvent{
+  final bool isNotification;
+  UpdateNotificationSetting({this.isNotification = false});
+}

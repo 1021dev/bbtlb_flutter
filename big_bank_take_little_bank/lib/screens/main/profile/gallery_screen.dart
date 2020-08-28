@@ -83,9 +83,17 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
       child: BlocBuilder<GalleryBloc, GalleryState>(
         cubit: galleryBloc,
         builder: (BuildContext context, GalleryState state) {
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: _body(state),
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg_home.png'),
+              )
+            ),
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              backgroundColor: Colors.transparent,
+              body: _body(state),
+            ),
           );
         },
       ),
@@ -102,14 +110,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
           top: 0,
           right: 0,
           left: 0,
-          bottom: 0,
-          child: Image.asset('assets/images/bg_home.png',),
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png',),
         ),
         SafeArea(
           child: Container(

@@ -5,6 +5,7 @@ import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,8 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       yield* updatePassword(event.oldPassword, event.newPassword);
     } else if (event is GetBlockListEvent) {
       yield* getBlockList();
+    } else if (event is UpdateNotificationSetting) {
+      yield* updateNotificationSetting(event.isNotification);
     }
   }
 
@@ -127,6 +130,11 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   Stream<ProfileScreenState> getBlockList() async* {
     yield state.copyWith(isLoading: true);
 
+  }
+
+  Stream<ProfileScreenState> updateNotificationSetting(bool isNotification) async* {
+    yield state.copyWith(isLoading: true);
+    await service.updateUser(Global.instance.userId, {'notification': isNotification});
   }
 
   @override

@@ -31,8 +31,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _body(),
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/bg_home.png'),
+          )
+      ),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.transparent,
+        body: _body(),
+      ),
     );
   }
 
@@ -44,14 +53,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           top: 0,
           right: 0,
           left: 0,
-          bottom: 0,
-          child: Image.asset('assets/images/bg_home.png', fit: BoxFit.fill,),
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png',),
         ),
         SafeArea(
           child: Stack(
@@ -66,11 +68,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 ),
               ),
               Positioned(
-                top: 100,
+                top: 72,
                 left: 16,
                 right: 16,
                 bottom: 0,
                 child: SingleChildScrollView(
+                  padding: EdgeInsets.only(top: 16, bottom: 16),
                   physics: BouncingScrollPhysics(),
                   child: Column(
                     children: [

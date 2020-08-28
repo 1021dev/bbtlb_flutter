@@ -84,8 +84,16 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
       child: BlocBuilder<ProfileScreenBloc, ProfileScreenState>(
         cubit: widget.screenBloc,
         builder: (BuildContext context, ProfileScreenState state) {
-          return Scaffold(
-            body: _body(state),
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg_home.png'),
+              )
+            ),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: _body(state),
+            ),
           );
         },
       ),
@@ -104,14 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
           top: 0,
           right: 0,
           left: 0,
-          bottom: 0,
-          child: Image.asset('assets/images/bg_home.png', fit: BoxFit.fill,),
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png',),
         ),
         SafeArea(
           top: false,

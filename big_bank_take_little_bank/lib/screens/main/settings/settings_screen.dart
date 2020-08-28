@@ -1,5 +1,6 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/settings/block_list_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/change_password_dialog.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/invite_friends_screen.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
@@ -99,7 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png',),
         ),
         SafeArea(
           child: Container(
@@ -169,18 +170,24 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
                           icon: 'setting_block',
                           text: 'BLOCKED',
                           onTap: () {
-
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: BlockListScreen(
+                                  screenBloc: profileScreenBloc,
+                                ),
+                                type: PageTransitionType.fade,
+                                duration: Duration(microseconds: 500),
+                              ),
+                            );
                           },
                         ),
                         SettingCellView(
                           icon: 'setting_notification',
                           text: 'NOTIFICATIONS',
-                          notification: true,
-                          onTap: () {
-
-                          },
+                          notification: state.currentUser.notification,
                           onChange: (val) {
-
+                            profileScreenBloc.add(UpdateNotificationSetting(isNotification: !state.currentUser.notification));
                           },
                         ),
                         SettingCellView(

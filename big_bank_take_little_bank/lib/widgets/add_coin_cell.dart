@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'animated_button.dart';
 import 'app_button.dart';
 import 'app_text.dart';
 
@@ -130,11 +131,9 @@ class AddCoinCell extends StatelessWidget {
                   ),
                 ),
                 Flexible(
-                  child: MaterialButton(
-                    onPressed: onTap,
-                    minWidth: 0,
-                    padding: EdgeInsets.zero,
-                    child: Container(
+                  child: AnimatedButton(
+                    onTap: onTap,
+                    content: Container(
                       height: 50,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(

@@ -79,8 +79,16 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
       child: BlocBuilder<ProfileScreenBloc, ProfileScreenState>(
         cubit: widget.screenBloc,
         builder: (BuildContext context, ProfileScreenState state) {
-          return Scaffold(
-            body: _body(state),
+          return Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/bg_home.png'),
+                )
+            ),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: _body(state),
+            ),
           );
         },
       ),
@@ -96,13 +104,7 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_home.png',),
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png',),
         ),
         Positioned(
           top: 0,
@@ -129,10 +131,9 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: double.infinity,
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.only(left: 8, right: 8),
                     child: Column(
                       children: [
-                        SizedBox(height: 16,),
                         Expanded(
                           child: ListView.separated(
                             itemBuilder: (context, index) {
@@ -256,6 +257,7 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
                               );
                             },
                             itemCount: state.contacts.length,
+                            padding: EdgeInsets.only(top: 16, bottom: 16),
                           ),
                         ),
                       ],

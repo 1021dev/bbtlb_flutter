@@ -121,11 +121,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: BlocBuilder<AuthScreenBloc, AuthScreenState>(
         cubit: screenBloc,
         builder: (BuildContext context, AuthScreenState state) {
-          return Scaffold(
-            key: scaffoldKey,
-            backgroundColor: AppColor.background,
-            resizeToAvoidBottomInset: true,
-            body: _body(state),
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/bg_sign_in.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: _body(state),
           );
         },
       ),
@@ -134,6 +137,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _body(AuthScreenState state) {
     return Scaffold(
+      key: scaffoldKey,
+      backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         bottom: false,
@@ -149,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.all(36),
+                padding: EdgeInsets.only(left: 36, right: 36),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
@@ -157,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: <Widget>[
                       SizedBox(height: MediaQuery.of(context).size.height * 0.2,),
                       Image.asset(
-                        'assets/images/text_logo.png',
+                        'assets/images/ic_text_logo.png',
                         width: MediaQuery.of(context).size.width * 0.5,
                         fit: BoxFit.cover,
                       ),

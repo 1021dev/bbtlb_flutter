@@ -5,6 +5,7 @@ import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key key}) : super(key: key);
@@ -31,7 +32,13 @@ class _SplashScreenState extends State<SplashScreen> {
     }
     print(currentUser);
     Navigator.pushReplacement(
-        context, CupertinoPageRoute(builder: (context) => currentUser != null ? MainScreen(): LoginScreen()));
+      context,
+      PageTransition(
+        child: currentUser != null ? MainScreen(): LoginScreen(),
+        type: PageTransitionType.fade,
+        duration: Duration(microseconds: 0),
+      ),
+    );
 
   }
 
@@ -39,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     contextNo = context;
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,

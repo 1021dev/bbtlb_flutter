@@ -85,10 +85,18 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocBuilder<LoginScreenBloc, LoginScreenState>(
         cubit: screenBloc,
         builder: (BuildContext context, LoginScreenState state) {
-          return Scaffold(
-            backgroundColor: AppColor.background,
-            resizeToAvoidBottomInset: true,
-            body: _body(state),
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/bg_sign_in.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              resizeToAvoidBottomInset: true,
+              body: _body(state),
+            ),
           );
         },
       ),
@@ -106,211 +114,215 @@ class _LoginScreenState extends State<LoginScreen> {
         child:  Stack(
           fit: StackFit.expand,
           children: [
-            Positioned(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset('assets/images/bg_sign_in.png', fit: BoxFit.fill,),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.all(36),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: MediaQuery.of(context).size. height * 0.4,
-                    ),
-                    Container(
-                      height: 55,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset('assets/images/bg_text_field.png', fit: BoxFit.fill,),
-                          TextField(
-                            focusNode: emailFocus,
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                            style: TextStyle(
-                              fontFamily: 'BackToSchool',
-                              color: Colors.white,
-                            ),
-                            decoration: InputDecoration(
-                              prefixIcon: Image.asset('assets/images/email.png'),
-                              contentPadding: EdgeInsets.all( 16),
-                              hintText: 'email',
-                              hintStyle: TextStyle(
-                                fontSize: 16,
+            // Positioned(
+            //   height: MediaQuery.of(context).size.height,
+            //   width: MediaQuery.of(context).size.width,
+            //   child: Image.asset('assets/images/bg_sign_in.png', fit: BoxFit.fill,),
+            // ),
+            SafeArea(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.only(left: 36, right: 36),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(bottom: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        height: MediaQuery.of(context).size. height * 0.35,
+                        child: Image.asset('assets/images/ic_text_logo.png'),
+                      ),
+                      Container(
+                        height: 55,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.asset('assets/images/bg_text_field.png', fit: BoxFit.fill,),
+                            TextField(
+                              focusNode: emailFocus,
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              style: TextStyle(
+                                fontFamily: 'BackToSchool',
                                 color: Colors.white,
                               ),
-                              border: InputBorder.none,
+                              decoration: InputDecoration(
+                                prefixIcon: Image.asset('assets/images/email.png'),
+                                contentPadding: EdgeInsets.all( 16),
+                                hintText: 'email',
+                                hintStyle: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                                border: InputBorder.none,
+                              ),
+                              onSubmitted: (val) {
+                                FocusScope.of(context).requestFocus(passwordFocus);
+                              },
                             ),
-                            onSubmitted: (val) {
-                              FocusScope.of(context).requestFocus(passwordFocus);
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8),
-                    ),
-                    Container(
-                      height: 55,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset('assets/images/bg_text_field.png', fit: BoxFit.fill,),
-                          TextField(
-                            focusNode: passwordFocus,
-                            controller: passwordController,
-                            keyboardType: TextInputType.text,
-                            textInputAction: TextInputAction.done,
-                            style: TextStyle(
-                              fontFamily: 'BackToSchool',
-                              color: Colors.white,
-                            ),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all( 16),
-                              prefixIcon: Image.asset('assets/images/password.png'),
-                              hintText: 'password',
-                              hintStyle: TextStyle(
-                                fontSize: 16,
+                      Padding(
+                        padding: EdgeInsets.only(top: 8),
+                      ),
+                      Container(
+                        height: 55,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.asset('assets/images/bg_text_field.png', fit: BoxFit.fill,),
+                            TextField(
+                              focusNode: passwordFocus,
+                              controller: passwordController,
+                              keyboardType: TextInputType.text,
+                              textInputAction: TextInputAction.done,
+                              style: TextStyle(
+                                fontFamily: 'BackToSchool',
                                 color: Colors.white,
                               ),
-                              border: InputBorder.none,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all( 16),
+                                prefixIcon: Image.asset('assets/images/password.png'),
+                                hintText: 'password',
+                                hintStyle: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                                border: InputBorder.none,
+                              ),
+                              obscureText: true,
+                              onSubmitted: (val) async {
+                                FocusScope.of(context).unfocus();
+                                _login();
+                              },
                             ),
-                            obscureText: true,
-                            onSubmitted: (val) async {
-                              FocusScope.of(context).unfocus();
-                              _login();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                    ),
-                    Container(
-                      height: 44,
-                      alignment: Alignment.centerRight,
-                      child: FlatButton(
-                        onPressed: () {
-                          String emailValid = AppHelper.emailValidate(emailController.text);
-                          if (emailValid != null) {
-                            Toast.show(emailValid, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
-                            return;
-                          }
-                          screenBloc.add(ForgetPasswordEvent(email: emailController.text));
-
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: 'BackToSchool'
-                          ),
+                          ],
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                    ),
-                    Container(
-                      height: 55,
-                      child: SizedBox.expand(
-                        child: MaterialButton(
-                          onPressed: _login,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          minWidth: 0,
-                          height: 50,
-                          padding: EdgeInsets.all(0),
-                          child: Image.asset('assets/images/btn_login.png', fit: BoxFit.fill,),
-                        ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 16),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: MaterialButton(
-                            onPressed: () {
-
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            minWidth: 0,
-                            height: 50,
-                            child: Image.asset('assets/images/btn_fb.png'),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: MaterialButton(
-                            onPressed: () {
-
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            minWidth: 0,
-                            height: 50,
-                            child: Image.asset('assets/images/btn_twitter.png'),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: MaterialButton(
-                            onPressed: () {
-
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            minWidth: 0,
-                            height: 50,
-                            child: Image.asset('assets/images/btn_google.png'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                    ),
-                    Container(
-                      height: 55,
-                      child: SizedBox.expand(
-                        child: MaterialButton(
+                      Container(
+                        height: 44,
+                        alignment: Alignment.centerRight,
+                        child: FlatButton(
                           onPressed: () {
-                            Navigator.push(context, PageTransition(
-                              child: RegisterScreen(),
-                              type: PageTransitionType.fade,
-                            ));
+                            String emailValid = AppHelper.emailValidate(emailController.text);
+                            if (emailValid != null) {
+                              Toast.show(emailValid, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+                              return;
+                            }
+                            screenBloc.add(ForgetPasswordEvent(email: emailController.text));
+
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontFamily: 'BackToSchool'
+                            ),
                           ),
-                          minWidth: 0,
-                          height: 50,
-                          clipBehavior: Clip.antiAlias,
-                          padding: EdgeInsets.all(0),
-                          child: Image.asset('assets/images/btn_sign_up.png'),
                         ),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: EdgeInsets.only(top: 16),
+                      ),
+                      Container(
+                        height: 55,
+                        child: SizedBox.expand(
+                          child: MaterialButton(
+                            onPressed: _login,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            minWidth: 0,
+                            height: 50,
+                            padding: EdgeInsets.all(0),
+                            child: Image.asset('assets/images/btn_login.png', fit: BoxFit.fill,),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 16),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: MaterialButton(
+                              onPressed: () {
+
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              minWidth: 0,
+                              height: 50,
+                              child: Image.asset('assets/images/btn_fb.png'),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: MaterialButton(
+                              onPressed: () {
+
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              minWidth: 0,
+                              height: 50,
+                              child: Image.asset('assets/images/btn_twitter.png'),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: MaterialButton(
+                              onPressed: () {
+
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              minWidth: 0,
+                              height: 50,
+                              child: Image.asset('assets/images/btn_google.png'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 16),
+                      ),
+                      Container(
+                        height: 55,
+                        child: SizedBox.expand(
+                          child: MaterialButton(
+                            onPressed: () {
+                              Navigator.push(context, PageTransition(
+                                child: RegisterScreen(),
+                                type: PageTransitionType.fade,
+                              ));
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            minWidth: 0,
+                            height: 50,
+                            clipBehavior: Clip.antiAlias,
+                            padding: EdgeInsets.all(0),
+                            child: Image.asset('assets/images/btn_sign_up.png'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
