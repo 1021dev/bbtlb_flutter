@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_detail_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
+import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -226,14 +228,15 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                             childAspectRatio: 0.8,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8,
-                            children: List.generate((state as GalleryLoadState).galleryList.length, (index) {
+                            children: List.generate(state.galleryList.length, (index) {
+                              GalleryModel galleryModel = state.galleryList[index];
                               return GestureDetector(
                                 onTap: () {
                                   Navigator.push(
                                     context,
                                     PageTransition(
                                       child: GalleryDetailScreen(
-                                        galleryModel: (state as GalleryLoadState).galleryList[index],
+                                        galleryModel: galleryModel,
                                         userModel: widget.userModel,
                                       ),
                                       type: PageTransitionType.fade,
@@ -256,15 +259,10 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                                 ),
                                               ),
                                               padding: EdgeInsets.only(left: 8, right: 12, top: 12, bottom: 16),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  image: DecorationImage(
-                                                    image: Image.asset('assets/images/lossing_piggy.png').image,
-                                                  ),
-                                                ),
+                                              child: GalleryImageView(
+                                                imageUrl: galleryModel.image,
                                               ),
+                                              clipBehavior: Clip.antiAlias,
                                             ),
                                           ),
                                           SizedBox(height: 8,),
@@ -427,6 +425,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
         context: context,
         builder: (_) {
           return PostGalleryDialog(
+            galleryBloc: galleryBloc,
             imageFile: croppedFile,
           );
         },

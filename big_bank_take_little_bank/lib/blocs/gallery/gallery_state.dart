@@ -19,24 +19,34 @@ class GalleryInitState extends GalleryState {
 class GalleryLoadState extends GalleryState{
   final List<GalleryModel> galleryList;
   final UserModel userModel;
+  final double uploadProgress;
+  final bool isUploading;
 
   GalleryLoadState({
     this.galleryList = const [],
     this.userModel,
+    this.uploadProgress = 0.0,
+    this.isUploading = false,
   });
 
   @override
   List<Object> get props => [
     galleryList,
     userModel,
+    uploadProgress,
+    isUploading,
   ];
   GalleryLoadState copyWith({
     List<GalleryModel> galleryList,
     UserModel userModel,
+    double uploadProgress,
+    bool isUploading,
   }) {
     return GalleryLoadState(
       galleryList: galleryList ?? this.galleryList,
       userModel: userModel ?? this.userModel,
+      uploadProgress: uploadProgress ?? this.uploadProgress,
+      isUploading: isUploading ?? this.isUploading,
     );
   }
 }

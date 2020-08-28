@@ -4,12 +4,14 @@ import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
+import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class GalleryDetailScreen extends StatefulWidget {
   final GalleryModel galleryModel;
@@ -139,6 +141,9 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                 color: Colors.white,
                               ),
                               clipBehavior: Clip.antiAlias,
+                              child: GalleryImageView(
+                                imageUrl: widget.galleryModel.image,
+                              ),
                             ),
                           ),
                           Padding(
@@ -165,7 +170,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                       ),
                                     ),
                                     Text(
-                                      'just before',
+                                      timeago.format(widget.galleryModel.createdAt),
                                       style: TextStyle(
                                         fontFamily: 'BackToSchool',
                                         color: Colors.white60,
@@ -176,7 +181,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                 ),
                                 Flexible(
                                   child: Text(
-                                    'Description',
+                                    widget.galleryModel.description,
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
                                       fontFamily: 'BackToSchool',
@@ -211,7 +216,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                           child: Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
                                         ),
                                         Text(
-                                          '0 Likes',
+                                          '${widget.galleryModel.likeCount} Likes',
                                           style: TextStyle(
                                             fontFamily: 'BackToSchool',
                                           ),
@@ -242,7 +247,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                           child: Image.asset('assets/images/ic_comment.png', width: 24, height: 24,),
                                         ),
                                         Text(
-                                          '0 Comment',
+                                          '${widget.galleryModel.likeCount} Comments',
                                           style: TextStyle(
                                             fontFamily: 'BackToSchool',
                                           ),
@@ -404,7 +409,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.all( 16),
                               prefixIcon: Image.asset('assets/images/pencil.png'),
-                              hintText: 'profession',
+                              hintText: 'Add comment',
                               hintStyle: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,

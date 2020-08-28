@@ -1,11 +1,18 @@
 import 'dart:io';
 
+import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/models/gallery_model.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PostGalleryDialog extends StatefulWidget {
   final File imageFile;
+  final GalleryBloc galleryBloc;
 
-  PostGalleryDialog({this.imageFile});
+  PostGalleryDialog({this.imageFile, this.galleryBloc});
   @override
   _PostGalleryDialogState createState() => new _PostGalleryDialogState();
 }
@@ -27,6 +34,39 @@ class _PostGalleryDialogState extends State<PostGalleryDialog> {
   }
   @override
   Widget build(BuildContext context) {
+    return BlocListener(
+      cubit: widget.galleryBloc,
+      listener: (BuildContext context, GalleryState state) async {
+        if (state is GallerySuccess) {
+          widget.galleryBloc.add(CheckGallery(userModel: Global.instance.userModel));
+          Navigator.pop(context);
+        } else if (state is GalleryFailure) {
+          showCupertinoDialog(
+              context: context, builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text('Oops'),
+              content: Text(state.error),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            );
+          });
+        }
+      },
+      child: BlocBuilder<GalleryBloc, GalleryState>(
+        cubit: widget.galleryBloc,
+        builder: (BuildContext context, GalleryState state) {
+          return _getBody(state);
+        },
+      ),
+    );
+  }
+  Widget _getBody(GalleryState state) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -66,36 +106,33 @@ class _PostGalleryDialogState extends State<PostGalleryDialog> {
                       Padding(
                         padding: EdgeInsets.only(top: 16),
                       ),
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Color(0xff07282D),
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Flexible(
-                            child: TextField(
-                              onChanged: (val) {
+                      Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Color(0xff07282D),
+                        ),
+                        padding: EdgeInsets.all(16),
+                        child: SizedBox.expand(
+                          child: TextField(
+                            onChanged: (val) {
 
-                              },
-                              focusNode: descriptionFocus,
-                              controller: descriptionController,
-                              keyboardType: TextInputType.text,
-                              textInputAction: TextInputAction.done,
-                              style: TextStyle(
-                                fontFamily: 'BackToSchool',
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all( 16),
-                                border: InputBorder.none,
-                                hintText: 'Description',
-                              ),
-                              onSubmitted: (val) {
-                              },
+                            },
+                            focusNode: descriptionFocus,
+                            controller: descriptionController,
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.done,
+                            style: TextStyle(
+                              fontFamily: 'BackToSchool',
+                              color: Colors.white,
+                              fontSize: 18,
                             ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              labelText: 'Description',
+                            ),
+                            onSubmitted: (val) {
+                            },
                           ),
                         ),
                       ),
@@ -150,7 +187,10 @@ class _PostGalleryDialogState extends State<PostGalleryDialog> {
                       child: SizedBox.expand(
                         child: MaterialButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            GalleryModel galleryModel = GalleryModel();
+                            galleryModel.id = FirebaseFirestore.instance.collection('users').doc(Global.instance.userId).collection('gallery').doc().id;
+                            galleryModel.description = descriptionController.text;
+                            widget.galleryBloc.add(CreateGalleryEvent(uid: Global.instance.userId, galleryModel: galleryModel, file: widget.imageFile));
                           },
                           minWidth: 0,
                           padding: EdgeInsets.zero,

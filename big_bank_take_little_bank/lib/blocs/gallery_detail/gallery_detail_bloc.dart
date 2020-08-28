@@ -32,8 +32,6 @@ class GalleryDetailBloc extends Bloc<GalleryDetailEvent, GalleryDetailState> {
       yield* addComment(event.uid, event.galleryId, event.commentModel);
     } else if (event is LikeEvent) {
       yield* updateLike(event.uid, event.galleryId, event.likeModel);
-    } else if (event is CreateGalleryEvent) {
-      yield* createGallery(event.uid, event.galleryModel);
     }
   }
 
@@ -101,10 +99,6 @@ class GalleryDetailBloc extends Bloc<GalleryDetailEvent, GalleryDetailState> {
 
   Stream<GalleryDetailState> updateLike(String uid, String galleryId, LikeModel likeModel) async* {
     await service.updateLike(uid, galleryId, likeModel);
-  }
-
-  Stream<GalleryDetailState> createGallery(String uid, GalleryModel galleryModel) async* {
-    await service.createGallery(uid, galleryModel);
   }
 
   @override

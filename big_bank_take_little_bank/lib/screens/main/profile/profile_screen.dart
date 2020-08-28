@@ -219,13 +219,16 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                     child: SizedBox.expand(
                       child: MaterialButton(
                         onPressed: () {
-                          Navigator.push(context, PageTransition(
-                            child: GalleryScreen(
-                              userModel: userModel,
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: GalleryScreen(
+                                userModel: userModel,
+                              ),
+                              type: PageTransitionType.fade,
+                              duration: Duration(microseconds: 300),
                             ),
-                            type: PageTransitionType.fade,
-                            duration: Duration(microseconds: 300),
-                          ));
+                          );
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

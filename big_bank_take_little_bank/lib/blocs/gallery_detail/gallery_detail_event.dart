@@ -60,10 +60,3 @@ class LikeEvent extends GalleryDetailEvent {
 
   LikeEvent({this.likeModel, this.uid, this.galleryId});
 }
-@immutable
-class CreateGalleryEvent extends GalleryDetailEvent {
-  final String uid;
-  final GalleryModel galleryModel;
-
-  CreateGalleryEvent({this.uid, this.galleryModel,});
-}

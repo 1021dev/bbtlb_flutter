@@ -61,6 +61,8 @@ dependencies:
   bordered_text: 1.0.0
   google_fonts: ^1.1.0
   grouped_list: ^3.3.0
+  timeago: ^2.0.27
+
   flutter_localizations:
     sdk: flutter
 dev_dependencies:
