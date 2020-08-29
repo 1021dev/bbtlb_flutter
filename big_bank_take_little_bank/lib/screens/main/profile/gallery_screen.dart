@@ -258,15 +258,33 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                           Expanded(
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                  image: Image.asset('assets/images/bg_gallery_item.png').image,
+                                                borderRadius: BorderRadius.circular(12),
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Color(0xff5c9d86),
+                                                    Color(0xff35777e)
+                                                  ],
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Color(0x90000000),
+                                                    spreadRadius: -1,
+                                                    offset: Offset(6, 6),
+                                                  )
+                                                ],
+                                              ),
+                                              padding: EdgeInsets.all(8),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  color: Colors.white,
+                                                ),
+                                                child: GalleryImageView(
+                                                  imageUrl: galleryModel.image,
                                                 ),
                                               ),
-                                              padding: EdgeInsets.only(left: 8, right: 12, top: 12, bottom: 16),
-                                              child: GalleryImageView(
-                                                imageUrl: galleryModel.image,
-                                              ),
-                                              clipBehavior: Clip.antiAlias,
                                             ),
                                           ),
                                           SizedBox(height: 8,),
@@ -284,7 +302,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                                     children: [
                                                       MaterialButton(
                                                         onPressed: () {
-                                                          _likeGallery(state, galleryModel);
+                                                          _likeGallery(state, state.galleryList[index]);
                                                         },
                                                         minWidth: 0,
                                                         padding: EdgeInsets.zero,

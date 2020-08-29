@@ -8,6 +8,7 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/comment_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
+import 'package:big_bank_take_little_bank/utils/crop_image.dart';
 import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -154,8 +155,11 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                           color: Colors.white,
                                         ),
                                         clipBehavior: Clip.antiAlias,
-                                        child: GalleryImageView(
-                                          imageUrl: state is GalleryDetailLoadState ? state.galleryModel.image: '',
+                                        child: CropImage(
+                                          index: 0,
+                                          albumn: [state is GalleryDetailLoadState ? state.galleryModel.image: ''],
+                                          isVideo: false,
+                                          list: [state is GalleryDetailLoadState ? state.galleryModel.image: ''],
                                         ),
                                       ),
                                     ),

@@ -55,7 +55,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
     if (currentState is GalleryLoadState) {
       yield currentState.copyWith(isUploading: true);
     }
-    StorageReference ref = firebaseStorage.ref().child('users').child(uid);
+    StorageReference ref = firebaseStorage.ref().child('gallery').child(uid).child(galleryModel.id);
     StorageUploadTask task = ref.putFile(file);
     task.events.listen((event) async* {
       double progress = event.snapshot.bytesTransferred.toDouble();

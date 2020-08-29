@@ -193,7 +193,7 @@ class FirestoreService {
         .collection('gallery')
         .doc(galleryId)
         .collection('comments')
-        .orderBy('updatedAt', descending: true)
+        .orderBy('updatedAt')
         .snapshots();
   }
 

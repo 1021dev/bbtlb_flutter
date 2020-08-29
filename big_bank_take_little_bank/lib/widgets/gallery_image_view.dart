@@ -17,7 +17,7 @@ class GalleryImageView extends StatelessWidget {
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             image: DecorationImage(
               image: imageProvider,
               fit: BoxFit.cover,
