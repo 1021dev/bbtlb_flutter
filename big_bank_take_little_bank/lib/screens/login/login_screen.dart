@@ -29,8 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
     screenBloc = new LoginScreenBloc(LoginScreenState());
     screenBloc.add(LoginScreenInitEvent());
     super.initState();
-    emailController.text = 'davis5.tony7@gmail.com';
-    passwordController.text = 'aidsyd112';
+    // emailController.text = 'davis5.tony7@gmail.com';
+    // passwordController.text = 'aidsyd112';
   }
 
   @override
