@@ -7,6 +7,7 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
+import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/background_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_image_view.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
@@ -177,42 +178,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                   SizedBox(
                     height: 16,
                   ),
-                  Container(
-                    height: 55,
-                    width: 725 / 175 * 55,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: Image.asset(
-                          'assets/images/btn_gallery.png',
-                          width: 725 / 175 * 55,
-                          height: 55,
-                          fit: BoxFit.fill,
-                        ).image,
-                      ),
-                    ),
-                    child: SizedBox.expand(
-                      child: MaterialButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: GalleryScreen(
-                                userModel: userModel,
-                              ),
-                              type: PageTransitionType.fade,
-                              duration: Duration(microseconds: 300),
-                            ),
-                          );
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        minWidth: 0,
-                        height: 50,
-                        padding: EdgeInsets.all(0),
-                      ),
-                    ),
-                  ),
+                  _galleryButton(state),
                 ],
               ),
             ),
@@ -239,7 +205,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           width: 55,
           height: 55,
           child: MaterialButton(
-            child: getFriendImage(state.friendsModel),
+            child: getFriendImage(state.friendsModel, state.blockModel),
             shape: CircleBorder(),
             minWidth: 0,
             padding: EdgeInsets.zero,
@@ -427,6 +393,59 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
   }
 
   Widget _buttons(FriendsState state) {
+    if (state is FriendsLoadState) {
+      if (state.blockModel != null && state.blockModel.id != null){
+        if (state.blockModel.sender == Global.instance.userId) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                AppLabel(
+                  title: 'You blocked this person',
+                  fontSize: 14,
+                  color: Color(0xffd40b22),
+                  shadow: true,
+                ),
+                SizedBox(height: 16,),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Container(),
+                    ),
+                    SizedBox(width: 16,),
+                    Flexible(
+                      child: AnimatedButton(
+                        onTap: () {
+                          friendsBloc.add(UnBlockFriends(blockModel: state.blockModel));
+                        },
+                        content: Container(
+                          child:  AppButton(
+                            colorStyle: 'green',
+                            titleWidget: Image.asset('assets/images/ic_check_outline.png'),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16,),
+                    Flexible(
+                      child: Container(),
+                    ),
+                  ],
+                )              ],
+            ),
+          );
+        } else {
+          return Container(
+            child: AppLabel(
+              title: 'You are blocked from this person',
+              fontSize: 14,
+              color: Color(0xffd40b22),
+              shadow: true,
+            ),
+          );
+        }
+      }
+    }
     return Container(
       padding: EdgeInsets.all(16),
       child: Row(
@@ -462,7 +481,15 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           Flexible(
             child: AnimatedButton(
               onTap: () {
-
+                if (state is FriendsLoadState) {
+                  BlockModel blockModel = BlockModel(
+                    id: state.userModel.id,
+                    sender: Global.instance.userId,
+                    receiver: state.userModel.id,
+                    status: 'block',
+                  );
+                  friendsBloc.add(BlockFriends(blockModel: blockModel));
+                }
               },
               content: Container(
                 child:  AppButton(
@@ -907,7 +934,54 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
     );
   }
 
-  Image getFriendImage(FriendsModel friendsModel) {
+  Widget _galleryButton(FriendsState state) {
+    if (state is FriendsLoadState) {
+      if (state.blockModel != null && state.blockModel.id != null){
+        return Container();
+      }
+    }
+    return Container(
+      height: 55,
+      width: 725 / 175 * 55,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: Image.asset(
+            'assets/images/btn_gallery.png',
+            width: 725 / 175 * 55,
+            height: 55,
+            fit: BoxFit.fill,
+          ).image,
+        ),
+      ),
+      child: SizedBox.expand(
+        child: MaterialButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              PageTransition(
+                child: GalleryScreen(
+                  userModel: userModel,
+                ),
+                type: PageTransitionType.fade,
+                duration: Duration(microseconds: 300),
+              ),
+            );
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          minWidth: 0,
+          height: 50,
+          padding: EdgeInsets.all(0),
+        ),
+      ),
+    );
+  }
+
+  Image getFriendImage(FriendsModel friendsModel, BlockModel blockModel) {
+    if (blockModel != null && blockModel.id != null) {
+      return null;
+    }
     if (friendsModel == null) {
       return null;
     }

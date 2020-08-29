@@ -96,7 +96,7 @@ class FirestoreService {
         .collection('friends')
         .where('status', isEqualTo: 'accept')
         .orderBy('name', descending: true)
-        .snapshots(includeMetadataChanges: true);
+        .snapshots();
   }
 
   Stream<QuerySnapshot> streamFriendsRequests(String uid) {
@@ -106,7 +106,15 @@ class FirestoreService {
         .where('status', isEqualTo: 'pending')
         .where('receiver', isEqualTo: uid)
         .orderBy('createdAt')
-        .snapshots(includeMetadataChanges: true);
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamBlockList(String uid) {
+    return userCollection
+        .doc(uid)
+        .collection('block')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
   }
 
   Future<DocumentSnapshot> getFriend(String uid) async {

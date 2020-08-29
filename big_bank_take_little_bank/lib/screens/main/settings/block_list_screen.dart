@@ -1,12 +1,10 @@
-import 'dart:typed_data';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/screens/main/settings/block_cell.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
-import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_contact/contact.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -36,7 +34,7 @@ class _BlockListScreenState extends State<BlockListScreen>  with SingleTickerPro
     scaleAnim = Tween(begin: 0.0, end: 1.0).animate(controller)..addListener(() { setState(() {
 
     });});
-
+    widget.screenBloc.add(GetBlockListEvent());
   }
 
   @override
@@ -129,23 +127,24 @@ class _BlockListScreenState extends State<BlockListScreen>  with SingleTickerPro
                     width: MediaQuery.of(context).size.width,
                     height: double.infinity,
                     padding: EdgeInsets.only(left: 8, right: 8),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ListView.separated(
-                            itemBuilder: (context, index) {
-                              return Container();
-                            },
-                            separatorBuilder: (context, index){
-                              return Divider(
-                                color: Colors.transparent,
-                              );
-                            },
-                            itemCount: state.contacts.length,
-                            padding: EdgeInsets.only(top: 16, bottom: 16),
-                          ),
-                        ),
-                      ],
+                    child: ListView.separated(
+                      shrinkWrap: false,
+                      physics: BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return BlockCell(
+                          blockModel: state.blockList[index],
+                          onTap: () {
+                            widget.screenBloc.add(UnBlockUserFromProfileEvent(blockModel: state.blockList[index]));
+                          },
+                        );
+                      },
+                      separatorBuilder: (context, index){
+                        return Divider(
+                          color: Colors.transparent,
+                        );
+                      },
+                      itemCount: state.blockList.length,
+                      padding: EdgeInsets.only(top: 16, bottom: 16),
                     ),
                   ),
                 ),

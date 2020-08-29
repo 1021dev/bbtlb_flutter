@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   final MainScreenBloc mainScreenBloc;
   ProfileScreenBloc(ProfileScreenState initialState, {@required this.mainScreenBloc}) : super(initialState);
   StreamSubscription _userSubscription;
+  StreamSubscription _blockListSubscription;
   FirestoreService service = FirestoreService();
   ContactService _contactService = UnifiedContacts;
 
@@ -44,6 +47,10 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       yield* getBlockList();
     } else if (event is UpdateNotificationSetting) {
       yield* updateNotificationSetting(event.isNotification);
+    } else if (event is LoadedBlockListEvent) {
+      yield* loadedBlockList(event.blockList);
+    } else if (event is UnBlockUserFromProfileEvent) {
+      yield* unBlock(event.blockModel);
     }
   }
 
@@ -128,8 +135,22 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   }
 
   Stream<ProfileScreenState> getBlockList() async* {
-    yield state.copyWith(isLoading: true);
+    await _blockListSubscription?.cancel();
+    _blockListSubscription = service.streamBlockList(Global.instance.userId).listen((event) {
+      if (event.size > 0) {
+        List<BlockModel> blockList = [];
+        event.docs.forEach((element) {
+          blockList.add(BlockModel.fromJson(element.data()));
+        });
+        add(LoadedBlockListEvent(blockList: blockList));
+      } else {
+        add(LoadedBlockListEvent(blockList: []));
+      }
+    });
+  }
 
+  Stream<ProfileScreenState> loadedBlockList(List<BlockModel> models) async* {
+    yield state.copyWith(blockList: models);
   }
 
   Stream<ProfileScreenState> updateNotificationSetting(bool isNotification) async* {
@@ -137,9 +158,20 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     await service.updateUser(Global.instance.userId, {'notification': isNotification});
   }
 
+  Stream<ProfileScreenState> unBlock(BlockModel blockModel) async* {
+    await service.deleteBlock(Global.instance.userId, blockModel);
+    DocumentSnapshot blockDoc = await service.getBlock(blockModel.id);
+    BlockModel userBlock = BlockModel.fromJson(blockDoc.data());
+
+    if (userBlock != null) {
+      await service.deleteBlock(blockModel.id, userBlock);
+    }
+  }
+
   @override
   Future<void> close() {
     _userSubscription?.cancel();
+    _blockListSubscription?.cancel();
     return super.close();
   }
 }

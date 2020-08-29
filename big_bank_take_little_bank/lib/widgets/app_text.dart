@@ -29,7 +29,7 @@ class AppLabel extends StatelessWidget {
         shadows: shadow ? [
           Shadow(
             color: shadowColor,
-            offset: Offset(2.0, 2.0),
+            offset: Offset(fontSize * 0.1, fontSize * 0.1),
           ),
         ] : [],
       ),

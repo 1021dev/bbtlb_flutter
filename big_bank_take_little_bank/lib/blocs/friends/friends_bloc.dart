@@ -56,20 +56,18 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   Stream<FriendsState> checkFriends(String friendId) async* {
     await _friendsSubscription?.cancel();
     _friendsSubscription = service.streamFriend(Global.instance.userId, friendId).listen((event) {
-      print(event);
       if (event.data() != null) {
         add(LoadedFriendsEvent(friendsModel: FriendsModel.fromJson(event.data())));
       } else {
-        add(LoadedFriendsEvent(friendsModel: FriendsModel()));
+        add(LoadedFriendsEvent(friendsModel: new FriendsModel()));
       }
     });
     await _blockSubscription?.cancel();
     _blockSubscription = service.streamBlock(Global.instance.userId, friendId).listen((event) {
-      print(event);
       if (event.data() != null) {
         add(LoadedBlockEvent(blockModel: BlockModel.fromJson(event.data())));
       } else {
-        add(LoadedBlockEvent(blockModel: null));
+        add(LoadedBlockEvent(blockModel: new BlockModel()));
       }
     });
   }
@@ -88,7 +86,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       }
     });
     await _friendsRequestSubscription?.cancel();
-    _friendsListSubscription = service.streamFriendsRequests(Global.instance.userId).listen((event) {
+    _friendsRequestSubscription = service.streamFriendsRequests(Global.instance.userId).listen((event) {
       if (event.size > 0) {
         List<FriendsModel> friends = [];
         event.docs.forEach((element) {
@@ -165,8 +163,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
 
       BlockModel userBlock = BlockModel(
         id: blockModel.sender,
-        sender: blockModel.receiver,
-        receiver: blockModel.sender,
+        sender: blockModel.sender,
+        receiver: blockModel.receiver,
         status: 'block',
       );
       await service.updateBlock(blockModel.id, userBlock);

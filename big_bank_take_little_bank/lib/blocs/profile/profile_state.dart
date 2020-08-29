@@ -1,4 +1,4 @@
-import 'package:big_bank_take_little_bank/models/friends_model.dart';
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,7 @@ class ProfileScreenState extends Equatable {
   final bool isLoading;
   final UserModel currentUser;
   final List<Contact> contacts;
-  final List<FriendsModel> blockList;
+  final List<BlockModel> blockList;
 
   ProfileScreenState({
     this.isLoading = false,
@@ -29,7 +29,7 @@ class ProfileScreenState extends Equatable {
     bool isLoading,
     UserModel currentUser,
     List<Contact> contacts,
-    List<FriendsModel> blockList,
+    List<BlockModel> blockList,
   }) {
     return ProfileScreenState(
       isLoading: isLoading ?? this.isLoading,
@@ -46,7 +46,7 @@ class ProfileScreenSuccess extends ProfileScreenState {
     bool isLoading,
     UserModel currentUser,
     List<Contact> contacts,
-    List<FriendsModel> blockList,
+    List<BlockModel> blockList,
   }) {
     ProfileScreenSuccess(
       isLoading: isLoading ?? this.isLoading,
@@ -64,7 +64,7 @@ class ProfileScreenSuccess extends ProfileScreenState {
   final bool isLoading;
   final UserModel currentUser;
   final List<Contact> contacts;
-  final List<FriendsModel> blockList;
+  final List<BlockModel> blockList;
   ProfileScreenSuccess({
     this.isLoading = false,
     this.currentUser,
