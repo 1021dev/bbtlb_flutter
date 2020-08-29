@@ -255,7 +255,7 @@ class _MainScreenContentState extends State<MainScreenContent> {
 
   Future<void> _initAdMob() {
     // TODO: Initialize AdMob SDK
-    return FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+    return FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
   }
 
 }

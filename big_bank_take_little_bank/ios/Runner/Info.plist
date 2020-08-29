@@ -102,7 +102,9 @@
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-5153425644830699~7898462351</string>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>

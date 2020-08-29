@@ -42,6 +42,10 @@ class AdsRewardsBloc extends Bloc<AdsRewardsEvent, AdsRewardsState> {
   }
 
   Stream<AdsRewardsState> updateAdsRewards(RewardsModel rewardsModel) async* {
+    final currentState = state;
+    if (currentState is AdsRewardsLoadState) {
+      rewardsModel.consecutive = currentState.rewardsList.length;
+    }
     await service.addRewards(rewardsModel);
     UserModel userModel = await service.getUserWithId(rewardsModel.id);
     userModel.points = userModel.points + rewardsModel.rewardPoint;
