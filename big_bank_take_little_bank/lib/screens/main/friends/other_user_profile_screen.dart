@@ -4,6 +4,8 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
+import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
+import 'package:big_bank_take_little_bank/widgets/app_button.dart';
 import 'package:big_bank_take_little_bank/widgets/background_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_image_view.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
@@ -86,8 +88,17 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
       child: BlocBuilder<FriendsBloc, FriendsState>(
         cubit: friendsBloc,
         builder: (BuildContext context, FriendsState state) {
-          return Scaffold(
-            body: _body(state),
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg_other_user.png'),
+                fit: BoxFit.fill,
+              ),
+            ),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: _body(state),
+            ),
           );
         },
       ),
@@ -103,14 +114,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           top: 0,
           right: 0,
           left: 0,
-          bottom: 0,
-          child: Image.asset('assets/images/bg_other_user.png', fit: BoxFit.fill,),
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top.png', fit: BoxFit.fill,),
         ),
         SafeArea(
           top: false,
@@ -157,6 +161,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                         fontFamily: 'BackToSchool'
                     ),
                   ),
+                  SizedBox(height: 8,),
+                  _buttons(state),
                   SizedBox(height: 8,),
                   _badgeSection(state),
                   SizedBox(
@@ -364,6 +370,57 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           ),
         ): Container()
       ],
+    );
+  }
+
+  Widget _buttons(FriendsState state) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Flexible(
+            child: AnimatedButton(
+              onTap: () {
+
+              },
+              content: Container(
+                child:  AppButton(
+                  colorStyle: 'blue',
+                  titleWidget: Image.asset('assets/images/ic_message_outline.png'),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 16,),
+          Flexible(
+            child: AnimatedButton(
+              onTap: () {
+
+              },
+              content: Container(
+                child:  AppButton(
+                  colorStyle: 'yellow',
+                  titleWidget: Image.asset('assets/images/ic_vs.png'),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 16,),
+          Flexible(
+            child: AnimatedButton(
+              onTap: () {
+
+              },
+              content: Container(
+                child:  AppButton(
+                  colorStyle: 'red',
+                  titleWidget: Image.asset('assets/images/ic_block.png'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

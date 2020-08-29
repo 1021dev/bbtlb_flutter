@@ -6,6 +6,7 @@ import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/profile/comment_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
 import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
@@ -111,7 +112,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
         ),
         SafeArea(
           child: Container(
@@ -140,21 +141,22 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Container(
-                                    height: MediaQuery.of(context).size.height * 0.2,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                      color: Color(0xff174951),
-                                    ),
-                                    padding: EdgeInsets.all(16),
+                                  Expanded(
                                     child: Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(16),
-                                        color: Colors.white,
+                                        color: Color(0xff174951),
                                       ),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: GalleryImageView(
-                                        imageUrl: (state as GalleryDetailLoadState).galleryModel.image,
+                                      padding: EdgeInsets.all(16),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(16),
+                                          color: Colors.white,
+                                        ),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: GalleryImageView(
+                                          imageUrl: state is GalleryDetailLoadState ? state.galleryModel.image: '',
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -178,11 +180,11 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                               'Description',
                                               style: TextStyle(
                                                   fontFamily: 'BackToSchool',
-                                                  color: Colors.white70
+                                                  color: Colors.white70,
                                               ),
                                             ),
                                             Text(
-                                              timeago.format((state as GalleryDetailLoadState).galleryModel.createdAt),
+                                            state is GalleryDetailLoadState ? timeago.format(state.galleryModel.createdAt): '',
                                               style: TextStyle(
                                                 fontFamily: 'BackToSchool',
                                                 color: Colors.white60,
@@ -193,7 +195,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                         ),
                                         Flexible(
                                           child: Text(
-                                            (state as GalleryDetailLoadState).galleryModel.description,
+                                            state is GalleryDetailLoadState ? state.galleryModel.description: '',
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
                                               fontFamily: 'BackToSchool',
@@ -204,7 +206,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                     ),
                                   ),
                                   Container(
-                                    height: 64,
+                                    height: 50,
                                     padding: EdgeInsets.only(top: 8),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -225,11 +227,14 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                                   },
                                                   minWidth: 0,
                                                   padding: EdgeInsets.zero,
-                                                  child: isLike(state) ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
+                                                  child: state is GalleryDetailLoadState
+                                                      ? (isLike(state)
+                                                      ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
+                                                      : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,))
                                                       : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
                                                 ),
                                                 Text(
-                                                  '${(state as GalleryDetailLoadState).galleryModel.likeCount} Likes',
+                                                  state is GalleryDetailLoadState ? '${state.galleryModel.likeCount} Likes': '0 Like',
                                                   style: TextStyle(
                                                     fontFamily: 'BackToSchool',
                                                   ),
@@ -257,7 +262,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                                   child: Image.asset('assets/images/ic_comment.png', width: 24, height: 24,),
                                                 ),
                                                 Text(
-                                                  '${(state as GalleryDetailLoadState).galleryModel.commentCount} Comments',
+                                                  state is GalleryDetailLoadState ? '${state.galleryModel.commentCount} Comments': '0 Comments',
                                                   style: TextStyle(
                                                     fontFamily: 'BackToSchool',
                                                   ),
@@ -287,18 +292,19 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                   borderRadius: BorderRadius.circular(12),
                                   color: Color(0xff174951),
                                 ),
-                                padding: EdgeInsets.all(12),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   clipBehavior: Clip.antiAlias,
-                                  padding: EdgeInsets.only(bottom: 16),
-                                  child: ListView.separated(
+                                  child: state is GalleryDetailLoadState ? ListView.separated(
+                                    padding: EdgeInsets.all(8),
                                     shrinkWrap: true,
                                     itemBuilder: (context, index) {
-                                      CommentModel commentModel = (state as GalleryDetailLoadState).commentList[index];
-                                      return _commentCell(commentModel);
+                                      CommentModel commentModel = state.commentList[index];
+                                      return CommentCell(
+                                        commentModel: commentModel,
+                                      );
                                     },
                                     separatorBuilder: (context, index) {
                                       return Divider(
@@ -307,8 +313,8 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                         color: Colors.transparent,
                                       );
                                     },
-                                    itemCount: (state as GalleryDetailLoadState).commentList.length,
-                                  ),
+                                    itemCount: state.commentList.length,
+                                  ): Container(),
                                 ),
                               ),
                             ),
@@ -368,7 +374,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                     .doc().id;
                                 galleryDetailBloc.add(
                                     AddCommentEvent(
-                                      uid: Global.instance.userId,
+                                      uid: widget.userModel.id,
                                       galleryId: widget.galleryModel.id,
                                       commentModel: commentModel,
                                     )
@@ -418,70 +424,6 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
           ),
         ): Container()
       ],
-    );
-  }
-
-  Widget _commentCell(CommentModel commentModel) {
-    return Container(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ProfileAvatar(
-            image: commentModel.userImage ?? '',
-            avatarSize: 50,
-          ),
-          SizedBox(width: 8,),
-          Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Color(0xff1B505E),
-              ),
-              padding: EdgeInsets.all(8),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Color(0xFF256979),
-                ),
-                padding: EdgeInsets.all(6),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          commentModel.userName,
-                          style: TextStyle(
-                            fontFamily: 'BackToSchool',
-                            fontSize: 14,
-                          ),
-                        ),
-                        Text(
-                          timeago.format(commentModel.createdAt),
-                          style: TextStyle(
-                            fontFamily: 'BackToSchool',
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      commentModel.comment,
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontFamily: 'BackToSchool',
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

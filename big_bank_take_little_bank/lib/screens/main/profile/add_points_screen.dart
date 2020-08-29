@@ -35,7 +35,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/bg_home.png'),
-          )
+            fit: BoxFit.fill,
+          ),
       ),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -53,7 +54,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top_bar_trans.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
         ),
         SafeArea(
           child: Stack(

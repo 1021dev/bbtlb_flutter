@@ -5,7 +5,7 @@ class AdManager {
 
   static String get appId {
     if (Platform.isAndroid) {
-      return "ca-app-pub-3940256099942544/8673189370";
+      return "ca-app-pub-3940256099942544~3347511713";
     } else if (Platform.isIOS) {
       return "ca-app-pub-8790458672355136~8614073145";
     } else {

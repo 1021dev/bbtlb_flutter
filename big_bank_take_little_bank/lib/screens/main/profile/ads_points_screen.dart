@@ -66,6 +66,7 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
             decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/bg_home.png'),
+                  fit: BoxFit.fill,
                 )
             ),
             child: Scaffold(
@@ -191,7 +192,9 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
                       ),
                       AnimatedButton(
                         onTap: () {
-                          RewardedVideoAd.instance.show();
+                          if (_isRewardedAdReady) {
+                            RewardedVideoAd.instance.show();
+                          }
                         },
                         content: Container(
                           width: 120,
@@ -205,24 +208,6 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
                           ),
                         ),
                       ),
-                      // MaterialButton(
-                      //   onPressed: () {
-                      //     RewardedVideoAd.instance.show();
-                      //   },
-                      //   minWidth: 0,
-                      //   padding: EdgeInsets.zero,
-                      //   child: Container(
-                      //     width: 120,
-                      //     child:  AppButton(
-                      //       colorStyle: 'green',
-                      //       titleWidget: AppGradientLabel(
-                      //         title: 'WATCH AD',
-                      //         shadow: true,
-                      //         fontSize: 20,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
                       AppButtonLabel(
                         title: '$count/10',
                         fontSize: 20,

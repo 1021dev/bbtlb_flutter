@@ -88,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/bg_home.png'),
+                fit: BoxFit.fill,
               )
             ),
             child: Scaffold(
@@ -112,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top_bar_trans.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
         ),
         SafeArea(
           top: false,

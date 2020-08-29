@@ -100,7 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top_bar_trans.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
         ),
         SafeArea(
           child: Container(
@@ -185,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
                         SettingCellView(
                           icon: 'setting_notification',
                           text: 'NOTIFICATIONS',
-                          notification: state.currentUser.notification,
+                          notification: state.currentUser != null ? state.currentUser.notification : false,
                           onChange: (val) {
                             profileScreenBloc.add(UpdateNotificationSetting(isNotification: !state.currentUser.notification));
                           },
@@ -239,42 +239,12 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
                               })
                           ),
                         ): Container(),
-                        Container(
-                          width: double.infinity,
-                          height: 80,
-                          margin: EdgeInsets.all(4),
-                          child: MaterialButton(
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                Image.asset('assets/images/btn_delete_bg.png',
-                                  fit: BoxFit.fill,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(left: 24, right: 24),
-                                  child: Row(
-                                    children: [
-                                      Image.asset('assets/images/setting_delete.png', height: 50,),
-                                      SizedBox(width: 16,),
-                                      Text(
-                                        'Delete Account',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: 'Lucky',
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            minWidth: 0,
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-
-                            },
-                          ),
+                        SettingCellView(
+                          icon: 'bin',
+                          text: 'DELETE ACCOUNT',
+                          isDelete: true,
+                          onTap: () {
+                          },
                         ),
                       ],
                     ),

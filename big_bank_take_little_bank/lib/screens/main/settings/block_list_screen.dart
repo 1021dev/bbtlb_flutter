@@ -82,7 +82,8 @@ class _BlockListScreenState extends State<BlockListScreen>  with SingleTickerPro
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/bg_home.png'),
-              )
+                fit: BoxFit.fill,
+              ),
             ),
             child: Scaffold(
               backgroundColor: Colors.transparent,
@@ -103,7 +104,7 @@ class _BlockListScreenState extends State<BlockListScreen>  with SingleTickerPro
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top_bar_trans.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
         ),
         Positioned(
           top: 0,

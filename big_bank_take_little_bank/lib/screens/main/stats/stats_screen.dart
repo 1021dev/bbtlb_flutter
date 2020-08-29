@@ -67,7 +67,7 @@ class _StatsScreenState extends State<StatsScreen> {
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top.png',),
+          child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
         ),
         SafeArea(
           child: Stack(

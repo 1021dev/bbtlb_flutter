@@ -38,8 +38,8 @@ class AppButton extends StatelessWidget {
           ),
           BoxShadow(
             color: getStrokeColor(colorStyle),
-            spreadRadius: 3,
-            blurRadius: 10,
+            spreadRadius: 2,
+            blurRadius: 5,
           ),
           BoxShadow(
             color: Color(0xAA000000),
@@ -112,8 +112,8 @@ List<Color> getBackgroundColor(String type) {
 
     case 'red':
       return [
-        Color(0xffd40b22),
         Color(0xffe01f2c),
+        Color(0xffdf431f),
       ];
 
     default:
@@ -138,7 +138,8 @@ Color getStrokeColor(String type) {
       return Color(0xfffac746);
 
     case 'red':
-      return Color(0xffbc0028);
+      return Color(0xffdf431f);
+  // return Color(0xffe01f2c);
 
     default:
       return Color(0xff69e890);

@@ -1,7 +1,6 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:big_bank_take_little_bank/screens/rigister/register_screen.dart';
-import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:big_bank_take_little_bank/utils/app_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
     screenBloc = new LoginScreenBloc(LoginScreenState());
     screenBloc.add(LoginScreenInitEvent());
     super.initState();
+    emailController.text = 'davis5.tony7@gmail.com';
+    passwordController.text = 'aidsyd112';
   }
 
   @override
@@ -94,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: Scaffold(
               backgroundColor: Colors.transparent,
-              resizeToAvoidBottomInset: true,
+              resizeToAvoidBottomInset: false,
               body: _body(state),
             ),
           );
