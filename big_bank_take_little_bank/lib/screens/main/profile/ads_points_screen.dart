@@ -280,9 +280,13 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
 
   void _loadRewardedAd() {
     RewardedVideoAd.instance.load(
-      targetingInfo: MobileAdTargetingInfo(),
-      adUnitId: AdManager.rewardedAdUnitId,
+      targetingInfo: targetingInfo,
+      adUnitId: RewardedVideoAd.testAdUnitId,
     );
   }
+  MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+      keywords: <String>['flutterio', 'beautiful apps'],
+      contentUrl: 'https://flutter.io',
+      testDevices: <String>['A6CB091DD6E765C87ED74D092E4568FE']);
 
 }

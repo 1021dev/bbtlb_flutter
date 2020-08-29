@@ -14,15 +14,27 @@ class DailyRewardsInitState extends DailyRewardsState {}
 
 class DailyRewardsAcceptState extends DailyRewardsState{
   final RewardsModel rewardsModel;
+  final bool isAvailable;
 
   DailyRewardsAcceptState({
     this.rewardsModel,
+    this.isAvailable = false,
   });
 
   @override
   List<Object> get props => [
     rewardsModel,
+    isAvailable,
   ];
+  DailyRewardsAcceptState copyWith({
+    RewardsModel rewardsModel,
+    bool isAvailable,
+  }) {
+    return DailyRewardsAcceptState(
+      rewardsModel: rewardsModel ?? this.rewardsModel,
+      isAvailable: isAvailable ?? this.isAvailable,
+    );
+  }
 }
 
 class DailyRewardsSuccess extends DailyRewardsState {}

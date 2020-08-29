@@ -307,16 +307,27 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                                         builder: (BuildContext context, snapshot) {
                                                           if (snapshot.data != null) {
                                                             DocumentSnapshot snap = snapshot.data;
-                                                            LikeModel likeModel = LikeModel.fromJson(snap.data());
-                                                            return MaterialButton(
-                                                              onPressed: () {
-                                                                _likeGallery(likeModel, state.galleryList[index]);
-                                                              },
-                                                              minWidth: 0,
-                                                              padding: EdgeInsets.zero,
-                                                              child: likeModel.like ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
-                                                                  : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
-                                                            );
+                                                            if (snap.data() != null) {
+                                                              LikeModel likeModel = LikeModel.fromJson(snap.data());
+                                                              return MaterialButton(
+                                                                onPressed: () {
+                                                                  _likeGallery(likeModel, state.galleryList[index]);
+                                                                },
+                                                                minWidth: 0,
+                                                                padding: EdgeInsets.zero,
+                                                                child: likeModel.like ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
+                                                                    : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
+                                                              );
+                                                            } else {
+                                                              return MaterialButton(
+                                                                onPressed: () {
+                                                                  _likeGallery(null, state.galleryList[index]);
+                                                                },
+                                                                minWidth: 0,
+                                                                padding: EdgeInsets.zero,
+                                                                child: Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
+                                                              );
+                                                            }
                                                           } else {
                                                             return MaterialButton(
                                                               onPressed: () {

@@ -7,12 +7,16 @@ import 'package:big_bank_take_little_bank/firestore_service/firestore_service.da
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
 
   DailyRewardsBloc(DailyRewardsState initialState) : super(initialState);
   StreamSubscription _rewardsSubscription;
+  static RewardsModel currentRewards;
   DailyRewardsState get initialState {
     return DailyRewardsInitState();
   }
@@ -23,6 +27,7 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
   Stream<DailyRewardsState> mapEventToState(DailyRewardsEvent event) async* {
     print(event);
     if (event is CheckDailyRewards) {
+      RewardedVideoAd.instance.listener = _onRewardedAdEvent;
       yield* checkDailyRewards();
     } else if (event is AvailableDailyRewards) {
       yield DailyRewardsAcceptState(rewardsModel: event.rewardsModel);
@@ -45,6 +50,68 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
         if (rewardsAt.year == now.year && rewardsAt.month == now.month && rewardsAt.day == now.day) {
 
         } else {
+          _loadRewardedAd();
+          currentRewards = lastRewards;
+          add(ShouldShowAds(isAvailable: true));
+          _rewardsSubscription.cancel();
+        }
+      } else {
+        _loadRewardedAd();
+        add(ShouldShowAds(isAvailable: false));
+      }
+    });
+  }
+
+  Stream<DailyRewardsState> updateDailyRewards(RewardsModel rewardsModel) async* {
+    if (state is DailyRewardsAcceptState) {
+      await service.addRewards(rewardsModel);
+      UserModel userModel = await service.getUserWithId(rewardsModel.id);
+      userModel.points = userModel.points + rewardsModel.rewardPoint;
+      await service.updateUser(userModel.id, userModel.toJson());
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _rewardsSubscription?.cancel();
+    return super.close();
+  }
+
+  void _loadRewardedAd() {
+    RewardedVideoAd.instance.load(
+      targetingInfo: targetingInfo,
+      adUnitId: RewardedVideoAd.testAdUnitId,
+    );
+  }
+
+  void _onRewardedAdEvent(RewardedVideoAdEvent event,
+      {String rewardType, int rewardAmount}) {
+    switch (event) {
+      case RewardedVideoAdEvent.loaded:
+        RewardedVideoAd.instance.show();
+        break;
+      case RewardedVideoAdEvent.closed:
+        // _loadRewardedAd();
+        break;
+      case RewardedVideoAdEvent.failedToLoad:
+        print('Failed to load a rewarded ad');
+        Future.delayed(Duration(minutes: 1), () {
+          _loadRewardedAd();
+        });
+        break;
+      case RewardedVideoAdEvent.rewarded:
+        print('rewarded $rewardType,  $rewardAmount');
+        if (currentRewards == null) {
+          RewardsModel rewardsModel = new RewardsModel();
+          rewardsModel.id = Global.instance.userId;
+          rewardsModel.consecutive = 0;
+          rewardsModel.rewardsAt = DateTime.now();
+          rewardsModel.rewardPoint = 50;
+          add(AvailableDailyRewards(rewardsModel: rewardsModel));
+        } else {
+          num consecutive = currentRewards.consecutive ?? 0;
+          DateTime rewardsAt = currentRewards.rewardsAt;
+          DateTime now = DateTime.now();
           if (rewardsAt.year == now.year && rewardsAt.month == now.month && rewardsAt.day == (now.day - 1)) {
             consecutive = consecutive + 1;
           } else {
@@ -67,38 +134,21 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
             points = 200;
           }
           RewardsModel rewardsModel = new RewardsModel();
-          rewardsModel.id = userId;
+          rewardsModel.id = Global.instance.userId;
           rewardsModel.consecutive = consecutive;
           rewardsModel.rewardsAt = DateTime.now();
           rewardsModel.rewardPoint = points;
           add(AvailableDailyRewards(rewardsModel: rewardsModel));
-          _rewardsSubscription.cancel();
         }
-      } else {
-        RewardsModel rewardsModel = new RewardsModel();
-        rewardsModel.id = userId;
-        rewardsModel.consecutive = 0;
-        rewardsModel.rewardsAt = DateTime.now();
-        rewardsModel.rewardPoint = 50;
-        add(AvailableDailyRewards(rewardsModel: rewardsModel));
-        _rewardsSubscription.cancel();
-      }
-    });
-  }
 
-  Stream<DailyRewardsState> updateDailyRewards(RewardsModel rewardsModel) async* {
-    if (state is DailyRewardsAcceptState) {
-      await service.addRewards(rewardsModel);
-      UserModel userModel = await service.getUserWithId(rewardsModel.id);
-      userModel.points = userModel.points + rewardsModel.rewardPoint;
-      await service.updateUser(userModel.id, userModel.toJson());
+        break;
+      default:
+      // do nothing
     }
   }
-
-  @override
-  Future<void> close() {
-    _rewardsSubscription?.cancel();
-    return super.close();
-  }
+  MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+      keywords: <String>['flutterio', 'beautiful apps'],
+      contentUrl: 'https://flutter.io',
+      testDevices: <String>['A6CB091DD6E765C87ED74D092E4568FE']);
 
 }

@@ -20,6 +20,11 @@ class AvailableDailyRewards extends DailyRewardsEvent {
   AvailableDailyRewards({this.rewardsModel});
 }
 
+class ShouldShowAds extends DailyRewardsEvent {
+  final bool isAvailable;
+  ShouldShowAds({this.isAvailable = false});
+}
+
 @immutable
 class UpdateDailyRewards extends DailyRewardsEvent {
   final RewardsModel rewardsModel;
