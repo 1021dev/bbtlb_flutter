@@ -22,14 +22,14 @@ class GalleryLoadState extends GalleryState{
   final UserModel userModel;
   final double uploadProgress;
   final bool isUploading;
-  final List<LikeModel> userLikeList;
+  // final List<LikeModel> userLikeList;
 
   GalleryLoadState({
     this.galleryList = const [],
     this.userModel,
     this.uploadProgress = 0.0,
     this.isUploading = false,
-    this.userLikeList = const [],
+    // this.userLikeList = const [],
   });
 
   @override
@@ -38,21 +38,21 @@ class GalleryLoadState extends GalleryState{
     userModel,
     uploadProgress,
     isUploading,
-    userLikeList,
+    // userLikeList,
   ];
   GalleryLoadState copyWith({
     List<GalleryModel> galleryList,
     UserModel userModel,
     double uploadProgress,
     bool isUploading,
-    List<LikeModel> userLikeList,
+    // List<LikeModel> userLikeList,
   }) {
     return GalleryLoadState(
       galleryList: galleryList ?? this.galleryList,
       userModel: userModel ?? this.userModel,
       uploadProgress: uploadProgress ?? this.uploadProgress,
       isUploading: isUploading ?? this.isUploading,
-      userLikeList: userLikeList ?? this.userLikeList,
+      // userLikeList: userLikeList ?? this.userLikeList,
     );
   }
 }

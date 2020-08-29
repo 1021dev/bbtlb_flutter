@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
@@ -258,6 +259,19 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                             friendsBloc.add(CancelFriends(friendsModel: state.friendsModel));
                           },
                         ),
+                        CupertinoActionSheetAction(
+                          child: const Text('Block this User'),
+                          onPressed: () {
+                            Navigator.pop(context, 'block');
+                            BlockModel blockModel = BlockModel(
+                              id: state.friendsModel.id,
+                              sender: state.friendsModel.sender,
+                              receiver: state.friendsModel.receiver,
+                              status: 'block',
+                            );
+                            friendsBloc.add(BlockFriends(blockModel: blockModel));
+                          },
+                        ),
                       ],
                       cancelButton: CupertinoActionSheetAction(
                         child: const Text('Cancel'),
@@ -288,7 +302,20 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                             Navigator.pop(context, 'decline');
                             friendsBloc.add(DeclineFriends(friendsModel: state.friendsModel));
                           },
-                        )
+                        ),
+                        CupertinoActionSheetAction(
+                          child: const Text('Block this User'),
+                          onPressed: () {
+                            Navigator.pop(context, 'decline');
+                            BlockModel blockModel = BlockModel(
+                              id: state.friendsModel.id,
+                              sender: state.friendsModel.receiver,
+                              receiver: state.friendsModel.sender,
+                              status: 'block',
+                            );
+                            friendsBloc.add(BlockFriends(blockModel: blockModel));
+                          },
+                        ),
                       ],
                       cancelButton: CupertinoActionSheetAction(
                         child: const Text('Cancel'),
@@ -309,10 +336,23 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                     message: const Text('Your options are '),
                     actions: <Widget>[
                       CupertinoActionSheetAction(
-                        child: const Text('Block this Friend'),
+                        child: const Text('UnFriend this User'),
                         onPressed: () {
                           Navigator.pop(context, 'remove');
-                          friendsBloc.add(BlockFriends(friendsModel: state.friendsModel));
+                          friendsBloc.add(CancelFriends(friendsModel: state.friendsModel));
+                        },
+                      ),
+                      CupertinoActionSheetAction(
+                        child: const Text('Block this User'),
+                        onPressed: () {
+                          Navigator.pop(context, 'remove');
+                          BlockModel blockModel = BlockModel(
+                            id: state.friendsModel.id,
+                            sender: Global.instance.userId,
+                            receiver: state.userModel.id,
+                            status: 'block',
+                          );
+                          friendsBloc.add(BlockFriends(blockModel: blockModel));
                         },
                       ),
                     ],
@@ -340,6 +380,19 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                         onPressed: () {
                           Navigator.pop(context, 'add');
                           friendsBloc.add(AcceptFriends(friendsModel: state.friendsModel));
+                        },
+                      ),
+                      CupertinoActionSheetAction(
+                        child: const Text('Block this User'),
+                        onPressed: () {
+                          Navigator.pop(context, 'remove');
+                          BlockModel blockModel = BlockModel(
+                            id: state.friendsModel.id,
+                            sender: Global.instance.userId,
+                            receiver: state.userModel.id,
+                            status: 'block',
+                          );
+                          friendsBloc.add(BlockFriends(blockModel: blockModel));
                         },
                       ),
                     ],
@@ -879,6 +932,13 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
       case 'decline':
         if (friendsModel.sender == auth.currentUser.uid) {
           return Image.asset('assets/images/friend_reject.png');
+        } else {
+          return Image.asset('assets/images/friend_remove.png');
+        }
+        break;
+      case 'block':
+        if (friendsModel.sender == auth.currentUser.uid) {
+          return Image.asset('assets/images/friend_remove.png');
         } else {
           return Image.asset('assets/images/friend_remove.png');
         }

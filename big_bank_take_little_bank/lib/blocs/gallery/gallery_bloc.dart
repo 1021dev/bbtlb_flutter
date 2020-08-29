@@ -27,7 +27,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
       yield* checkGallery(event.userModel);
     } else if (event is GalleryLoadedEvent) {
       yield GalleryLoadState(galleryList: event.galleryList, userModel: event.userModel);
-      yield* loadUserLikes(event.userModel);
+      // yield* loadUserLikes(event.userModel);
     } else if (event is CreateGalleryEvent) {
       yield* createGallery(event.uid, event.galleryModel, event.file);
     } else if (event is GalleryLikeEvent) {
@@ -80,19 +80,19 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
     yield GallerySuccess();
   }
 
-  Stream<GalleryState> loadUserLikes(UserModel userModel) async* {
-    final currentState = state;
-    if (currentState is GalleryLoadState) {
-      List<LikeModel> likeList = [];
-      for (GalleryModel galleryModel in currentState.galleryList) {
-        final userLikeDoc = await service.getUserLike(userModel.id, galleryModel.id);
-        if (userLikeDoc.data() != null) {
-          likeList.add(LikeModel.fromJson(userLikeDoc.data()));
-        }
-      }
-      yield currentState.copyWith(userLikeList: likeList);
-    }
-  }
+  // Stream<GalleryState> loadUserLikes(UserModel userModel) async* {
+  //   final currentState = state;
+  //   if (currentState is GalleryLoadState) {
+  //     List<LikeModel> likeList = [];
+  //     for (GalleryModel galleryModel in currentState.galleryList) {
+  //       final userLikeDoc = await service.getUserLike(userModel.id, galleryModel.id);
+  //       if (userLikeDoc.data() != null) {
+  //         likeList.add(LikeModel.fromJson(userLikeDoc.data()));
+  //       }
+  //     }
+  //     yield currentState.copyWith(userLikeList: likeList);
+  //   }
+  // }
 
   Stream<GalleryState> updateLike(String uid, GalleryModel galleryModel, LikeModel likeModel) async* {
     await service.updateLike(uid, galleryModel.id, likeModel);

@@ -11,6 +11,7 @@ class FriendsModel {
   String sender;
   String receiver;
   String status;
+  String block;
 
   DocumentReference reference;
 
@@ -23,6 +24,7 @@ class FriendsModel {
     this.sender,
     this.receiver,
     this.status = 'notFriends',
+    this.block,
   });
 
   factory FriendsModel.fromJson(Map<dynamic, dynamic> json) {
@@ -32,6 +34,7 @@ class FriendsModel {
       name: json['name'] as String ?? '',
       sender: json['sender'] as String ?? '',
       receiver: json['receiver'] as String ?? '',
+      block: json['block'] as String ?? '',
       status: json['status'] as String ?? 'notFriends',
       createdAt: (json['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
       updatedAt: (json['updatedAt'] as Timestamp).toDate() ?? DateTime.now(),
@@ -54,6 +57,7 @@ class FriendsModel {
         'sender': instance.sender ?? '',
         'receiver': instance.receiver ?? '',
         'status': instance.status ?? 'notFriends',
+        'block': instance.block ?? '',
       };
 
   String getGroup() {

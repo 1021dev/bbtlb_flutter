@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
@@ -12,6 +13,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
 
   FriendsBloc(FriendsState initialState) : super(initialState);
   StreamSubscription _friendsSubscription;
+  StreamSubscription _blockSubscription;
   StreamSubscription _friendsListSubscription;
   StreamSubscription _friendsRequestSubscription;
   FriendsState get initialState {
@@ -37,9 +39,13 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     } else if (event is CancelFriends) {
       yield* updateFriends(event.friendsModel, 'cancel');
     } else if (event is BlockFriends) {
-      yield* updateFriends(event.friendsModel, 'block');
+      yield* updateBlock(event.blockModel, 'block');
+    } else if (event is UnBlockFriends) {
+      yield* updateBlock(event.blockModel, 'unblock');
     } else if (event is LoadedFriendsEvent) {
       yield* loadedFriends(event.friendsModel);
+    } else if (event is LoadedBlockEvent) {
+      yield* loadedBlock(event.blockModel);
     } else if (event is LoadedFriendsListEvent) {
       yield* loadedFriendsList(event.friendsList);
     } else if (event is LoadedRequestListEvent) {
@@ -55,6 +61,15 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
         add(LoadedFriendsEvent(friendsModel: FriendsModel.fromJson(event.data())));
       } else {
         add(LoadedFriendsEvent(friendsModel: FriendsModel()));
+      }
+    });
+    await _blockSubscription?.cancel();
+    _blockSubscription = service.streamBlock(Global.instance.userId, friendId).listen((event) {
+      print(event);
+      if (event.data() != null) {
+        add(LoadedBlockEvent(blockModel: BlockModel.fromJson(event.data())));
+      } else {
+        add(LoadedBlockEvent(blockModel: null));
       }
     });
   }
@@ -99,7 +114,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     userFriendsModel.name = Global.instance.userModel.name;
     userFriendsModel.image = Global.instance.userModel.image;
     userFriendsModel.sender = Global.instance.userId;
-    friendsModel.receiver = userModel.id;
+    userFriendsModel.receiver = userModel.id;
     userFriendsModel.status = 'pending';
     await service.addFriends(userModel.id, userFriendsModel);
     final currentState = state;
@@ -135,6 +150,29 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     }
   }
 
+  Stream<FriendsState> updateBlock(BlockModel blockModel, String status) async* {
+    if (status == 'unblock') {
+      await service.deleteBlock(Global.instance.userId, blockModel);
+
+      DocumentSnapshot blockDoc = await service.getBlock(blockModel.id);
+      BlockModel userBlock = BlockModel.fromJson(blockDoc.data());
+
+      if (userBlock != null) {
+        await service.deleteBlock(blockModel.id, userBlock);
+      }
+    } else {
+      await service.updateBlock(Global.instance.userId, blockModel);
+
+      BlockModel userBlock = BlockModel(
+        id: blockModel.sender,
+        sender: blockModel.receiver,
+        receiver: blockModel.sender,
+        status: 'block',
+      );
+      await service.updateBlock(blockModel.id, userBlock);
+    }
+  }
+
   Stream<FriendsState> loadedFriends(FriendsModel friendsModel) async* {
     final currentState = state;
     UserModel userModel;
@@ -148,6 +186,23 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
         yield FriendsLoadState(friendsModel: friendsModel, userModel: userModel);
       } else {
         yield FriendsLoadState(friendsModel: friendsModel);
+      }
+    }
+  }
+
+  Stream<FriendsState> loadedBlock(BlockModel blockModel) async* {
+    final currentState = state;
+    UserModel userModel;
+    if (currentState is FriendsInitState) {
+      userModel = currentState.userModel;
+    }
+    if (currentState is FriendsLoadState) {
+      yield currentState.copyWith(blockModel: blockModel);
+    } else {
+      if (userModel != null) {
+        yield FriendsLoadState(blockModel: blockModel, userModel: userModel);
+      } else {
+        yield FriendsLoadState(blockModel: blockModel);
       }
     }
   }
@@ -212,6 +267,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   @override
   Future<void> close() {
     _friendsSubscription?.cancel();
+    _blockSubscription?.cancel();
     _friendsListSubscription?.cancel();
     _friendsRequestSubscription?.cancel();
     return super.close();

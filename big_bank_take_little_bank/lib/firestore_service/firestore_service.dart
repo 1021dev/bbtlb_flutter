@@ -1,3 +1,4 @@
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/comment_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
@@ -116,11 +117,27 @@ class FirestoreService {
         .get();
   }
 
+  Future<DocumentSnapshot> getBlock(String uid) async {
+    return userCollection
+        .doc(uid)
+        .collection('block')
+        .doc(Global.instance.userId)
+        .get();
+  }
+
   Stream<DocumentSnapshot> streamFriend(String uid, String friendId) {
     return userCollection
         .doc(uid)
         .collection('friends')
         .doc(friendId)
+        .snapshots();
+  }
+
+  Stream<DocumentSnapshot> streamBlock(String uid, String blockId) {
+    return userCollection
+        .doc(uid)
+        .collection('block')
+        .doc(blockId)
         .snapshots();
   }
 
@@ -140,11 +157,27 @@ class FirestoreService {
         .update(friendsModel.toJson());
   }
 
+  Future<void> updateBlock(String userId, BlockModel blockModel) async {
+    return userCollection
+        .doc(userId)
+        .collection('block')
+        .doc(blockModel.id)
+        .set(blockModel.toJson());
+  }
+
   Future<void> deleteFriends(String userId, FriendsModel friendsModel) async {
     return userCollection
         .doc(userId)
         .collection('friends')
         .doc(friendsModel.id)
+        .delete();
+  }
+
+  Future<void> deleteBlock(String userId, BlockModel blockModel) async {
+    return userCollection
+        .doc(userId)
+        .collection('block')
+        .doc(blockModel.id)
         .delete();
   }
 

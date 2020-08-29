@@ -1,5 +1,6 @@
 
 
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
@@ -29,6 +30,12 @@ class LoadOtherUserProfile extends FriendsEvent {
 class LoadedFriendsEvent extends FriendsEvent {
   final FriendsModel friendsModel;
   LoadedFriendsEvent({this.friendsModel});
+}
+
+@immutable
+class LoadedBlockEvent extends FriendsEvent {
+  final BlockModel blockModel;
+  LoadedBlockEvent({this.blockModel});
 }
 
 @immutable
@@ -67,9 +74,15 @@ class DeclineFriends extends FriendsEvent {
 
 @immutable
 class BlockFriends extends FriendsEvent {
-  final FriendsModel friendsModel;
+  final BlockModel blockModel;
 
-  BlockFriends({this.friendsModel,});
+  BlockFriends({this.blockModel,});
+}
+@immutable
+class UnBlockFriends extends FriendsEvent {
+  final BlockModel blockModel;
+
+  UnBlockFriends({this.blockModel,});
 }
 
 @immutable

@@ -196,10 +196,12 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     );
                   },
                   onAccept: () {
-
+                    FriendsModel friendsModel = element.friendsModel;
+                    friendsBloc.add(AcceptFriends(friendsModel: friendsModel));
                   },
                   onDecline: () {
-
+                    FriendsModel friendsModel = element.friendsModel;
+                    friendsBloc.add(AcceptFriends(friendsModel: friendsModel));
                   },
                 )
                     :FriendsCell(

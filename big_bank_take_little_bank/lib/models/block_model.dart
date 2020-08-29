@@ -6,8 +6,6 @@ class BlockModel {
   String id;
   DateTime createdAt;
   DateTime updatedAt;
-  String image;
-  String name;
   String sender;
   String receiver;
   String status;
@@ -18,8 +16,6 @@ class BlockModel {
     this.id,
     this.createdAt,
     this.updatedAt,
-    this.image,
-    this.name,
     this.sender,
     this.receiver,
     this.status = 'block',
@@ -28,11 +24,9 @@ class BlockModel {
   factory BlockModel.fromJson(Map<dynamic, dynamic> json) {
     return BlockModel(
       id: json['id'] as String ?? '',
-      image: json['image'] as String ?? '',
-      name: json['name'] as String ?? '',
       sender: json['sender'] as String ?? '',
       receiver: json['receiver'] as String ?? '',
-      status: json['status'] as String ?? 'notFriends',
+      status: json['status'] as String ?? '',
       createdAt: (json['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
       updatedAt: (json['updatedAt'] as Timestamp).toDate() ?? DateTime.now(),
     );
@@ -49,17 +43,9 @@ class BlockModel {
         'id': instance.id ?? '',
         'createdAt': Timestamp.fromDate(instance.createdAt ?? DateTime.now()),
         'updatedAt': Timestamp.fromDate(instance.updatedAt ?? DateTime.now()),
-        'image': instance.image ?? '',
-        'name': instance.name ?? '',
         'sender': instance.sender ?? '',
         'receiver': instance.receiver ?? '',
-        'status': instance.status ?? 'notFriends',
+        'status': instance.status ?? '',
       };
 
-  String getGroup() {
-    if (name != null && name != '') {
-      return '${name.toUpperCase()[0]}';
-    }
-    return '';
-  }
 }

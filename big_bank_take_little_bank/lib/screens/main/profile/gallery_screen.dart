@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
@@ -8,6 +9,7 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_detail_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
 import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -300,14 +302,32 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                                                   flex: 1,
                                                   child: Row(
                                                     children: [
-                                                      MaterialButton(
-                                                        onPressed: () {
-                                                          _likeGallery(state, state.galleryList[index]);
+                                                      FutureBuilder(
+                                                        future: FirestoreService().getUserLike(widget.userModel.id, state.galleryList[index].id),
+                                                        builder: (BuildContext context, snapshot) {
+                                                          if (snapshot.data != null) {
+                                                            DocumentSnapshot snap = snapshot.data;
+                                                            LikeModel likeModel = LikeModel.fromJson(snap.data());
+                                                            return MaterialButton(
+                                                              onPressed: () {
+                                                                _likeGallery(likeModel, state.galleryList[index]);
+                                                              },
+                                                              minWidth: 0,
+                                                              padding: EdgeInsets.zero,
+                                                              child: likeModel.like ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
+                                                                  : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
+                                                            );
+                                                          } else {
+                                                            return MaterialButton(
+                                                              onPressed: () {
+                                                                _likeGallery(null, state.galleryList[index]);
+                                                              },
+                                                              minWidth: 0,
+                                                              padding: EdgeInsets.zero,
+                                                              child: Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
+                                                            );
+                                                          }
                                                         },
-                                                        minWidth: 0,
-                                                        padding: EdgeInsets.zero,
-                                                        child: isLike(state) ? Image.asset('assets/images/ic_heart.png', width: 24, height: 24,)
-                                                            : Image.asset('assets/images/ic_no_heart.png', width: 24, height: 24,),
                                                       ),
                                                       Text(
                                                         '${galleryModel.likeCount}',
@@ -400,23 +420,19 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
     );
   }
 
-  bool isLike(GalleryLoadState state) {
-    List<LikeModel> likes = [];
-    likes.addAll(state.userLikeList);
-    List like = likes.where((element) => element.id == Global.instance.userId).toList();
-    if (like.length > 0) {
-      return like.first.like;
-    } else {
-      return false;
-    }
-  }
+  // bool isLike(GalleryLoadState state, int index) {
+  //   List<LikeModel> likes = [];
+  //   likes.addAll(state.userLikeList);
+  //   List like = likes.where((element) => element.id == Global.instance.userId).toList();
+  //   if (like.length > 0) {
+  //     return like.first.like;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
-  _likeGallery(GalleryLoadState state, GalleryModel galleryModel) {
-    List<LikeModel> likes = [];
-    likes.addAll(state.userLikeList);
-    List like = likes.where((element) => element.id == Global.instance.userId).toList();
-    if (like.length > 0) {
-      LikeModel likeModel = like.first;
+  _likeGallery(LikeModel likeModel, GalleryModel galleryModel) {
+    if (likeModel != null) {
       likeModel.like = !likeModel.like;
       galleryBloc.add(
           GalleryLikeEvent(

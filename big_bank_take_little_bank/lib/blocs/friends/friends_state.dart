@@ -1,3 +1,4 @@
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
@@ -20,30 +21,36 @@ class FriendsInitState extends FriendsState {
 class FriendsLoadState extends FriendsState {
   final FriendsModel friendsModel;
   final UserModel userModel;
+  final BlockModel blockModel;
 
   FriendsLoadState({
     this.friendsModel,
     this.userModel,
+    this.blockModel,
   });
 
   @override
   List<Object> get props => [
     friendsModel,
     userModel,
+    blockModel,
   ];
   FriendsLoadState copyWith({
     FriendsModel friendsModel,
     UserModel userModel,
+    BlockModel blockModel,
   }) {
     return FriendsLoadState(
       friendsModel: friendsModel ?? this.friendsModel,
       userModel: userModel ?? this.userModel,
+      blockModel: blockModel ?? this.blockModel,
     );
   }
 }
 
 class FriendsListLoadState extends FriendsState {
   final List<FriendsModel> friendsList;
+  final List<BlockModel> blockList;
   final List<FriendsModel> requestList;
   final List<FriendsGroupModel> friendsGroupList;
 
@@ -51,6 +58,7 @@ class FriendsListLoadState extends FriendsState {
     this.friendsList = const [],
     this.requestList = const [],
     this.friendsGroupList = const [],
+    this.blockList = const [],
   });
 
   @override
@@ -58,16 +66,19 @@ class FriendsListLoadState extends FriendsState {
     friendsList,
     requestList,
     friendsGroupList,
+    blockList,
   ];
   FriendsListLoadState copyWith({
     List<FriendsModel> friendsList,
     List<FriendsModel> requestList,
     List<FriendsGroupModel> friendsGroupList,
+    List<BlockModel> blockList,
   }) {
     return FriendsListLoadState(
       friendsList: friendsList ?? this.friendsList,
       requestList: requestList ?? this.requestList,
       friendsGroupList: friendsGroupList ?? this.friendsGroupList,
+      blockList: blockList ?? this.blockList,
     );
   }
 }
@@ -75,30 +86,36 @@ class FriendsListLoadState extends FriendsState {
 class FriendsSuccess extends FriendsState {
   final FriendsModel friendsModel;
   final UserModel userModel;
+  final BlockModel blockModel;
 
   FriendsSuccess({
     this.friendsModel,
     this.userModel,
+    this.blockModel,
   });
 
   @override
   List<Object> get props => [
     friendsModel,
     userModel,
+    blockModel,
   ];
   FriendsSuccess copyWith({
     FriendsModel friendsModel,
     UserModel userModel,
+    BlockModel blockModel,
   }) {
     return FriendsSuccess(
       friendsModel: friendsModel ?? this.friendsModel,
       userModel: userModel ?? this.userModel,
+      blockModel: blockModel ?? this.blockModel,
     );
   }
 }
 
 class FriendsListSuccess extends FriendsState {
   final List<FriendsModel> friendsList;
+  final List<BlockModel> blockList;
   final List<FriendsModel> requestList;
   final List<FriendsGroupModel> friendsGroupList;
 
@@ -106,6 +123,7 @@ class FriendsListSuccess extends FriendsState {
     this.friendsList = const [],
     this.requestList = const [],
     this.friendsGroupList = const [],
+    this.blockList = const [],
   });
 
   @override
@@ -113,16 +131,19 @@ class FriendsListSuccess extends FriendsState {
     friendsList,
     requestList,
     friendsGroupList,
+    blockList,
   ];
   FriendsListSuccess copyWith({
     List<FriendsModel> friendsList,
     List<FriendsModel> requestList,
     List<FriendsGroupModel> friendsGroupList,
+    List<BlockModel> blockList,
   }) {
     return FriendsListSuccess(
       friendsList: friendsList ?? this.friendsList,
       requestList: requestList ?? this.requestList,
       friendsGroupList: friendsGroupList ?? this.friendsGroupList,
+      blockList: blockList ?? this.blockList,
     );
   }
 }
