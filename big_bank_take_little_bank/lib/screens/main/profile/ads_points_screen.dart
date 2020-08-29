@@ -94,7 +94,10 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
   }
 
   Widget _body(AdsRewardsState state) {
-    double progress = MediaQuery.of(context).size.width * 0.08 * count.toDouble();
+    double progress = 0;
+    if (state is AdsRewardsLoadState) {
+      progress = MediaQuery.of(context).size.width * 0.08 * state.rewardsList.length.toDouble();
+    }
     return Stack(
       fit: StackFit.expand,
       children: [
