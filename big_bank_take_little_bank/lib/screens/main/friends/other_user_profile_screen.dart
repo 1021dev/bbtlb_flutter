@@ -4,6 +4,8 @@ import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
@@ -467,7 +469,31 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           Flexible(
             child: AnimatedButton(
               onTap: () {
-
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ChooseChallengeScreen(
+                      userModel: userModel,
+                      onChallenge: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: GameInScreen(),
+                            type: PageTransitionType.fade,
+                            duration: Duration(milliseconds: 300),
+                          ),
+                        );
+                      },
+                      onSchedule: () {
+                        Navigator.pop(context);
+                      },
+                      onLive: () {
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                );
               },
               content: Container(
                 child:  AppButton(

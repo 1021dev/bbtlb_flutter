@@ -56,7 +56,7 @@ class CropImage extends StatelessWidget {
                 fit: StackFit.expand,
                 children: <Widget>[
                   Image.asset(
-                    'assets/failed.jpg',
+                    'assets/images/ic_block.png',
                     fit: BoxFit.cover,
                   ),
                   const Positioned(

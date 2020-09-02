@@ -2,6 +2,7 @@ import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/login/login_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
+import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +48,27 @@ class _SplashScreenState extends State<SplashScreen> {
     contextNo = context;
     return Scaffold(
       body: Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery.of(context).size.height,
         height: MediaQuery.of(context).size.height,
-        margin: EdgeInsets.all(0.0),
-        child: Image.asset('assets/images/splash.png', fit: BoxFit.fill,),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xff0e5073),
+              Color(0xff35996a),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Container(
+          width: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height,
+          decoration: MakeCircle(
+            strokeWidth: 44,
+            strokeCap: StrokeCap.square,
+          ),
+          child: Image.asset('assets/images/splash.png', fit: BoxFit.fill,),
+        ),
       ),
     );
   }

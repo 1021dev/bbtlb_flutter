@@ -116,6 +116,12 @@ List<Color> getBackgroundColor(String type) {
         Color(0xffdf431f),
       ];
 
+    case 'sky':
+      return [
+        Color(0xff4db78a),
+        Color(0xff70c6b3),
+      ];
+
     default:
       return [
         Color(0xff22f863),
@@ -139,6 +145,9 @@ Color getStrokeColor(String type) {
 
     case 'red':
       return Color(0xffdf431f);
+
+    case 'sky':
+      return Color(0xff64c1a5);
   // return Color(0xffe01f2c);
 
     default:

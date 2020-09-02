@@ -88,6 +88,7 @@ class AppButtonLabel extends StatelessWidget {
   final Color shadowColor;
   final String fontFamily;
   final double fontSize;
+  final TextAlign align;
 
   AppButtonLabel({
     this.title = '',
@@ -96,12 +97,14 @@ class AppButtonLabel extends StatelessWidget {
     this.shadowColor = Colors.black87,
     this.fontFamily = 'Lucky',
     this.fontSize = 18,
+    this.align = TextAlign.left,
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
+      textAlign: align,
       style: TextStyle(
         color: color,
         fontFamily: fontFamily,
@@ -109,7 +112,7 @@ class AppButtonLabel extends StatelessWidget {
         shadows: shadow ? [
           Shadow(
             color: shadowColor,
-            offset: Offset(4.0, 4.0),
+            offset: Offset(fontSize * 0.1, fontSize * 0.1),
           ),
         ] : [],
       ),
@@ -156,15 +159,13 @@ class BackgroundButton extends StatelessWidget {
             image: Image.asset('assets/images/2.0x/button_yellow.png', fit: BoxFit.fill,).image,
           )
         ),
-        child: Center(
-          child: AppButtonLabel(
-            title: title,
-            color: color,
-            shadow: shadow,
-            shadowColor: shadowColor,
-            fontFamily: fontFamily,
-            fontSize: fontSize,
-          ),
+        child: AppButtonLabel(
+          title: title,
+          color: color,
+          shadow: shadow,
+          shadowColor: shadowColor,
+          fontFamily: fontFamily,
+          fontSize: fontSize,
         ),
       ),
     );
@@ -192,7 +193,7 @@ class AppGradientLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final Shader linearGradient = LinearGradient(
       colors: <Color>[Color(0xffff8d1e), Color(0xffffc412)],
-    ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
+    ).createShader(Rect.fromLTWH(0.0, 0.0, fontSize, fontSize));
     return Text(
       title,
       style: TextStyle(
@@ -201,10 +202,10 @@ class AppGradientLabel extends StatelessWidget {
         shadows: shadow ? [
           Shadow(
             color: shadowColor,
-            offset: Offset(fontSize * 0.1, fontSize * 0.1),
+            offset: Offset(fontSize * 0.05, fontSize * 0.05),
           ),
         ] : [],
-        foreground: Paint()..shader = linearGradient,
+        foreground: Paint()..shader = gradient != null ? gradient.createShader(Rect.fromLTWH(0.0, 0.0, fontSize, fontSize)): linearGradient,
       ),
     );
   }

@@ -159,7 +159,6 @@ class AppContent extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) => onAfterBuild(context));
 
     return Scaffold(
-      backgroundColor: Colors.green,
       body: Stack(
         children: <Widget>[
           SplashScreen(),

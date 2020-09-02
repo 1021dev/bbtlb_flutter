@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
@@ -211,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisSpacing: 16,
                   childAspectRatio: 0.6,
                   mainAxisSpacing: 16,
+                  padding: EdgeInsets.only(bottom: 100, top: 16),
                   children: List.generate(
                     state.activeUsers.length,
                         (index) {
@@ -226,6 +228,25 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               type: PageTransitionType.downToUp,
                             ),
+                          );
+                        },
+                        onChallenge: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ChooseChallengeScreen(
+                                userModel: state.activeUsers[index],
+                                onChallenge: () {
+                                  Navigator.pop(context);
+                                },
+                                onSchedule: () {
+                                  Navigator.pop(context);
+                                },
+                                onLive: () {
+                                  Navigator.pop(context);
+                                },
+                              );
+                            },
                           );
                         },
                       );

@@ -8,7 +8,8 @@ class HomeCell extends StatelessWidget {
 
   final UserModel userModel;
   final Function onTap;
-  HomeCell({this.userModel, this.onTap,});
+  final Function onChallenge;
+  HomeCell({this.userModel, this.onTap, this.onChallenge,});
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +191,7 @@ class HomeCell extends StatelessWidget {
             height: 50,
             width: avatarSize * 1.2,
             child: MaterialButton(
-              onPressed: onTap,
+              onPressed: onChallenge,
               padding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
