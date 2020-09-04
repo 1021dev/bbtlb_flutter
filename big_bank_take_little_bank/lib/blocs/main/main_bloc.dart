@@ -39,7 +39,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   }
 
   Stream<MainScreenState> init() async* {
-    User user = auth.currentUser;
+    User user = FirebaseAuth.instance.currentUser;
     await _userSubscription?.cancel();
     _userSubscription = service.streamUser(user.uid).listen((event) {
       if (event != null) {

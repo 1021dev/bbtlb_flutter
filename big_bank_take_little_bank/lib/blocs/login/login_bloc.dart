@@ -38,7 +38,7 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
   Stream<LoginScreenState> loginUser(String email, String password) async* {
     try {
       yield state.copyWith(isLoading: true);
-      UserCredential result = await auth.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential result = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       if (result.user == null) {
         yield LoginScreenFailure(error: '$result');
       } else {
@@ -71,7 +71,7 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
 
   Stream<LoginScreenState> forgetPassword(String email) async* {
     yield state.copyWith(isLoading: true);
-    await auth.sendPasswordResetEmail(email: email);
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     yield state.copyWith(isLoading: false);
     yield LoginScreenPasswordResetSent();
   }

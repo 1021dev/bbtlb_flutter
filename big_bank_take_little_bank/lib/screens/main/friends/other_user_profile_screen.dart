@@ -6,6 +6,7 @@ import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_win_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
@@ -13,6 +14,7 @@ import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/background_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_image_view.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -476,14 +478,14 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       userModel: userModel,
                       onChallenge: () {
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            child: GameInScreen(),
-                            type: PageTransitionType.fade,
-                            duration: Duration(milliseconds: 300),
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   PageTransition(
+                        //     child: GameWinScreen(),
+                        //     type: PageTransitionType.fade,
+                        //     duration: Duration(milliseconds: 300),
+                        //   ),
+                        // );
                       },
                       onSchedule: () {
                         Navigator.pop(context);
@@ -1016,28 +1018,28 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
         return Image.asset('assets/images/friend_add.png');
         break;
       case 'pending':
-        if (friendsModel.sender == auth.currentUser.uid) {
+        if (friendsModel.sender == FirebaseAuth.instance.currentUser.uid) {
           return Image.asset('assets/images/friend_pending.png');
         } else {
           return Image.asset('assets/images/friend_waiting.png');
         }
         break;
       case 'accept':
-        if (friendsModel.sender == auth.currentUser.uid) {
+        if (friendsModel.sender == FirebaseAuth.instance.currentUser.uid) {
           return Image.asset('assets/images/friend_sent.png');
         } else {
           return Image.asset('assets/images/friend_sent.png');
         }
         break;
       case 'decline':
-        if (friendsModel.sender == auth.currentUser.uid) {
+        if (friendsModel.sender == FirebaseAuth.instance.currentUser.uid) {
           return Image.asset('assets/images/friend_reject.png');
         } else {
           return Image.asset('assets/images/friend_remove.png');
         }
         break;
       case 'block':
-        if (friendsModel.sender == auth.currentUser.uid) {
+        if (friendsModel.sender == FirebaseAuth.instance.currentUser.uid) {
           return Image.asset('assets/images/friend_remove.png');
         } else {
           return Image.asset('assets/images/friend_remove.png');

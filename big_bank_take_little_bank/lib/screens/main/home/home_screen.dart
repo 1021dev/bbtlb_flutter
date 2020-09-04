@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
@@ -238,6 +239,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 userModel: state.activeUsers[index],
                                 onChallenge: () {
                                   Navigator.pop(context);
+                                  BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
+                                      RequestChallengeEvent(
+                                        type: 'standard',
+                                        userModel: state.activeUsers[index],
+                                      )
+                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   PageTransition(
+                                  //     child: GameInScreen(),
+                                  //     type: PageTransitionType.fade,
+                                  //     duration: Duration(milliseconds: 300),
+                                  //   ),
+                                  // );
                                 },
                                 onSchedule: () {
                                   Navigator.pop(context);

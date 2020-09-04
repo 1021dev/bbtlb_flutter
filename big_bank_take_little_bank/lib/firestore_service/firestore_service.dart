@@ -8,9 +8,11 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestoreService {
   final userCollection = firestore.collection('users');
+  final challengeCollection = firestore.collection('challenge');
   // User Manager
   Future<UserModel> getUserWithId(String id) async {
     DocumentSnapshot snap = await userCollection.doc(id).get();
@@ -81,7 +83,7 @@ class FirestoreService {
         .snapshots().map((event) {
          List<UserModel> users = [];
        event.docs.forEach((element) {
-         if (element.id != auth.currentUser.uid) {
+         if (element.id != FirebaseAuth.instance.currentUser.uid) {
            users.add(UserModel.fromJson(element.data()));
          }
        });
@@ -306,6 +308,29 @@ class FirestoreService {
         .collection('likes')
         .doc(Global.instance.userId).get();
   }
+
+  Stream<QuerySnapshot> streamChallenge(String uid) {
+    return challengeCollection
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamRequestedChallenge(String uid) {
+    return challengeCollection
+        .where('sender', isEqualTo: Global.instance.userId)
+        .where('status', isEqualTo: 'pending')
+        .orderBy('createdAt',)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamReceivedChallenge(String uid) {
+    return challengeCollection
+        .where('receiver', isEqualTo: Global.instance.userId)
+        .where('status', isEqualTo: 'pending')
+        .orderBy('createdAt',)
+        .snapshots();
+  }
+
 
 
 }

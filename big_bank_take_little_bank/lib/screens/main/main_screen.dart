@@ -1,12 +1,22 @@
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
+import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_requested_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_win_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/daily_rewards/daily_rewards_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:big_bank_take_little_bank/utils/app_color.dart';
+import 'package:big_bank_take_little_bank/widgets/app_button.dart';
+import 'package:big_bank_take_little_bank/widgets/challenge_request_button.dart';
+import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
+import 'package:big_bank_take_little_bank/widgets/pulse_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/radial_menu.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:firebase_admob/firebase_admob.dart';
@@ -14,6 +24,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:page_transition/page_transition.dart';
+
+import 'challenge/choose_challenge_screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -57,6 +70,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
     final MainScreenBloc mainScreenBloc = MainScreenBloc(MainScreenInitState());
     // ignore: close_sinks
     final AdsRewardsBloc adsRewardsBloc = AdsRewardsBloc(AdsRewardsInitState());
+    // ignore: close_sinks
+    final ChallengeBloc challengeBloc = ChallengeBloc(ChallengeState());
     return MultiBlocProvider(
       providers: [
         BlocProvider<DailyRewardsBloc>(
@@ -75,6 +90,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
           create: (BuildContext context) {
             return adsRewardsBloc
               ..add(CheckAdsRewards());
+          },
+        ),
+        BlocProvider<ChallengeBloc>(
+          create: (BuildContext context) {
+            return challengeBloc
+              ..add(ChallengeInitEvent());
           },
         ),
       ],
@@ -135,18 +156,33 @@ class MainScreenContent extends StatefulWidget {
   _MainScreenContentState createState() => _MainScreenContentState();
 }
 
-class _MainScreenContentState extends State<MainScreenContent> {
+class _MainScreenContentState extends State<MainScreenContent>
+    with SingleTickerProviderStateMixin {
+
+  AnimationController _controller;
+
   @override
   void initState() {
-    // TODO: implement initState
-    _initAdMob();
     super.initState();
+    _controller = new AnimationController(
+      vsync: this,
+    );
+    _startAnimation();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _initAdMob();
+    _controller.dispose();
     super.dispose();
+  }
+
+  void _startAnimation() {
+    // _controller.stop();
+    // _controller.reset();
+    _controller.repeat(
+      period: Duration(seconds: 1),
+    );
   }
 
   @override
@@ -203,6 +239,83 @@ class _MainScreenContentState extends State<MainScreenContent> {
               BlocProvider.of<MainScreenBloc>(context).add(UpdateScreenEvent(screenIndex: index));
             },
           ),
+        ),
+        BlocBuilder<ChallengeBloc, ChallengeState>(
+          builder: (BuildContext ctx, ChallengeState challengeState) {
+            if (challengeState.receivedRequestList.length > 0) {
+              ChallengeModel model = challengeState.receivedRequestList.first;
+              return FutureBuilder(
+                future: FirestoreService().getUserWithId(model.sender),
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) {
+                    return Container();
+                  }
+                  return Positioned(
+                    top: 24,
+                    right: 8,
+                    child: CustomPaint(
+                      painter: PulseWidget(_controller),
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext cctx) {
+                              return GameRequestedScreen(
+                                userModel: snapshot.data,
+                                onProfile: () {
+                                  Navigator.pop(cctx);
+                                  Navigator.push(
+                                    cctx,
+                                    PageTransition(
+                                      child: OtherUserProfileScreen(
+                                        userModel: snapshot.data,
+                                        screenBloc: BlocProvider.of<MainScreenBloc>(context),
+                                      ),
+                                      type: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                onAccept: () async {
+                                  Navigator.pop(cctx);
+                                  final result = await Navigator.push(
+                                    cctx,
+                                    PageTransition(
+                                      child: GameInScreen(),
+                                      type: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                onDecline: () {
+                                  Navigator.pop(cctx);
+                                },
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          width: 64.0,
+                          height: 64.0,
+                          child: Center(
+                            child: SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: ProfileAvatar(
+                                image: snapshot.data.image ?? '',
+                                avatarSize: 50,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+            return Container();
+          },
         ),
         state.isLoading ? Positioned(
           height: MediaQuery.of(context).size.height,

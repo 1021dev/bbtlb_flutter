@@ -55,7 +55,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   }
 
   Stream<ProfileScreenState> init() async* {
-    User user = auth.currentUser;
+    User user = FirebaseAuth.instance.currentUser;
 
     await _userSubscription?.cancel();
     _userSubscription = service.streamUser(user.uid).listen((event) {
@@ -96,7 +96,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   Stream<ProfileScreenState> logout() async* {
     yield state.copyWith(isLoading: true);
 
-    await auth.signOut();
+    await FirebaseAuth.instance.signOut();
 
     yield ProfileScreenLogout();
   }
@@ -119,7 +119,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
 
   Stream<ProfileScreenState> updatePassword(String oldPassword, String newPassword) async* {
     yield state.copyWith(isLoading: true);
-    UserCredential result = await auth.signInWithEmailAndPassword(email: state.currentUser.email, password: oldPassword);
+    UserCredential result = await FirebaseAuth.instance.signInWithEmailAndPassword(email: state.currentUser.email, password: oldPassword);
     if (result.user != null) {
       User user = result.user;
       try {

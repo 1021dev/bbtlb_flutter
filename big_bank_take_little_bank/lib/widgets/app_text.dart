@@ -159,13 +159,15 @@ class BackgroundButton extends StatelessWidget {
             image: Image.asset('assets/images/2.0x/button_yellow.png', fit: BoxFit.fill,).image,
           )
         ),
-        child: AppButtonLabel(
-          title: title,
-          color: color,
-          shadow: shadow,
-          shadowColor: shadowColor,
-          fontFamily: fontFamily,
-          fontSize: fontSize,
+        child: Center(
+          child: AppButtonLabel(
+            title: title,
+            color: color,
+            shadow: shadow,
+            shadowColor: shadowColor,
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+          ),
         ),
       ),
     );

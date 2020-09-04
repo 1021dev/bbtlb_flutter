@@ -4,11 +4,9 @@ import 'package:big_bank_take_little_bank/widgets/gradient_progress.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
-
-import 'game_win_screen.dart';
 
 class GameInScreen extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() {
     return _GameInScreenState();
@@ -25,23 +23,10 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
 
   @override
   void initState() {
-    _animationController = new AnimationController(vsync: this, duration: Duration(seconds: 10))..addListener(() {
-      setState(() {});
-    })..addStatusListener((status){
-      if(status == AnimationStatus.completed){
-        _animationController.dispose();
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            child: GameWinScreen(),
-            type: PageTransitionType.fade,
-            duration: Duration(milliseconds: 300),
-          ),
-        );
-      }
-    });
-
-    _animationController.forward();
+    _animationController =
+    new AnimationController(vsync: this, duration: Duration(seconds: 10));
+    _animationController.addListener(() => setState(() {}));
+    _animationController.repeat();
     // _animationController.forward();
     WidgetsBinding.instance.addPostFrameCallback((_) => _recordSize());
     super.initState();
@@ -55,12 +40,8 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
   void dispose() {
+    _animationController.dispose();
     super.dispose();
   }
   @override

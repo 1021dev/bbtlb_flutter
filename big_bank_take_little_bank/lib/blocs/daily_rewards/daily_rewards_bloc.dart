@@ -11,6 +11,7 @@ import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
@@ -48,7 +49,7 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
   }
 
   Stream<DailyRewardsState> checkDailyRewards() async* {
-    String userId = auth.currentUser.uid;
+    String userId = FirebaseAuth.instance.currentUser.uid;
     await _rewardsSubscription?.cancel();
     _rewardsSubscription = service.streamLastRewards(userId).listen((event) {
       if (event.docs.length > 0) {

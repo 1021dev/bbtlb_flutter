@@ -29,7 +29,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
   Stream<AuthScreenState> registerUser(RegisterUserEvent event) async* {
     try {
       yield state.copyWith(isLoading: true);
-      UserCredential result = await auth.createUserWithEmailAndPassword(
+      UserCredential result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: event.email,
         password: event.password,
       );

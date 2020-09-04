@@ -5,6 +5,7 @@ import 'package:big_bank_take_little_bank/firestore_service/firestore_service.da
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 const String testDevice = 'YOUR_DEVICE_ID';
 
@@ -30,7 +31,7 @@ class AdsRewardsBloc extends Bloc<AdsRewardsEvent, AdsRewardsState> {
   }
 
   Stream<AdsRewardsState> checkAdsRewards() async* {
-    String userId = auth.currentUser.uid;
+    String userId = FirebaseAuth.instance.currentUser.uid;
     await _rewardsSubscription?.cancel();
     _rewardsSubscription = service.streamAdsRewards(userId).listen((event) {
       List<RewardsModel> rewardsList = [];

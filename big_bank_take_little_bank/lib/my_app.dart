@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/provider/store/store.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
@@ -12,7 +13,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-final FirebaseAuth auth = FirebaseAuth.instance;
+// final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
@@ -99,6 +100,7 @@ class _MyAppState extends State<MyApp> {
     _firebaseMessaging.getToken().then((String token) {
       assert(token != null);
       print("Push Messaging token: $token");
+      Global.instance.setToken(token);
     });
     _firebaseMessaging.subscribeToTopic("matchscore");
   }
