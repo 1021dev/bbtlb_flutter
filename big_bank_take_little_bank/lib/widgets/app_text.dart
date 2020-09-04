@@ -9,6 +9,8 @@ class AppLabel extends StatelessWidget {
   final Color shadowColor;
   final String fontFamily;
   final double fontSize;
+  final int maxLine;
+  final TextAlign alignment;
 
   AppLabel({
     this.title = '',
@@ -17,6 +19,8 @@ class AppLabel extends StatelessWidget {
     this.shadowColor = Colors.black87,
     this.fontFamily = 'BackToSchool',
     this.fontSize = 18,
+    this.maxLine = 1,
+    this.alignment = TextAlign.left,
   });
   @override
   Widget build(BuildContext context) {
@@ -33,7 +37,8 @@ class AppLabel extends StatelessWidget {
           ),
         ] : [],
       ),
-      maxLines: 1,
+      textAlign: alignment,
+      maxLines: maxLine,
       softWrap: true,
     );
   }

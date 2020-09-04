@@ -435,7 +435,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       child: Container(),
                     ),
                   ],
-                )              ],
+                ),
+              ],
             ),
           );
         } else {
@@ -478,14 +479,12 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                       userModel: userModel,
                       onChallenge: () {
                         Navigator.pop(context);
-                        // Navigator.push(
-                        //   context,
-                        //   PageTransition(
-                        //     child: GameWinScreen(),
-                        //     type: PageTransitionType.fade,
-                        //     duration: Duration(milliseconds: 300),
-                        //   ),
-                        // );
+                        BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                            RequestChallengeEvent(
+                              type: 'standard',
+                              userModel: userModel,
+                            )
+                        );
                       },
                       onSchedule: () {
                         Navigator.pop(context);

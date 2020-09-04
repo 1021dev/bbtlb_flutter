@@ -69,7 +69,9 @@ dependencies:
   flip_panel: 1.0.1
   flutter_localizations:
     sdk: flutter
-  spritewidget:
+  spritewidget: ^0.9.24
+  flutter_slidable: ^0.5.4
+
 dev_dependencies:
   image_res: ^0.2.3
   flutter_test:

@@ -2,6 +2,7 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_requested_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_win_screen.dart';
@@ -9,6 +10,7 @@ import 'package:big_bank_take_little_bank/screens/main/daily_rewards/daily_rewar
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
@@ -72,6 +74,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
     final AdsRewardsBloc adsRewardsBloc = AdsRewardsBloc(AdsRewardsInitState());
     // ignore: close_sinks
     final ChallengeBloc challengeBloc = ChallengeBloc(ChallengeState());
+    // ignore: close_sinks
+    final NotificationScreenBloc notificationScreenBloc = NotificationScreenBloc(NotificationScreenState());
     return MultiBlocProvider(
       providers: [
         BlocProvider<DailyRewardsBloc>(
@@ -96,6 +100,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
           create: (BuildContext context) {
             return challengeBloc
               ..add(ChallengeInitEvent());
+          },
+        ),
+        BlocProvider<NotificationScreenBloc>(
+          create: (BuildContext context) {
+            return notificationScreenBloc
+              ..add(NotificationInitEvent());
           },
         ),
       ],
@@ -333,7 +343,7 @@ class _MainScreenContentState extends State<MainScreenContent>
   }
 
   Widget _getBody(MainScreenLoadState state , BuildContext context) {
-    print(state.currentScreen);
+    Global.instance.homeContext = context;
     switch(state.currentScreen) {
       case 1:
         return StatsScreen(
@@ -341,6 +351,7 @@ class _MainScreenContentState extends State<MainScreenContent>
         );
       case 2:
         return FriendsScreen(
+          homeContext: context,
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
       case 3:
@@ -353,7 +364,10 @@ class _MainScreenContentState extends State<MainScreenContent>
       case 5:
         return Container();
       case 6:
-        return Container();
+        return MessagesScreen(
+          homeContext: context,
+          screenBloc: BlocProvider.of<MainScreenBloc>(context),
+        );
       case 7:
         return SettingsScreen(
           homeContext: context,

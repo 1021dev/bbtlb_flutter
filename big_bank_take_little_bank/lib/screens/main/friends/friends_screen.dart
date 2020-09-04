@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +17,8 @@ import 'other_user_profile_screen.dart';
 
 class FriendsScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
-  FriendsScreen({Key key, this.screenBloc}) : super(key: key);
+  final BuildContext homeContext;
+  FriendsScreen({Key key, this.screenBloc, this.homeContext,}) : super(key: key);
 
   @override
   _FriendsScreenState createState() => _FriendsScreenState();
@@ -206,7 +209,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                 )
                     :FriendsCell(
                   groupModel: element,
-                  onTap: () {
+                  onTap: (UserModel userModel) {
                     Navigator.push(
                       context,
                       PageTransition(
@@ -218,11 +221,33 @@ class _FriendsScreenState extends State<FriendsScreen> {
                       ),
                     );
                   },
-                  onChat: () {
+                  onChat: (UserModel userModel) {
 
                   },
-                  onChallenge: () {
-
+                  onChallenge: (UserModel userModel) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ChooseChallengeScreen(
+                          userModel: userModel,
+                          onChallenge: () {
+                            Navigator.pop(context);
+                            BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
+                                RequestChallengeEvent(
+                                  type: 'standard',
+                                  userModel: userModel,
+                                )
+                            );
+                          },
+                          onSchedule: () {
+                            Navigator.pop(context);
+                          },
+                          onLive: () {
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    );
                   },
                 );
               },

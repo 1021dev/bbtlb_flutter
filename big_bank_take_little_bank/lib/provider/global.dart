@@ -23,6 +23,7 @@ class Global extends ChangeNotifier{
   DocumentReference userRef;
   String userId = '';
   UserModel userModel;
+  BuildContext homeContext;
 
   String _pushToken;
 

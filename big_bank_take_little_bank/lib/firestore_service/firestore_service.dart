@@ -3,6 +3,7 @@ import 'package:big_bank_take_little_bank/models/comment_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/liket_model.dart';
+import 'package:big_bank_take_little_bank/models/notification_model.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
@@ -331,6 +332,30 @@ class FirestoreService {
         .snapshots();
   }
 
+
+  Stream<QuerySnapshot> streamNotifications(String uid) {
+    return userCollection
+        .doc(uid)
+        .collection('notifications')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  Future<void> readNotification(String uid, String notificationId) async {
+    return userCollection
+        .doc(uid)
+        .collection('notifications')
+        .doc(notificationId)
+        .update({'isRead': true});
+  }
+
+  Future<void> deleteNotification(String uid, String notificationId) async {
+    return userCollection
+        .doc(uid)
+        .collection('notifications')
+        .doc(notificationId)
+        .delete();
+  }
 
 
 }
