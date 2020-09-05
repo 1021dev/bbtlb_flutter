@@ -76,6 +76,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
     final ChallengeBloc challengeBloc = ChallengeBloc(ChallengeState());
     // ignore: close_sinks
     final NotificationScreenBloc notificationScreenBloc = NotificationScreenBloc(NotificationScreenState());
+    // ignore: close_sinks
+    final GameBloc gameBloc = GameBloc(GameState());
     return MultiBlocProvider(
       providers: [
         BlocProvider<DailyRewardsBloc>(
@@ -106,6 +108,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
           create: (BuildContext context) {
             return notificationScreenBloc
               ..add(NotificationInitEvent());
+          },
+        ),
+        BlocProvider<GameBloc>(
+          create: (BuildContext context) {
+            return gameBloc;
           },
         ),
       ],
@@ -150,6 +157,91 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                   },
                 );
               }
+            },
+          ),
+          BlocListener<GameBloc, GameState>(
+            // listenWhen: (previousState, state) {
+            //   if (previousState != state && state is DailyRewardsAcceptState) {
+            //     return true;
+            //   } else {
+            //     return false;
+            //   }
+            // },
+            listener: (BuildContext gCtx, GameState gstate) async {
+              if (gstate is GameInState) {
+                Navigator.push(
+                  gCtx,
+                  PageTransition(
+                    child: GameInScreen(),
+                    type: PageTransitionType.fade,
+                    duration: Duration(milliseconds: 300),
+                  ),
+                );
+              } else if (gstate is GameDeclinedState) {
+
+              } else if (gstate is GameResultState) {
+
+              } else if (gstate is GameCanceledState) {
+
+              } else if (gstate is GameNotAnsweredState) {
+
+              } else if (gstate is GameRequestedState) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext cctx) {
+                    return FutureBuilder(
+                      future: FirestoreService().getUserWithId(gstate.challengeModel.sender),
+                      builder: (fctx, snapshot) {
+                        if (snapshot.data == null) {
+                          return Container();
+                        }
+                        return GameRequestedScreen(
+                          userModel: snapshot.data,
+                          onProfile: () {
+                            Navigator.pop(cctx);
+                            Navigator.push(
+                              cctx,
+                              PageTransition(
+                                child: OtherUserProfileScreen(
+                                  userModel: snapshot.data,
+                                  screenBloc: BlocProvider.of<MainScreenBloc>(gCtx),
+                                ),
+                                type: PageTransitionType.fade,
+                                duration: Duration(milliseconds: 300),
+                              ),
+                            );
+                          },
+                          onAccept: () async {
+                            Navigator.pop(cctx);
+                            BlocProvider.of<ChallengeBloc>(gCtx)..add(ResponseChallengeRequestEvent(
+                                challengeModel: gstate.challengeModel, response: 'accept'
+                            ));
+                            final result = await Navigator.push(
+                              cctx,
+                              PageTransition(
+                                child: GameInScreen(),
+                                type: PageTransitionType.fade,
+                                duration: Duration(milliseconds: 300),
+                              ),
+                            );
+                          },
+                          onDecline: () {
+                            Navigator.pop(cctx);
+                            BlocProvider.of<ChallengeBloc>(gCtx).add(ResponseChallengeRequestEvent(
+                                challengeModel: gstate.challengeModel, response: 'decline'
+                            ));
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
+              }
+              },
+          ),
+          BlocListener<ChallengeBloc, ChallengeState>(
+            listener: (BuildContext cblCtx, ChallengeState cState) async {
+
             },
           ),
         ],
@@ -288,6 +380,9 @@ class _MainScreenContentState extends State<MainScreenContent>
                                 },
                                 onAccept: () async {
                                   Navigator.pop(cctx);
+                                  BlocProvider.of<ChallengeBloc>(context)..add(ResponseChallengeRequestEvent(
+                                    challengeModel: model, response: 'accept'
+                                  ));
                                   final result = await Navigator.push(
                                     cctx,
                                     PageTransition(
@@ -299,6 +394,9 @@ class _MainScreenContentState extends State<MainScreenContent>
                                 },
                                 onDecline: () {
                                   Navigator.pop(cctx);
+                                  BlocProvider.of<ChallengeBloc>(context).add(ResponseChallengeRequestEvent(
+                                      challengeModel: model, response: 'decline'
+                                  ));
                                 },
                               );
                             },

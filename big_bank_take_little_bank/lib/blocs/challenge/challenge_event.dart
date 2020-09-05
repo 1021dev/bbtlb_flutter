@@ -68,4 +68,3 @@ class ResponseChallengeRequestEvent extends ChallengeEvent {
     this.userModel,
   });
 }
-

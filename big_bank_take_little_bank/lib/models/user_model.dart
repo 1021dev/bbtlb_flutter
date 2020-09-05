@@ -26,6 +26,7 @@ class UserModel {
   num totalLoss;
   num totalAccepted;
   num totalDeclined;
+  num totalGamePlayed;
   num points;
   num level;
   bool isAdmin;
@@ -54,6 +55,7 @@ class UserModel {
     this.notification,
     this.address,
     this.totalChallenge,
+    this.totalGamePlayed,
     this.totalDecline,
     this.totalAccept,
     this.totalWin,
@@ -97,6 +99,7 @@ class UserModel {
       totalAccept: json['totalAccept'] as num ?? 0,
       totalAccepted: json['totalAccepted'] as num ?? 0,
       totalChallenge: json['totalChallenge'] as num ?? 0,
+      totalGamePlayed: json['totalGamePlayed'] as num ?? 0,
       totalDecline: json['totalDecline'] as num ?? 0,
       totalDeclined: json['totalDeclined'] as num ?? 0,
       totalLoss: json['totalLoss:'] as num ?? 0,
@@ -131,6 +134,7 @@ class UserModel {
         'address': instance.address ?? '',
         'location': instance.location ?? '',
         'totalChallenge': instance.totalChallenge ?? 0,
+        'totalGamePlayed': instance.totalGamePlayed ?? 0,
         'totalDecline': instance.totalDecline ?? 0,
         'totalAccept': instance.totalAccept ?? 0,
         'totalWin': instance.totalWin ?? 0,

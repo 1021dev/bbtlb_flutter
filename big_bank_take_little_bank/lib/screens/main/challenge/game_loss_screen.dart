@@ -5,15 +5,15 @@ import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class GameInScreen extends StatefulWidget {
+class GameLossScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _GameInScreenState();
+    return _GameLossScreenState();
   }
 }
 
-class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMixin {
+class _GameLossScreenState extends State<GameLossScreen> with TickerProviderStateMixin {
   AnimationController _animationController;
 
 // a key to set on our Text widget, so we can measure later

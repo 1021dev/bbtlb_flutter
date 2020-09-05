@@ -7,6 +7,7 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_win_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
@@ -472,29 +473,100 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           Flexible(
             child: AnimatedButton(
               onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ChooseChallengeScreen(
-                      userModel: userModel,
-                      onChallenge: () {
-                        Navigator.pop(context);
-                        BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
-                            RequestChallengeEvent(
-                              type: 'standard',
-                              userModel: userModel,
-                            )
-                        );
-                      },
-                      onSchedule: () {
-                        Navigator.pop(context);
-                      },
-                      onLive: () {
-                        Navigator.pop(context);
-                      },
+                if (Global.instance.userModel.points == 0) {
+                  showCupertinoDialog(context: context, builder: (BuildContext context) {
+                    return CupertinoAlertDialog(
+                      title: Text('Oops'),
+                      content: AppLabel(
+                        title: 'You don\'t have enough points',
+                        alignment: TextAlign.center,
+                        maxLine: 2,
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                          child: Text('Get Points'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AddPointsScreen(
+                                  homeContext: Global.instance.homeContext,
+                                ),
+                                type: PageTransitionType.fade,
+                                duration: Duration(microseconds: 300),
+                              ),
+                            );
+                          },
+                        ),
+                        CupertinoDialogAction(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
                     );
-                  },
-                );
+                  });
+                } else if (userModel.points == 0) {
+                  showCupertinoDialog(context: context, builder: (BuildContext context) {
+                    return CupertinoAlertDialog(
+                      title: Text('Oops'),
+                      content: AppLabel(
+                        title: 'You cannot game with this user',
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                          child: Text('Ok'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  });
+                } else if (userModel.level != Global.instance.userModel.level) {
+                  showCupertinoDialog(context: context, builder: (BuildContext context) {
+                    return CupertinoAlertDialog(
+                      title: Text('Oops'),
+                      content: AppLabel(
+                        title: 'You cannot game with this user',
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                          child: Text('Ok'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  });
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ChooseChallengeScreen(
+                        userModel: userModel,
+                        onChallenge: () {
+                          Navigator.pop(context);
+                          BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                              RequestChallengeEvent(
+                                type: 'standard',
+                                userModel: userModel,
+                              )
+                          );
+                        },
+                        onSchedule: () {
+                          Navigator.pop(context);
+                        },
+                        onLive: () {
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  );
+                }
               },
               content: Container(
                 child:  AppButton(

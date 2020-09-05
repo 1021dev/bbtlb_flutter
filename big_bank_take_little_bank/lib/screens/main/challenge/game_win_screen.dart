@@ -226,8 +226,19 @@ class _GGameWinScreenState extends State<GameWinScreen> with TickerProviderState
                   child: Image.asset('assets/images/pig_win_1.png', width: 200, height: 200,),
                 ),
               ),
+              Positioned(
+                right: 16,
+                top: 20,
+                child: MaterialButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  minWidth: 0,
+                  padding: EdgeInsets.zero,
+                  child: Image.asset('assets/images/ic_close_outline.png', width: 36, height: 36,),
+                ),
+              )
             ],
-
           ),
         );
       },

@@ -60,6 +60,8 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
     await _userSubscription?.cancel();
     _userSubscription = service.streamUser(user.uid).listen((event) {
       if (event != null) {
+        Global.instance.userId = user.uid;
+        Global.instance.userModel = event;
         add(ProfileScreenUserLoadedEvent(user: event));
       }
     });
@@ -94,6 +96,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   }
 
   Stream<ProfileScreenState> logout() async* {
+    await service.updateUser(Global.instance.userId, {'isLoggedIn': false});
     yield state.copyWith(isLoading: true);
 
     await FirebaseAuth.instance.signOut();
@@ -140,7 +143,10 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       if (event.size > 0) {
         List<BlockModel> blockList = [];
         event.docs.forEach((element) {
-          blockList.add(BlockModel.fromJson(element.data()));
+          BlockModel blockModel = BlockModel.fromJson(element.data());
+          if (blockModel.sender == Global.instance.userId) {
+            blockList.add(blockModel);
+          }
         });
         add(LoadedBlockListEvent(blockList: blockList));
       } else {

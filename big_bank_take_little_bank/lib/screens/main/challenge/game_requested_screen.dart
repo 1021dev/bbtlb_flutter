@@ -3,6 +3,7 @@ import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
+import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -84,6 +85,22 @@ class GameRequestedScreen extends StatelessWidget {
                                 fontSize: 32,
                                 align: TextAlign.center,
                                 shadowColor: Color.fromRGBO(0, 0, 0, 0.58),
+                              ),
+                            ),
+                            SizedBox(height: 12,),
+                            Center(
+                              child: SizedBox(
+                                height: 64.0,
+                                child: FlipClock.countdown(
+                                  duration: Duration(minutes: 1),
+                                  digitColor: Color(0xfff49926),
+                                  backgroundColor: Colors.transparent,
+                                  digitSize: 48.0,
+                                  borderRadius: const BorderRadius.all(Radius.circular(3.0)),
+                                  onDone: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
                               ),
                             ),
                             SizedBox(height: 12,),

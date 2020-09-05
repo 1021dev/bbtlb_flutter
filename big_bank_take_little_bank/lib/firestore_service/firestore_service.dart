@@ -79,8 +79,8 @@ class FirestoreService {
 
   Stream<List<UserModel>> streamUsers() {
     return userCollection
-//        .where('isLoggedIn', isEqualTo: true)
-        .orderBy('createdAt')
+        .where('points', isGreaterThan: 0)
+        .orderBy('points')
         .snapshots().map((event) {
          List<UserModel> users = [];
        event.docs.forEach((element) {
@@ -310,10 +310,20 @@ class FirestoreService {
         .doc(Global.instance.userId).get();
   }
 
-  Stream<QuerySnapshot> streamChallenge(String uid) {
+  Stream<QuerySnapshot> streamChallenges(String uid) {
     return challengeCollection
         .orderBy('createdAt', descending: true)
         .snapshots();
+  }
+
+  Stream<DocumentSnapshot> streamChallenge(String uid, String challengeId) {
+    return challengeCollection
+        .doc(challengeId)
+        .snapshots();
+  }
+
+  Future<void> updateChallenge(String challengeId, Map<String, dynamic> body) async {
+    return challengeCollection.doc(challengeId).update(body);
   }
 
   Stream<QuerySnapshot> streamRequestedChallenge(String uid) {
@@ -331,7 +341,6 @@ class FirestoreService {
         .orderBy('createdAt',)
         .snapshots();
   }
-
 
   Stream<QuerySnapshot> streamNotifications(String uid) {
     return userCollection

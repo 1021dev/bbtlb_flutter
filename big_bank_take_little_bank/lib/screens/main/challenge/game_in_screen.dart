@@ -1,4 +1,10 @@
 import 'package:align_positioned/align_positioned.dart';
+import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
+import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_tie_screen_temp.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_win_screen_temp.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/gradient_progress.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
@@ -6,9 +12,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
+import 'game_loss_screen.dart';
 import 'game_win_screen.dart';
 
 class GameInScreen extends StatefulWidget {
+  final ChallengeModel challengeModel;
+  GameInScreen({this.challengeModel});
   @override
   State<StatefulWidget> createState() {
     return _GameInScreenState();
@@ -27,17 +36,10 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
   void initState() {
     _animationController = new AnimationController(vsync: this, duration: Duration(seconds: 10))..addListener(() {
       setState(() {});
-    })..addStatusListener((status){
+    })..addStatusListener((status)async {
       if(status == AnimationStatus.completed){
         _animationController.dispose();
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            child: GameWinScreen(),
-            type: PageTransitionType.fade,
-            duration: Duration(milliseconds: 300),
-          ),
-        );
+        await showResult();
       }
     });
 
@@ -45,6 +47,43 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
     // _animationController.forward();
     WidgetsBinding.instance.addPostFrameCallback((_) => _recordSize());
     super.initState();
+  }
+
+  Future<void> showResult() async {
+    String challengerUd = widget.challengeModel.sender == Global.instance.userId ? widget.challengeModel.receiver: widget.challengeModel.sender;
+    UserModel challenger = await FirestoreService().getUserWithId(challengerUd);
+    int challengerPoints = challenger.points;
+    if (challengerPoints == Global.instance.userModel.points) {
+      Navigator.pushReplacement(
+        context,
+        PageTransition(
+          child: GameTieTempScreen(),
+          type: PageTransitionType.fade,
+          duration: Duration(milliseconds: 300),
+        ),
+      );
+    } else if (challengerPoints > Global.instance.userModel.points) {
+      Navigator.pushReplacement(
+        context,
+        PageTransition(
+          child: GameWinTempScreen(
+            challengeModel: widget.challengeModel,
+            points: challenger.points,
+          ),
+          type: PageTransitionType.fade,
+          duration: Duration(milliseconds: 300),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        PageTransition(
+          child: GameLossScreen(),
+          type: PageTransitionType.fade,
+          duration: Duration(milliseconds: 300),
+        ),
+      );
+    }
   }
 
   void _recordSize() {
@@ -65,7 +104,10 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
   }
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    int time = (_animationController.value * 10).toInt() + 1;
+    if (time > 10) {
+      time = 10;
+    }
     return Scaffold(
       body: Stack(
         children: [
@@ -163,7 +205,7 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
             alignment: Alignment.center,
             dy: - MediaQuery.of(context).size.height * 0.06, // Move 4 pixels to the right.
             child: Text(
-              '${(_animationController.value * 10).toInt() + 1}',
+              '$time',
               key: myTextKey,
               style: new TextStyle(
                 fontSize: 180.0,

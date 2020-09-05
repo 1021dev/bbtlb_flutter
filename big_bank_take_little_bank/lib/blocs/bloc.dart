@@ -9,3 +9,4 @@ export './gallery/gallery.dart';
 export './gallery_detail/gallery_detail.dart';
 export './challenge/challenge.dart';
 export './notifications/notifications.dart';
+export './game/game.dart';

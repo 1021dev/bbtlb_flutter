@@ -1,3 +1,4 @@
+import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +15,16 @@ class MainScreenLoadState extends MainScreenState {
   final int currentScreen;
   final UserModel currentUser;
   final List<UserModel> activeUsers;
+  final List<UserModel> filterUsers;
+  final List<BlockModel> blockList;
 
   MainScreenLoadState({
     this.isLoading = false,
     this.currentScreen,
     this.currentUser,
     this.activeUsers = const [],
+    this.filterUsers = const [],
+    this.blockList = const [],
   });
 
   @override
@@ -28,6 +33,8 @@ class MainScreenLoadState extends MainScreenState {
     currentScreen,
     currentUser,
     activeUsers,
+    filterUsers,
+    blockList,
   ];
 
   MainScreenLoadState copyWith({
@@ -35,12 +42,16 @@ class MainScreenLoadState extends MainScreenState {
     int currentScreen,
     UserModel currentUser,
     List<UserModel> activeUsers,
+    List<UserModel> filterUsers,
+    List<BlockModel> blockList,
   }) {
     return MainScreenLoadState(
       isLoading: isLoading ?? this.isLoading,
       currentScreen: currentScreen ?? this.currentScreen,
       currentUser: currentUser ?? this.currentUser,
       activeUsers: activeUsers ?? this.activeUsers,
+      filterUsers: filterUsers ?? this.filterUsers,
+      blockList: blockList ?? this.blockList,
     );
   }
 }

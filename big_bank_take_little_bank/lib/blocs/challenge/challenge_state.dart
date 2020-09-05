@@ -1,6 +1,5 @@
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 
 class ChallengeState extends Equatable {
   final bool isLoading;

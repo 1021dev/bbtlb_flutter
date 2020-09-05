@@ -8,10 +8,8 @@ import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/app_constant.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:rxdart/rxdart.dart';
 
 class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
 
@@ -19,9 +17,10 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   StreamSubscription _streamChallengeList;
   StreamSubscription _streamRequestedChallenges;
   StreamSubscription _streamReceivedChallenges;
+  StreamSubscription _streamCurrentChallenge;
 
-  FriendsState get initialState {
-    return FriendsInitState();
+  ChallengeState get initialState {
+    return ChallengeState();
   }
 
   FirestoreService service = FirestoreService();
@@ -38,12 +37,24 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       } else {
         yield state.copyWith(isGamePlay: false, pendingRequestList: event.challengeList);
       }
+      if (event.challengeList.length > 0) {
+        if ((event.challengeList.first.id ?? '') != '') {
+          yield* observerChallenge(event.challengeList.first);
+        }
+      }
     } else if (event is LoadedReceivedChallengeEvent) {
       if (event.challengeList.length > 0 || state.pendingRequestList.length > 0) {
          yield state.copyWith(isGamePlay: true, receivedRequestList: event.challengeList);
       } else {
         yield state.copyWith(isGamePlay: false, receivedRequestList: event.challengeList);
       }
+      if (event.challengeList.length > 0) {
+        if ((event.challengeList.first.id ?? '') != '') {
+          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
+        }
+      }
+    } else if (event is ResponseChallengeRequestEvent) {
+      yield* updateChallenge(event.challengeModel, event.response);
     }
   }
 
@@ -74,6 +85,10 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     yield state.copyWith(isRequesting: false);
   }
 
+  Stream<ChallengeState> updateChallenge(ChallengeModel model, String status) async* {
+    await service.updateChallenge(model.id, {'status': status});
+  }
+
   Stream<ChallengeState> loadInitChallenge() async* {
     await _streamRequestedChallenges?.cancel();
     _streamRequestedChallenges = service.streamRequestedChallenge(Global.instance.userId).listen((event) {
@@ -99,15 +114,37 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
         add(LoadedReceivedChallengeEvent(challengeList: []));
       }
     });
-
   }
 
+  Stream<ChallengeState> observerChallenge(ChallengeModel challengeModel) async* {
+    await _streamCurrentChallenge?.cancel();
+    _streamCurrentChallenge = service.streamChallenge(Global.instance.userId, challengeModel.id).listen((event) {
+      print(event);
+      if (event != null) {
+        ChallengeModel model = ChallengeModel.fromJson(event.data());
+        if (model.status == 'accept') {
+          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameInEvent(challengeModel: model));
+          _streamCurrentChallenge.cancel();
+        } else if (model.status == 'decline') {
+          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(ChallengeDeclinedEvent(challengeModel: model));
+          _streamCurrentChallenge.cancel();
+        } else if (model.status == 'notAnswered') {
+          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(ChallengeNoAnsweredEvent(challengeModel: model));
+          _streamCurrentChallenge.cancel();
+        } else if (model.status == 'cancel') {
+          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(ChallengeCancelledEvent(challengeModel: model));
+          _streamCurrentChallenge.cancel();
+        }
+      }
+    });
+  }
 
   @override
   Future<void> close() {
     _streamChallengeList?.cancel();
     _streamRequestedChallenges?.cancel();
     _streamReceivedChallenges?.cancel();
+    _streamCurrentChallenge?.cancel();
     return super.close();
   }
 

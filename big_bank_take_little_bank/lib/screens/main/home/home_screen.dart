@@ -1,11 +1,14 @@
 import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
+import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
+import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController searchController = TextEditingController();
   @override
   void initState() {
+    widget.screenBloc.add(MainScreenInitEvent());
     super.initState();
+    searchController.addListener(() {
+      widget.screenBloc.add(SearchUserEvent(query: searchController.text));
+    });
   }
 
   @override
@@ -70,7 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _body(MainScreenLoadState state) {
-    print('users ${state.activeUsers.length}');
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -215,54 +221,117 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisSpacing: 16,
                   padding: EdgeInsets.only(bottom: 100, top: 16),
                   children: List.generate(
-                    state.activeUsers.length,
+                    (searchController.text ?? '') == '' ? state.activeUsers.length: state.filterUsers.length,
                         (index) {
                       return HomeCell(
-                        userModel: state.activeUsers[index],
+                        userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
                         onTap: () {
                           Navigator.push(
                             context,
                             PageTransition(
                               child: OtherUserProfileScreen(
                                 screenBloc: widget.screenBloc,
-                                userModel: state.activeUsers[index],
+                                userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
                               ),
                               type: PageTransitionType.downToUp,
                             ),
                           );
                         },
                         onChallenge: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ChooseChallengeScreen(
-                                userModel: state.activeUsers[index],
-                                onChallenge: () {
-                                  Navigator.pop(context);
-                                  BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
-                                      RequestChallengeEvent(
-                                        type: 'standard',
-                                        userModel: state.activeUsers[index],
-                                      )
-                                  );
-                                  // Navigator.push(
-                                  //   context,
-                                  //   PageTransition(
-                                  //     child: GameInScreen(),
-                                  //     type: PageTransitionType.fade,
-                                  //     duration: Duration(milliseconds: 300),
-                                  //   ),
-                                  // );
-                                },
-                                onSchedule: () {
-                                  Navigator.pop(context);
-                                },
-                                onLive: () {
-                                  Navigator.pop(context);
-                                },
+                          if (Global.instance.userModel.points == 0) {
+                            showCupertinoDialog(context: context, builder: (BuildContext context) {
+                              return CupertinoAlertDialog(
+                                title: Text('Oops'),
+                                content: AppLabel(
+                                  title: 'You don\'t have enough points',
+                                  maxLine: 2,
+                                  alignment: TextAlign.center,
+                                ),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    child: Text('Get Points'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        PageTransition(
+                                          child: AddPointsScreen(
+                                            homeContext: widget.homeContext,
+                                          ),
+                                          type: PageTransitionType.fade,
+                                          duration: Duration(microseconds: 300),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  CupertinoDialogAction(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
                               );
-                            },
-                          );
+                            });
+                          } else if (((searchController.text ?? '') == '' ?  state.activeUsers[index].points: state.filterUsers[index]) == 0) {
+                            showCupertinoDialog(context: context, builder: (BuildContext context) {
+                              return CupertinoAlertDialog(
+                                title: Text('Oops'),
+                                content: AppLabel(
+                                  title: 'You cannot game with this user',
+                                ),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    child: Text('Ok'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                          } else if (((searchController.text ?? '') == '' ? state.activeUsers[index].level: state.filterUsers[index].level) != Global.instance.userModel.level) {
+                            showCupertinoDialog(context: context, builder: (BuildContext context) {
+                              return CupertinoAlertDialog(
+                                title: Text('Oops'),
+                                content: AppLabel(
+                                  title: 'You cannot game with this user',
+                                ),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    child: Text('Ok'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ChooseChallengeScreen(
+                                  userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
+                                  onChallenge: () {
+                                    Navigator.pop(context);
+                                    BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
+                                        RequestChallengeEvent(
+                                          type: 'standard',
+                                          userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
+                                        )
+                                    );
+                                  },
+                                  onSchedule: () {
+                                    Navigator.pop(context);
+                                  },
+                                  onLive: () {
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            );
+                          }
                         },
                       );
                     },

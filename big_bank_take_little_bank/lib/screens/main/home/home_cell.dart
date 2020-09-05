@@ -91,9 +91,27 @@ class HomeCell extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(avatarSize / 2),
                   ),
-                  child: ProfileImageView(
-                    imageUrl: userModel.image ?? '',
-                    avatarSize: avatarSize,
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      ProfileImageView(
+                        imageUrl: userModel.image ?? '',
+                        avatarSize: avatarSize,
+                      ),
+                      Container(
+                        width: 16,
+                        height: 16,
+                        alignment: Alignment.bottomRight,
+                        decoration: BoxDecoration(
+                          color: userModel.isLoggedIn ? Colors.green: Colors.grey,
+                          border: Border.all(
+                            color: Color(0xFF1b5c6b),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8)
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
