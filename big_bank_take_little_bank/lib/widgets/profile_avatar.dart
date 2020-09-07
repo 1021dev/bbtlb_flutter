@@ -8,7 +8,6 @@ class ProfileAvatar extends StatelessWidget {
   ProfileAvatar({this.image, this.avatarSize = 64});
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       height: avatarSize + 8,
       width: avatarSize + 8,

@@ -1,12 +1,6 @@
-import 'dart:math';
 
-import 'package:align_positioned/align_positioned.dart';
-import 'package:big_bank_take_little_bank/utils/app_constant.dart';
-import 'package:big_bank_take_little_bank/widgets/animated_bubble.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
-import 'package:big_bank_take_little_bank/widgets/app_text.dart';
-import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -34,6 +28,7 @@ class _GameTieTempScreenState extends State<GameTieTempScreen> with TickerProvid
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+        alignment: Alignment.bottomCenter,
         fit: StackFit.expand,
         children: [
           Container(
@@ -42,13 +37,13 @@ class _GameTieTempScreenState extends State<GameTieTempScreen> with TickerProvid
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/screen_loss.png'),
-              )
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Positioned(
             bottom: 64,
-            left: 0,
-            right: 0,
+            width: MediaQuery.of(context).size.width * 0.5,
             child: AnimatedButton(
               content: AppButton(
                 height: 50,
@@ -56,7 +51,7 @@ class _GameTieTempScreenState extends State<GameTieTempScreen> with TickerProvid
                 colorStyle: 'yellow',
               ),
               onTap: () {
-
+                Navigator.pop(context);
               },
             ),
           ),

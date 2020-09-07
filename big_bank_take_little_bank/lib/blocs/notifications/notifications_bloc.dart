@@ -15,7 +15,6 @@ class NotificationScreenBloc extends Bloc<NotificationScreenEvent, NotificationS
   StreamSubscription _notificationsSubscription;
 
   FirestoreService service = FirestoreService();
-  ContactService _contactService = UnifiedContacts;
 
   NotificationScreenState get initialState {
     return NotificationScreenState(isLoading: true);
@@ -27,8 +26,6 @@ class NotificationScreenBloc extends Bloc<NotificationScreenEvent, NotificationS
       yield* init();
     } else if (event is NotificationsLoadedEvent) {
       List<NotificationModel> unreadNotifications = event.notificationsList.where((element) => element.isRead == false).toList();
-      print(event.notificationsList);
-
       yield state.copyWith(notifications: event.notificationsList, unreadNotifications: unreadNotifications);
     } else if (event is ReadNotificationEvent) {
       yield* readNotification(event.notificationModel);
@@ -41,15 +38,15 @@ class NotificationScreenBloc extends Bloc<NotificationScreenEvent, NotificationS
     User user = FirebaseAuth.instance.currentUser;
     await _notificationsSubscription?.cancel();
     _notificationsSubscription = service.streamNotifications(user.uid).listen((event) {
-      if (event.size > 0) {
+      print(event.docs.length);
         List<NotificationModel> notifications = [];
         event.docs.forEach((element) {
           notifications.add(NotificationModel.fromJson(element.data()));
         });
         add(NotificationsLoadedEvent(notificationsList: notifications));
-      } else {
-        add(NotificationsLoadedEvent(notificationsList: []));
-      }
+      // } else {
+      //   add(NotificationsLoadedEvent(notificationsList: []));
+      // }
     });
   }
 

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/auth/auth.dart';
-import 'package:big_bank_take_little_bank/utils/app_color.dart';
 import 'package:big_bank_take_little_bank/utils/app_helper.dart';
 import 'package:big_bank_take_little_bank/widgets/input_done_view.dart';
 import 'package:flutter/cupertino.dart';

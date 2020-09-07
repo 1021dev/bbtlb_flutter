@@ -237,7 +237,7 @@ class _GGameWinScreenState extends State<GameWinScreen> with TickerProviderState
                   padding: EdgeInsets.zero,
                   child: Image.asset('assets/images/ic_close_outline.png', width: 36, height: 36,),
                 ),
-              )
+              ),
             ],
           ),
         );

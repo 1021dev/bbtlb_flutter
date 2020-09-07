@@ -7,7 +7,6 @@ import 'package:big_bank_take_little_bank/blocs/daily_rewards/daily_rewards.dart
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:firebase_admob/firebase_admob.dart';

@@ -1,6 +1,4 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
-import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/edit_profile_dialog.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
@@ -30,11 +28,9 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
   Animation<double> translation;
   Animation<double> scaleAnim;
   CurvedAnimation curvedAnimation;
-  UserModel userModel;
   @override
   void initState() {
     super.initState();
-    userModel = Global.instance.userModel;
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     curvedAnimation =
@@ -103,9 +99,6 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
 
   Widget _body(ProfileScreenState state) {
     double avatarSize = MediaQuery.of(context).size.width * 0.3;
-    if (state.currentUser != null) {
-      userModel = state.currentUser;
-    }
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -143,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                           child: Padding(
                             padding: EdgeInsets.only(right: 4, bottom: 4),
                             child: ProfileImageView(
-                              imageUrl: userModel.image ?? '',
+                              imageUrl: state.currentUser != null ? state.currentUser.image ?? '': '',
                               avatarSize: avatarSize - 16,
                             ),
                           ),
@@ -158,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
 
                                   return EditProfileDialog(
                                     screenBloc: widget.screenBloc,
-                                    userModel: userModel,
+                                    userModel: state.currentUser,
                                   );
                                 },
                               );
@@ -177,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                   ),
                   SizedBox(height: 16,),
                   Text(
-                    userModel.name ?? '',
+                    state.currentUser != null ? state.currentUser.name ?? '': '',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -186,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                   ),
                   SizedBox(height: 8,),
                   Text(
-                    userModel.email ?? '',
+                    state.currentUser != null ? state.currentUser.email ?? '': '',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -225,7 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                             context,
                             PageTransition(
                               child: GalleryScreen(
-                                userModel: userModel,
+                                userModel: state.currentUser,
                               ),
                               type: PageTransitionType.fade,
                               duration: Duration(microseconds: 300),
@@ -436,7 +429,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${userModel.points}',
+                        '${state.currentUser != null ? state.currentUser.points: 0}',
                         style: TextStyle(
                           color: Color(0xFFF8A828),
                           fontSize: 20,
@@ -464,7 +457,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${userModel.totalPlayed}',
+                        '${state.currentUser != null ? state.currentUser.totalGamePlayed: 0}',
                         style: TextStyle(
                           color: Color(0xFF3AC3DC),
                           fontSize: 20,
@@ -508,7 +501,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        '${userModel.age}',
+                        '${state.currentUser != null ? state.currentUser.age: 0}',
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 18,
@@ -538,7 +531,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        userModel.location ?? '',
+                        state.currentUser != null ? state.currentUser.location ?? '': '',
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 18,
@@ -568,7 +561,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        userModel.profession ?? '',
+                        state.currentUser != null ? state.currentUser.profession ?? '': '',
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 18,
@@ -619,7 +612,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        '${userModel.totalWin}',
+                        '${state.currentUser != null ? state.currentUser.totalWin: 0}',
                         style: TextStyle(
                           color: Color(0xFF84B65B),
                           fontSize: 20,
@@ -668,7 +661,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        '${userModel.totalLoss}',
+                        '${state.currentUser != null ? state.currentUser.totalLoss: 0}',
                         style: TextStyle(
                           color: Color(0xFFD741D9),
                           fontSize: 20,
@@ -728,7 +721,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                 children: [
                   SizedBox(height: 16,),
                   Text(
-                    '${userModel.totalRequest}',
+                    '${state.currentUser != null ? state.currentUser.totalRequest: 0}',
                     style: TextStyle(
                       color: Color(0xFF19DC47),
                       fontSize: 20,
@@ -759,7 +752,7 @@ class _ProfileScreenState extends State<ProfileScreen>  with SingleTickerProvide
                 children: [
                   SizedBox(height: 16,),
                   Text(
-                    '${userModel.totalDecline}',
+                    '${state.currentUser != null ? state.currentUser.totalDecline: 0}',
                     style: TextStyle(
                       color: Color(0xFFF3422E),
                       fontSize: 20,

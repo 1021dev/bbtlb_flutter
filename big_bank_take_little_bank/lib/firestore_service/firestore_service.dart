@@ -3,7 +3,6 @@ import 'package:big_bank_take_little_bank/models/comment_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/liket_model.dart';
-import 'package:big_bank_take_little_bank/models/notification_model.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
@@ -346,6 +345,7 @@ class FirestoreService {
     return userCollection
         .doc(uid)
         .collection('notifications')
+        // .where('createdAt', isGreaterThan: DateTime.now().subtract(Duration(days: 30)))
         .orderBy('createdAt', descending: true)
         .snapshots();
   }

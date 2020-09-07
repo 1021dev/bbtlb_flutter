@@ -29,7 +29,6 @@ class _DailyRewardsDialogState extends State<DailyRewardsDialog> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
   @override

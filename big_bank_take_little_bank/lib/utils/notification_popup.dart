@@ -23,7 +23,6 @@ class _NotificationPopupState extends State<NotificationPopup> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     HapticFeedback.vibrate();
     Future.delayed(Duration(seconds: 4)).then((value) {

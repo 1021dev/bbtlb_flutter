@@ -1,11 +1,6 @@
-import 'dart:math';
 
-import 'package:align_positioned/align_positioned.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
-import 'package:big_bank_take_little_bank/utils/app_constant.dart';
-import 'package:big_bank_take_little_bank/widgets/animated_bubble.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
-import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +41,8 @@ class _GameWinTempScreenState extends State<GameWinTempScreen> with TickerProvid
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/screen_win.png'),
-              )
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Positioned(
@@ -64,7 +60,7 @@ class _GameWinTempScreenState extends State<GameWinTempScreen> with TickerProvid
                   height: 8,
                 ),
                 AppGradientLabel(
-                  title: '1234',
+                  title: '${widget.points}',
                   shadow: true,
                   fontSize: 48,
                 ),
@@ -77,6 +73,18 @@ class _GameWinTempScreenState extends State<GameWinTempScreen> with TickerProvid
                   shadow: true,
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            right: 16,
+            top: 20,
+            child: MaterialButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              minWidth: 0,
+              padding: EdgeInsets.zero,
+              child: Image.asset('assets/images/ic_close_outline.png', width: 36, height: 36,),
             ),
           ),
         ],

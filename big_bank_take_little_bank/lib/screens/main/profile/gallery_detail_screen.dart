@@ -9,8 +9,6 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/comment_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/post_gallery_dialog.dart';
 import 'package:big_bank_take_little_bank/utils/crop_image.dart';
-import 'package:big_bank_take_little_bank/widgets/gallery_image_view.dart';
-import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

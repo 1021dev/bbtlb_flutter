@@ -5,7 +5,6 @@ import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_requested_screen.dart';
-import 'package:big_bank_take_little_bank/screens/main/challenge/game_win_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/daily_rewards/daily_rewards_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
@@ -13,10 +12,6 @@ import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
-import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
-import 'package:big_bank_take_little_bank/utils/app_color.dart';
-import 'package:big_bank_take_little_bank/widgets/app_button.dart';
-import 'package:big_bank_take_little_bank/widgets/challenge_request_button.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:big_bank_take_little_bank/widgets/pulse_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/radial_menu.dart';
@@ -28,7 +23,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
-import 'challenge/choose_challenge_screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -61,7 +55,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
     } else {
       mainScreenBloc.add(UserOfflineEvent());
     }
-    //TODO: set status to offline here in firestore
   }
 
   @override
@@ -160,19 +153,22 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
             },
           ),
           BlocListener<GameBloc, GameState>(
-            // listenWhen: (previousState, state) {
-            //   if (previousState != state && state is DailyRewardsAcceptState) {
-            //     return true;
-            //   } else {
-            //     return false;
-            //   }
-            // },
+            listenWhen: (previousState, state) {
+              if (previousState != state ) {
+                return true;
+              } else {
+                return false;
+              }
+            },
             listener: (BuildContext gCtx, GameState gstate) async {
               if (gstate is GameInState) {
                 Navigator.push(
                   gCtx,
                   PageTransition(
-                    child: GameInScreen(),
+                    child: GameInScreen(
+                      userModel: gstate.userModel,
+                      challengeModel: gstate.challengeModel,
+                    ),
                     type: PageTransitionType.fade,
                     duration: Duration(milliseconds: 300),
                   ),
@@ -180,6 +176,37 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
               } else if (gstate is GameDeclinedState) {
 
               } else if (gstate is GameResultState) {
+                // if (gstate.userModel.points == Global.instance.userModel.points) {
+                //   Navigator.push(
+                //     gCtx,
+                //     PageTransition(
+                //       child: GameTieTempScreen(),
+                //       type: PageTransitionType.fade,
+                //       duration: Duration(milliseconds: 300),
+                //     ),
+                //   );
+                // } else if (gstate.userModel.points > Global.instance.userModel.points) {
+                //   Navigator.push(
+                //     gCtx,
+                //     PageTransition(
+                //       child: GameLossTempScreen(),
+                //       type: PageTransitionType.fade,
+                //       duration: Duration(milliseconds: 300),
+                //     ),
+                //   );
+                // } else {
+                //   Navigator.push(
+                //     gCtx,
+                //     PageTransition(
+                //       child: GameWinTempScreen(
+                //         points: gstate.userModel.points,
+                //         challengeModel: gstate.challengeModel,
+                //       ),
+                //       type: PageTransitionType.fade,
+                //       duration: Duration(milliseconds: 300),
+                //     ),
+                //   );
+                // }
 
               } else if (gstate is GameCanceledState) {
 
@@ -196,6 +223,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                           return Container();
                         }
                         return GameRequestedScreen(
+                          challengeModel: gstate.challengeModel,
                           userModel: snapshot.data,
                           onProfile: () {
                             Navigator.pop(cctx);
@@ -213,23 +241,29 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                           },
                           onAccept: () async {
                             Navigator.pop(cctx);
-                            BlocProvider.of<ChallengeBloc>(gCtx)..add(ResponseChallengeRequestEvent(
-                                challengeModel: gstate.challengeModel, response: 'accept'
-                            ));
-                            final result = await Navigator.push(
-                              cctx,
-                              PageTransition(
-                                child: GameInScreen(),
-                                type: PageTransitionType.fade,
-                                duration: Duration(milliseconds: 300),
-                              ),
-                            );
+                            if (gstate.challengeModel != null) {
+                              DateTime dateTime = gstate.challengeModel.challengeTime;
+                              Duration duration = DateTime.now().difference(dateTime);
+                              int seconds = (duration.inSeconds - 60);
+                              if (seconds < 0) {
+                                BlocProvider.of<ChallengeBloc>(gCtx)..add(ResponseChallengeRequestEvent(
+                                  challengeModel: gstate.challengeModel, response: 'accept',
+                                ));
+                              }
+                            }
                           },
                           onDecline: () {
                             Navigator.pop(cctx);
-                            BlocProvider.of<ChallengeBloc>(gCtx).add(ResponseChallengeRequestEvent(
-                                challengeModel: gstate.challengeModel, response: 'decline'
-                            ));
+                            if (gstate.challengeModel != null) {
+                              DateTime dateTime = gstate.challengeModel.challengeTime;
+                              Duration duration = DateTime.now().difference(dateTime);
+                              int seconds = (duration.inSeconds - 60);
+                              if (seconds < 0) {
+                                BlocProvider.of<ChallengeBloc>(gCtx).add(ResponseChallengeRequestEvent(
+                                    challengeModel: gstate.challengeModel, response: 'decline'
+                                ));
+                              }
+                            }
                           },
                         );
                       },
@@ -364,6 +398,7 @@ class _MainScreenContentState extends State<MainScreenContent>
                             builder: (BuildContext cctx) {
                               return GameRequestedScreen(
                                 userModel: snapshot.data,
+                                challengeModel: model,
                                 onProfile: () {
                                   Navigator.pop(cctx);
                                   Navigator.push(
@@ -380,23 +415,29 @@ class _MainScreenContentState extends State<MainScreenContent>
                                 },
                                 onAccept: () async {
                                   Navigator.pop(cctx);
-                                  BlocProvider.of<ChallengeBloc>(context)..add(ResponseChallengeRequestEvent(
-                                    challengeModel: model, response: 'accept'
-                                  ));
-                                  final result = await Navigator.push(
-                                    cctx,
-                                    PageTransition(
-                                      child: GameInScreen(),
-                                      type: PageTransitionType.fade,
-                                      duration: Duration(milliseconds: 300),
-                                    ),
-                                  );
+                                  if (challengeState.receivedRequestList.length > 0) {
+                                    DateTime dateTime = challengeState.receivedRequestList.first.challengeTime;
+                                    Duration duration = DateTime.now().difference(dateTime);
+                                    int seconds = (duration.inSeconds - 60);
+                                    if (seconds < 0) {
+                                      BlocProvider.of<ChallengeBloc>(context)..add(ResponseChallengeRequestEvent(
+                                          challengeModel: model, response: 'accept'
+                                      ));
+                                    }
+                                  }
                                 },
                                 onDecline: () {
                                   Navigator.pop(cctx);
-                                  BlocProvider.of<ChallengeBloc>(context).add(ResponseChallengeRequestEvent(
-                                      challengeModel: model, response: 'decline'
-                                  ));
+                                  if (challengeState.receivedRequestList.length > 0) {
+                                    DateTime dateTime = challengeState.receivedRequestList.first.challengeTime;
+                                    Duration duration = DateTime.now().difference(dateTime);
+                                    int seconds = (duration.inSeconds - 60);
+                                    if (seconds < 0) {
+                                      BlocProvider.of<ChallengeBloc>(context).add(ResponseChallengeRequestEvent(
+                                          challengeModel: model, response: 'decline'
+                                      ));
+                                    }
+                                  }
                                 },
                               );
                             },
@@ -479,7 +520,6 @@ class _MainScreenContentState extends State<MainScreenContent>
   }
 
   Future<void> _initAdMob() {
-    // TODO: Initialize AdMob SDK
     return FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
   }
 

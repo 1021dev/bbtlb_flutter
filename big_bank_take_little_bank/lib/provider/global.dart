@@ -41,7 +41,7 @@ class Global extends ChangeNotifier{
   Env env;
   void setToken(String token) async {
     _pushToken = token;
-    if (FirebaseAuth.instance.currentUser != null) {
+    if (FirebaseAuth.instance.currentUser != null && (token ?? '') != '') {
       await firestore.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
     }
   }

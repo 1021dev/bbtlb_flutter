@@ -87,6 +87,9 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
 
   Stream<ChallengeState> updateChallenge(ChallengeModel model, String status) async* {
     await service.updateChallenge(model.id, {'status': status});
+    if (status == 'accept') {
+      BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameInEvent(challengeModel: model));
+    }
   }
 
   Stream<ChallengeState> loadInitChallenge() async* {
@@ -117,22 +120,23 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   }
 
   Stream<ChallengeState> observerChallenge(ChallengeModel challengeModel) async* {
+    print('observer =================');
     await _streamCurrentChallenge?.cancel();
     _streamCurrentChallenge = service.streamChallenge(Global.instance.userId, challengeModel.id).listen((event) {
       print(event);
       if (event != null) {
         ChallengeModel model = ChallengeModel.fromJson(event.data());
         if (model.status == 'accept') {
-          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameInEvent(challengeModel: model));
+          BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameInEvent(challengeModel: model));
           _streamCurrentChallenge.cancel();
         } else if (model.status == 'decline') {
-          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(ChallengeDeclinedEvent(challengeModel: model));
+          BlocProvider.of<GameBloc>(Global.instance.homeContext).add(ChallengeDeclinedEvent(challengeModel: model));
           _streamCurrentChallenge.cancel();
         } else if (model.status == 'notAnswered') {
-          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(ChallengeNoAnsweredEvent(challengeModel: model));
+          BlocProvider.of<GameBloc>(Global.instance.homeContext).add(ChallengeNoAnsweredEvent(challengeModel: model));
           _streamCurrentChallenge.cancel();
         } else if (model.status == 'cancel') {
-          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(ChallengeCancelledEvent(challengeModel: model));
+          BlocProvider.of<GameBloc>(Global.instance.homeContext).add(ChallengeCancelledEvent(challengeModel: model));
           _streamCurrentChallenge.cancel();
         }
       }

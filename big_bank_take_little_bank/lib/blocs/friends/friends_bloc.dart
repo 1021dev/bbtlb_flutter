@@ -160,6 +160,16 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       }
     } else {
       await service.updateBlock(Global.instance.userId, blockModel);
+      await service.userCollection
+          .doc(Global.instance.userId)
+          .collection('friends')
+          .doc(blockModel.id)
+          .delete();
+      await service.userCollection
+          .doc(blockModel.id)
+          .collection('friends')
+          .doc(Global.instance.userId)
+          .delete();
 
       BlockModel userBlock = BlockModel(
         id: blockModel.sender,

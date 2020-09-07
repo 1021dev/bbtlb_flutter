@@ -2,7 +2,6 @@ import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 
 @immutable
 abstract class ChallengeEvent extends Equatable {

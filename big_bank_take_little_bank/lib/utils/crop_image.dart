@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:big_bank_take_little_bank/utils/pic_swiper.dart';
 import 'package:big_bank_take_little_bank/utils/video_player.dart';

@@ -46,7 +46,6 @@ class _GameTieScreenState extends State<GameTieScreen> with TickerProviderStateM
   }
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       body: Stack(
         children: [

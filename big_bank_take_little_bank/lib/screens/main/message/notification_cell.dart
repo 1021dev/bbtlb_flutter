@@ -1,5 +1,3 @@
-import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
-import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/notification_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';

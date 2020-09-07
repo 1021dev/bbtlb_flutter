@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 class GameState extends Equatable {
@@ -28,13 +29,25 @@ class GameState extends Equatable {
 
 class GameInState extends GameState {
   final ChallengeModel challengeModel;
+  final UserModel userModel;
 
-  GameInState({this.challengeModel});
+  GameInState({this.challengeModel, this.userModel});
 
   @override
   List<Object> get props => [
     challengeModel,
+    userModel,
   ];
+  GameState copyWith({
+    bool isLoading,
+    ChallengeModel challengeModel,
+    UserModel userModel,
+  }) {
+    return GameInState(
+      userModel: userModel,
+      challengeModel: challengeModel ?? this.challengeModel,
+    );
+  }
 
 }
 
@@ -88,12 +101,23 @@ class GameCanceledState extends GameState {
 
 class GameResultState extends GameState {
   final ChallengeModel challengeModel;
+  final UserModel userModel;
 
-  GameResultState({this.challengeModel});
+  GameResultState({this.challengeModel, this.userModel});
 
   @override
   List<Object> get props => [
     challengeModel,
   ];
+  GameState copyWith({
+    bool isLoading,
+    ChallengeModel challengeModel,
+    UserModel userModel,
+  }) {
+    return GameResultState(
+      userModel: userModel,
+      challengeModel: challengeModel ?? this.challengeModel,
+    );
+  }
 
 }

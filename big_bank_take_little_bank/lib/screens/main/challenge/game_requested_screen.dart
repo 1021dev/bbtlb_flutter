@@ -1,3 +1,4 @@
+import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
@@ -9,17 +10,25 @@ import 'package:flutter/material.dart';
 
 class GameRequestedScreen extends StatelessWidget {
   final UserModel userModel;
+  final ChallengeModel challengeModel;
   final Function onProfile;
   final Function onAccept;
   final Function onDecline;
   GameRequestedScreen({
     this.userModel,
+    this.challengeModel,
     this.onProfile,
     this.onAccept,
     this.onDecline,
   });
 
   Widget build(BuildContext context) {
+
+    DateTime dateTime = challengeModel.challengeTime;
+    print(dateTime);
+    Duration duration = DateTime.now().difference(dateTime);
+    print(duration);
+    int seconds = (duration.inSeconds - 60).abs();
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -92,7 +101,7 @@ class GameRequestedScreen extends StatelessWidget {
                               child: SizedBox(
                                 height: 64.0,
                                 child: FlipClock.countdown(
-                                  duration: Duration(minutes: 1),
+                                  duration: Duration(seconds: seconds),
                                   digitColor: Color(0xfff49926),
                                   backgroundColor: Colors.transparent,
                                   digitSize: 48.0,

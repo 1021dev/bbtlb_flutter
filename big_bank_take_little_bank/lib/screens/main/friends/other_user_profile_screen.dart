@@ -2,11 +2,8 @@ import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
-import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
-import 'package:big_bank_take_little_bank/screens/main/challenge/game_win_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
@@ -707,7 +704,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        userModel != null ? '${userModel.totalPlayed}': '',
+                        userModel != null ? '${userModel.totalGamePlayed}': '',
                         style: TextStyle(
                           color: Color(0xFF3AC3DC),
                           fontSize: 20,

@@ -62,6 +62,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
       if (event != null) {
         Global.instance.userId = user.uid;
         Global.instance.userModel = event;
+        print(event.toJson());
         add(ProfileScreenUserLoadedEvent(user: event));
       }
     });
