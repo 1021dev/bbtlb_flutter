@@ -11,6 +11,7 @@ import 'package:big_bank_take_little_bank/widgets/app_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/background_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_image_view.dart';
+import 'package:big_bank_take_little_bank/widgets/stripe_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -659,7 +660,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
             top: 16,
             left: 0,
             right: 0,
-            height: 100,
+            height: 120,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,21 +672,69 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                     borderRadius: BorderRadius.circular(16),
                     color: Color(0x60000000),
                   ),
+                  padding: EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(
+                            'assets/images/level_1_challenger.png',
+                            width: 32,
+                            height: 32,
+                            fit: BoxFit.fill,
+                          ),
+                          Image.asset(
+                            'assets/images/hammer_im.png',
+                            width: 24,
+                            height: 24,
+                            fit: BoxFit.fill,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8,),
+                      Text(
+                        userModel != null ? '${userModel.totalWin}': '',
+                        style: TextStyle(
+                          color: Color(0xFF84B65B),
+                          fontSize: 20,
+                          fontFamily: 'Lucky',
+                        ),
+                      ),
+                      SizedBox(height: 8,),
+                      Flexible(
+                        child: Text(
+                          'WINS',
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 24,),
+                Container(
+                  width: 80,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: Color(0x60000000),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        userModel != null ? '${userModel.points}' : '',
+                        userModel != null ? '${userModel.totalGamePlayed}': '',
                         style: TextStyle(
-                          color: Color(0xFFF8A828),
-                          fontSize: 20,
+                          color: Color(0xFF3AC3DC),
+                          fontSize: 32,
                           fontFamily: 'Lucky',
                         ),
                       ),
-                      SizedBox(height: 16,),
+                      SizedBox(height: 4,),
                       Text(
-                        'POINTS',
+                        'GAMES\nPLAYED',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ],
@@ -699,22 +748,43 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                     borderRadius: BorderRadius.circular(16),
                     color: Color(0x60000000),
                   ),
+                  padding: EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Image.asset(
+                            'assets/images/hammer_im.png',
+                            width: 24,
+                            height: 24,
+                            fit: BoxFit.fill,
+                          ),
+                          Image.asset(
+                            'assets/images/lossing_piggy.png',
+                            width: 32,
+                            height: 32,
+                            fit: BoxFit.fill,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8,),
                       Text(
-                        userModel != null ? '${userModel.totalGamePlayed}': '',
+                        userModel != null ? '${userModel.totalLoss}': '',
                         style: TextStyle(
-                          color: Color(0xFF3AC3DC),
+                          color: Color(0xFFD741D9),
                           fontSize: 20,
                           fontFamily: 'Lucky',
                         ),
                       ),
-                      SizedBox(height: 4,),
-                      Text(
-                        'GAMES\nPLAYED',
-                        style: Theme.of(context).textTheme.bodyText1,
+                      SizedBox(height: 8,),
+                      Flexible(
+                        child: Text(
+                          'LOSSES',
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
                       ),
                     ],
                   ),
@@ -723,7 +793,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
             ),
           ),
           Positioned(
-            top: 132,
+            top: 152,
             height: 72,
             child: Container(
               decoration: BoxDecoration(
@@ -821,119 +891,20 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            height: 100,
-            bottom: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Color(0x60000000),
-                  ),
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/level_1_challenger.png',
-                            width: 32,
-                            height: 32,
-                            fit: BoxFit.fill,
-                          ),
-                          Image.asset(
-                            'assets/images/hammer_im.png',
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.fill,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8,),
-                      Text(
-                        userModel != null ? '${userModel.totalWin}': '',
-                        style: TextStyle(
-                          color: Color(0xFF84B65B),
-                          fontSize: 20,
-                          fontFamily: 'Lucky',
-                        ),
-                      ),
-                      SizedBox(height: 8,),
-                      Flexible(
-                        child: Text(
-                          'WINS',
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 24,),
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Color(0x60000000),
-                  ),
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Image.asset(
-                            'assets/images/hammer_im.png',
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.fill,
-                          ),
-                          Image.asset(
-                            'assets/images/lossing_piggy.png',
-                            width: 32,
-                            height: 32,
-                            fit: BoxFit.fill,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8,),
-                      Text(
-                        userModel != null ? '${userModel.totalLoss}': '',
-                        style: TextStyle(
-                          color: Color(0xFFD741D9),
-                          fontSize: 20,
-                          fontFamily: 'Lucky',
-                        ),
-                      ),
-                      SizedBox(height: 8,),
-                      Flexible(
-                        child: Text(
-                          'LOSSES',
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 
   Widget _challengesSection(FriendsState state) {
+    double progress = 0.0;
+    if (userModel != null) {
+      if (userModel.totalRequest == 0 && userModel.totalDeclined == 0) {
+        progress = 0;
+      } else {
+        progress = MediaQuery.of(context).size.width * 0.6 * userModel.totalRequest.toDouble() / (userModel.totalRequest.toDouble() + userModel.totalDeclined.toDouble());
+  }
+}
     return SizedBox(
       height: 200,
       child: Stack(
@@ -968,14 +939,14 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                 children: [
                   SizedBox(height: 16,),
                   Text(
-                    userModel != null ? '${userModel.totalRequest}': '',
+                    userModel != null ? '${userModel.totalRequest}': '0',
                     style: TextStyle(
                       color: Color(0xFF19DC47),
-                      fontSize: 20,
+                      fontSize: 32,
                       fontFamily: 'Lucky',
                     ),
                   ),
-                  SizedBox(height: 16,),
+                  SizedBox(height: 8,),
                   Text(
                     'REQUESTED',
                     style: TextStyle(
@@ -999,14 +970,14 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                 children: [
                   SizedBox(height: 16,),
                   Text(
-                    userModel != null ? '${userModel.totalDecline}': '',
+                    userModel != null ? '${userModel.totalDeclined}': '0',
                     style: TextStyle(
                       color: Color(0xFFF3422E),
-                      fontSize: 20,
+                      fontSize: 32,
                       fontFamily: 'Lucky',
                     ),
                   ),
-                  SizedBox(height: 16,),
+                  SizedBox(height: 8,),
                   Text(
                     'DECLINED',
                     style: TextStyle(
@@ -1024,6 +995,74 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                 ],
               ),
             ],
+          ),
+          Positioned(
+            bottom: 24,
+            child: Stack(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: userModel.totalDeclined > 0 ? [
+                        Color(0xff0b3935),
+                        Color(0xff185458),
+                      ]: [
+                        Color(0xffc93900),
+                        Color(0xffff443b),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black87,
+                        spreadRadius: -3,
+                        blurRadius: 1,
+                        offset: Offset(3, 6),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: progress,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xff00ff9c),
+                          Color(0xff00d64c),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: progress,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: StripsWidget(
+                      color1: Color(0x6300d64c),
+                      color2: Color(0x63ffffff),
+                      gap: 12,
+                      noOfStrips: 100,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       ),

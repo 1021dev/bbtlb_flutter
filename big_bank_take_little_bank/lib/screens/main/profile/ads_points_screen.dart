@@ -257,54 +257,7 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
       ],
     );
   }
-  void _onRewardedAdEvent(RewardedVideoAdEvent event,
-      {String rewardType, int rewardAmount}) {
-    switch (event) {
-      case RewardedVideoAdEvent.loaded:
-        setState(() {
-          _isRewardedAdReady = true;
-        });
-        break;
-      case RewardedVideoAdEvent.closed:
-        setState(() {
-          _isRewardedAdReady = false;
-        });
-        _loadRewardedAd();
-        break;
-      case RewardedVideoAdEvent.failedToLoad:
-        setState(() {
-          _isRewardedAdReady = false;
-        });
-        print('Failed to load a rewarded ad');
-        break;
-      case RewardedVideoAdEvent.rewarded:
-        print('rewarded $rewardType,  $rewardAmount');
-        int rewardsPoint = 0;
-        if (count < 5) {
-          rewardsPoint = 100 + Random().nextInt(400);
-        } else if (count < 10) {
-          rewardsPoint = 500 + Random().nextInt(500);
-        } else {
-          rewardsPoint = 1000;
-        }
-        RewardsModel rewardsModel = RewardsModel();
-        rewardsModel.id = Global.instance.userId;
-        rewardsModel.rewardPoint = rewardsPoint;
-        rewardsModel.type = 'ads';
-        rewardsModel.consecutive = count;
-        BlocProvider.of<AdsRewardsBloc>(homeContext)..add(UpdateAdsRewards(rewardsModel: rewardsModel));
-        break;
-      default:
-      // do nothing
-    }
-  }
 
-  void _loadRewardedAd() {
-    RewardedVideoAd.instance.load(
-      targetingInfo: MobileAdTargetingInfo(),
-      adUnitId: RewardedVideoAd.testAdUnitId,
-    );
-  }
   MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
       keywords: <String>['flutterio', 'beautiful apps'],
       contentUrl: 'https://flutter.io',

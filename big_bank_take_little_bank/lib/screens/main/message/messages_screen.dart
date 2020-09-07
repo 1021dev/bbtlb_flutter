@@ -81,7 +81,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   Widget _body(NotificationScreenState state) {
-    print(state.notifications);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -143,7 +142,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
             notificationModel: state.notifications[index],
             controller: slidableController,
             onDelete: () {
-
+              print('delete notifications');
+              notificationScreenBloc.add(DeleteNotificationEvent(notificationModel: state.notifications[index]));
             },
             onTap: () {
 

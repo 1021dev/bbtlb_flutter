@@ -24,10 +24,6 @@ class NotificationCell extends StatelessWidget {
       key: Key(notificationModel.id),
       controller: controller,
       direction: Axis.horizontal,
-      // dismissal: SlidableDismissal(
-      //   child: SlidableDrawerDismissal(),
-      //   onDismissed: onDelete,
-      // ),
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child:  GestureDetector(
@@ -116,7 +112,10 @@ class NotificationCell extends StatelessWidget {
         SlideAction(
           color: Colors.transparent,
           child: Image.asset('assets/images/ic_delete_notification.png'),
-          onTap: () {},
+          onTap: () {
+            print('delete');
+            onDelete();
+          },
         ),
       ],
     );

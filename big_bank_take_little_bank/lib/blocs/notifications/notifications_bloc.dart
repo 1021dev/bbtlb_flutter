@@ -38,7 +38,6 @@ class NotificationScreenBloc extends Bloc<NotificationScreenEvent, NotificationS
     User user = FirebaseAuth.instance.currentUser;
     await _notificationsSubscription?.cancel();
     _notificationsSubscription = service.streamNotifications(user.uid).listen((event) {
-      print(event.docs.length);
         List<NotificationModel> notifications = [];
         event.docs.forEach((element) {
           notifications.add(NotificationModel.fromJson(element.data()));
