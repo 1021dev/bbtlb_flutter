@@ -113,9 +113,9 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
       child: BlocBuilder<GameBloc, GameState>(
         cubit: gameBloc,
         builder: (BuildContext context, GameState state) {
-          int time = (_animationController.value * 10).toInt() + 1;
-          if (time > 10) {
-            time = 10;
+          int time = 10 - (_animationController.value * 10).toInt();
+          if (time < 0) {
+            time = 0;
           }
           return Scaffold(
             body: Stack(

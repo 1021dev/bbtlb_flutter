@@ -1005,12 +1005,12 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                   height: 24,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: userModel.totalDeclined > 0 ? [
-                        Color(0xff0b3935),
-                        Color(0xff185458),
-                      ]: [
+                      colors: (userModel != null ? userModel.totalDeclined : 0) > 0 ? [
                         Color(0xffc93900),
                         Color(0xffff443b),
+                      ]: [
+                        Color(0xff0b3935),
+                        Color(0xff185458),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,

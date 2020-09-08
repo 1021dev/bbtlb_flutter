@@ -40,6 +40,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
   @override
   void initState() {
     super.initState();
+    mainScreenBloc.add(UserLoginEvent());
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -61,8 +62,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
   Widget build(BuildContext buildContext) {
     // ignore: close_sinks
     final DailyRewardsBloc dailyRewardsBloc = DailyRewardsBloc(DailyRewardsInitState());
-    // ignore: close_sinks
-    final MainScreenBloc mainScreenBloc = MainScreenBloc(MainScreenInitState());
     // ignore: close_sinks
     final AdsRewardsBloc adsRewardsBloc = AdsRewardsBloc(AdsRewardsInitState());
     // ignore: close_sinks

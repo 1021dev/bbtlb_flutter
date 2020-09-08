@@ -78,6 +78,7 @@ class FirestoreService {
 
   Stream<List<UserModel>> streamUsers() {
     return userCollection
+        .where('isLoggedIn', isEqualTo: true)
         .where('points', isGreaterThan: 0)
         .orderBy('points')
         .snapshots().map((event) {

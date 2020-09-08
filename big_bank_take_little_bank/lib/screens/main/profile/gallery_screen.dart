@@ -471,7 +471,28 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
   }
 
   _deleteGallery(GalleryModel galleryModel) {
-    galleryBloc.add(DeleteGalleryEvent(uid: widget.userModel.id, galleryModel: galleryModel));
+    showCupertinoDialog(context: context, builder: (BuildContext context) {
+      return CupertinoAlertDialog(
+        title: Text('Delete gallery'),
+        content: Text('Are you sure you want to delete this gallery?'),
+        actions: [
+          CupertinoDialogAction(
+            child: Text('No'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          CupertinoDialogAction(
+            child: Text('Sure'),
+            onPressed: () {
+              Navigator.pop(context);
+              galleryBloc.add(DeleteGalleryEvent(uid: widget.userModel.id, galleryModel: galleryModel));
+            },
+          ),
+        ],
+      );
+    });
+
   }
 
   Future getImage(int type) async {

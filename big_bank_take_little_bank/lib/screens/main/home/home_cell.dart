@@ -103,7 +103,7 @@ class HomeCell extends StatelessWidget {
                         height: 16,
                         alignment: Alignment.bottomRight,
                         decoration: BoxDecoration(
-                          color: userModel.isLoggedIn ? Colors.green: Colors.grey,
+                          color: userModel.isOnline ? Colors.green: Colors.grey,
                           border: Border.all(
                             color: Color(0xFF1b5c6b),
                             width: 2,

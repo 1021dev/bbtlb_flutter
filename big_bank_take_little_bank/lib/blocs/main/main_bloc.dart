@@ -44,6 +44,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       yield* searchUsers(event.query);
     } else if (event is BlockListLoadedEvent) {
       yield* blockListLoaded(event.blockList);
+    } else if (event is UserLoginEvent) {
+      yield* userLogin();
     }
   }
 
@@ -127,11 +129,15 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   }
 
   Stream<MainScreenState> userOnline() async* {
-      await service.updateUser(Global.instance.userId, {'isLoggedIn': true});
+    await service.updateUser(Global.instance.userId, {'isOnline': true});
   }
 
   Stream<MainScreenState> userOffline() async* {
-      await service.updateUser(Global.instance.userId, {'isLoggedIn': false});
+    await service.updateUser(Global.instance.userId, {'isOnline': false});
+  }
+
+  Stream<MainScreenState> userLogin() async* {
+    await service.updateUser(Global.instance.userId, {'isLoggedIn': true});
   }
 
   Stream<MainScreenState> searchUsers(String query) async* {

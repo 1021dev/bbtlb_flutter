@@ -194,7 +194,27 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
                           icon: 'setting_logout',
                           text: 'Logout',
                           onTap: () {
-                            profileScreenBloc.add(ProfileScreenLogoutEvent());
+                            showCupertinoDialog(context: context, builder: (BuildContext context) {
+                              return CupertinoAlertDialog(
+                                title: Text('Logout'),
+                                content: Text('Are you sure you want to logout?'),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    child: Text('No'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  CupertinoDialogAction(
+                                    child: Text('Sure'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      profileScreenBloc.add(ProfileScreenLogoutEvent());
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
                           },
                         ),
                         SettingCellView(
@@ -244,6 +264,26 @@ class _SettingsScreenState extends State<SettingsScreen>  with SingleTickerProvi
                           text: 'DELETE ACCOUNT',
                           isDelete: true,
                           onTap: () {
+                            showCupertinoDialog(context: context, builder: (BuildContext context) {
+                              return CupertinoAlertDialog(
+                                title: Text('Delete Account'),
+                                content: Text('Are you sure you want to delete your account?'),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    child: Text('No'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  CupertinoDialogAction(
+                                    child: Text('Sure'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
                           },
                         ),
                       ],

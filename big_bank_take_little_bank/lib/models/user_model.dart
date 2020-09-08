@@ -14,6 +14,7 @@ class UserModel {
   num age;
   bool isFacebookUser;
   bool isLoggedIn;
+  bool isOnline;
   bool notification;
   String address;
   String location;
@@ -52,6 +53,7 @@ class UserModel {
     this.userType,
     this.isFacebookUser,
     this.isLoggedIn,
+    this.isOnline,
     this.notification,
     this.address,
     this.totalChallenge,
@@ -89,6 +91,7 @@ class UserModel {
       isAdmin: json['isAdmin'] as bool ?? false,
       isFacebookUser: json['isFacebookUser'] as bool ?? false,
       isLoggedIn: json['isLoggedIn'] as bool ?? false,
+      isOnline: json['isOnline'] as bool ?? false,
       level: json['level'] as num ?? 1,
       location: json['location'] as String ?? '',
       loginAt: (json['loginAt'] as Timestamp).toDate() ?? DateTime.now(),
@@ -130,6 +133,7 @@ class UserModel {
         'age': instance.age ?? 0,
         'isFacebookUser': instance.isFacebookUser ?? false,
         'isLoggedIn': instance.isLoggedIn ?? false,
+        'isOnline': instance.isOnline ?? false,
         'notification': instance.notification ?? false,
         'address': instance.address ?? '',
         'location': instance.location ?? '',

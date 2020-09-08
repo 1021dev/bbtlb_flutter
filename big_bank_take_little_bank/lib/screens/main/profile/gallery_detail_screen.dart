@@ -35,7 +35,9 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
   Animation<double> scaleAnim;
   CurvedAnimation curvedAnimation;
   TextEditingController messageController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   FocusNode messageNode = FocusNode();
+  FocusNode descriptionNode = FocusNode();
 
   GalleryDetailBloc galleryDetailBloc;
   @override
@@ -51,6 +53,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
 
     });});
 
+    descriptionController.text = widget.galleryModel.description;
   }
 
   @override
@@ -58,6 +61,8 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
     controller.dispose();
     messageController.dispose();
     messageNode.dispose();
+    descriptionController.dispose();
+    descriptionNode.dispose();
     super.dispose();
   }
 
@@ -196,12 +201,17 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                                           ],
                                         ),
                                         Flexible(
-                                          child: Text(
-                                            state is GalleryDetailLoadState ? state.galleryModel.description: '',
+                                          child: EditableText(
                                             textAlign: TextAlign.left,
+                                            focusNode: descriptionNode,
+                                            controller: descriptionController,
                                             style: TextStyle(
                                               fontFamily: 'BackToSchool',
+                                              fontSize: 16,
                                             ),
+                                            keyboardType: TextInputType.multiline,
+                                            cursorColor: Colors.white,
+                                            backgroundCursorColor: Colors.transparent,
                                           ),
                                         ),
                                       ],

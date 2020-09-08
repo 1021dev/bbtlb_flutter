@@ -98,6 +98,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
 
   Stream<ProfileScreenState> logout() async* {
     await service.updateUser(Global.instance.userId, {'isLoggedIn': false});
+    await service.updateUser(Global.instance.userId, {'isOnline': false});
     yield state.copyWith(isLoading: true);
 
     await FirebaseAuth.instance.signOut();

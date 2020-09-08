@@ -41,6 +41,8 @@ class UpdateScreenEvent extends MainScreenEvent {
 
 class LoadActiveUsersEvent extends MainScreenEvent {}
 
+class UserLoginEvent extends MainScreenEvent {}
+
 class UserOnlineEvent extends MainScreenEvent {}
 
 class UserOfflineEvent extends MainScreenEvent {}
