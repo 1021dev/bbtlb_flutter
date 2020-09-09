@@ -252,11 +252,13 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       });
       groupList.sort((g1, g2) => g1.group.compareTo(g2.group));
       yield currentState.copyWith(requestList: requests, friendsGroupList: groupList);
+      print(groupList);
     } else {
       List<FriendsGroupModel> groupList = [];
       requests.forEach((element) {
         groupList.add(FriendsGroupModel(group: '', friendsModel: element));
       });
+      print(groupList);
       yield FriendsListLoadState(requestList: requests, friendsGroupList: groupList);
     }
   }

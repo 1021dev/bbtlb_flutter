@@ -23,6 +23,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
+import 'challenge/challenge_pending_screen.dart';
+
 
 
 class MainScreen extends StatefulWidget {
@@ -437,6 +439,58 @@ class _MainScreenContentState extends State<MainScreenContent>
                                       ));
                                     }
                                   }
+                                },
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          width: 64.0,
+                          height: 64.0,
+                          child: Center(
+                            child: SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: ProfileAvatar(
+                                image: snapshot.data.image ?? '',
+                                avatarSize: 50,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else if (challengeState.pendingRequestList.length > 0) {
+              ChallengeModel model = challengeState.pendingRequestList.first;
+              return FutureBuilder(
+                future: FirestoreService().getUserWithId(model.sender),
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) {
+                    return Container();
+                  }
+                  return Positioned(
+                    top: 24,
+                    right: 8,
+                    child: CustomPaint(
+                      painter: PulseWidget(_controller),
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext cctx) {
+                              return ChallengePendingDialog(
+                                challengeModel: model,
+                                onChallenge: () {
+                                  Navigator.pop(context);
+                                },
+                                onSchedule: () {
+                                  Navigator.pop(context);
+                                },
+                                onLive: () {
+                                  Navigator.pop(context);
                                 },
                               );
                             },

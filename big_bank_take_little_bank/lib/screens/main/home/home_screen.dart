@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/challenge_pending_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
@@ -310,6 +311,33 @@ class _HomeScreenState extends State<HomeScreen> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
+                                if (BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).state.pendingRequestList.length > 0) {
+                                  return ChallengePendingDialog(
+                                    challengeModel: BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).state.pendingRequestList.first,
+                                    onChallenge: () {
+                                      Navigator.pop(context);
+                                    },
+                                    onSchedule: () {
+                                      Navigator.pop(context);
+                                    },
+                                    onLive: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                } else if (BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).state.receivedRequestList.length > 0) {
+                                  return ChallengePendingDialog(
+                                    challengeModel: BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).state.receivedRequestList.first,
+                                    onChallenge: () {
+                                      Navigator.pop(context);
+                                    },
+                                    onSchedule: () {
+                                      Navigator.pop(context);
+                                    },
+                                    onLive: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                }
                                 return ChooseChallengeScreen(
                                   userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
                                   onChallenge: () {
