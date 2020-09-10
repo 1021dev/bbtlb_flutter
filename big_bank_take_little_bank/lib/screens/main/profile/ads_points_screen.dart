@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:big_bank_take_little_bank/blocs/ads_rewards/ads_rewards.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
@@ -29,33 +28,88 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
 
   final BuildContext homeContext;
   _AdsPointsScreenState(this.homeContext);
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    testDevices: testDevice != null ? <String>[testDevice] : null,
+    keywords: <String>['foo', 'bar'],
+    contentUrl: 'http://foo.com/bar.html',
+    childDirected: true,
+    nonPersonalizedAds: true,
+  );
+  // MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+  //     keywords: <String>['flutterio', 'beautiful apps'],
+  //     contentUrl: 'https://flutter.io',
+  //     testDevices: <String>['A6CB091DD6E765C87ED74D092E4568FE']);
+
 
   bool _isRewardedAdReady = false;
   num count = 0;
-  AdmobReward rewardAd;
-
   @override
   void initState() {
     _isRewardedAdReady = false;
-    // RewardedVideoAd.instance.listener = _onRewardedAdEvent;
-    // _loadRewardedAd();
-    rewardAd = AdmobReward(
-      adUnitId: AdManager.appId,
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        // if (event == AdmobAdEvent.closed) rewardAd.load();
-        handleEvent(event, args, 'Reward');
-      },
-    );
+    RewardedVideoAd.instance.listener =
+        (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
+      print("RewardedVideoAd event $event");
+      if (event == RewardedVideoAdEvent.rewarded) {
+        int rewardsPoint = 0;
+        if (count < 5) {
+          rewardsPoint = 100 + Random().nextInt(400);
+        } else if (count < 10) {
+          rewardsPoint = 500 + Random().nextInt(500);
+        } else {
+          rewardsPoint = 1000;
+        }
+        RewardsModel rewardsModel = RewardsModel();
+        rewardsModel.id = Global.instance.userId;
+        rewardsModel.rewardPoint = rewardsPoint;
+        rewardsModel.type = 'ads';
+        rewardsModel.consecutive = count;
+        BlocProvider.of<AdsRewardsBloc>(homeContext)..add(UpdateAdsRewards(rewardsModel: rewardsModel));
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text('Reward callback fired. Thanks Andrew!'),
+                    Text('Type: $rewardType'),
+                    Text('Amount: $rewardAmount'),
+                  ],
+                ),
+              ),
+              onWillPop: () async {
+                // scaffoldState.currentState.hideCurrentSnackBar();
+                return true;
+              },
+            );
+          },
+        );
+      } else if (event == RewardedVideoAdEvent.loaded) {
+        setState(() {
+          _isRewardedAdReady = true;
+        });
+      } else if (event == RewardedVideoAdEvent.failedToLoad) {
+        Future.delayed(Duration(minutes: 1), () {
+          load();
+        });
+      } else if (event == RewardedVideoAdEvent.closed) {
 
-    rewardAd.load();
-
+      }
+    };
+    load();
     super.initState();
+  }
+
+  load() {
+    RewardedVideoAd.instance.load(
+        adUnitId: RewardedVideoAd.testAdUnitId,
+        targetingInfo: targetingInfo);
   }
 
   @override
   void dispose() {
     // RewardedVideoAd.instance.listener = null;
-    rewardAd.dispose();
     super.dispose();
   }
 
@@ -208,11 +262,8 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
                       ),
                       AnimatedButton(
                         onTap: () async {
-                          // if (_isRewardedAdReady) {
-                          //   RewardedVideoAd.instance.show();
-                          // }
-                          if (await rewardAd.isLoaded) {
-                            rewardAd.show();
+                          if (_isRewardedAdReady) {
+                            RewardedVideoAd.instance.show();
                           } else {
                             Toast.show( 'Reward ad is still loading...', context);
                           }
@@ -257,81 +308,5 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
       ],
     );
   }
-
-  MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-      keywords: <String>['flutterio', 'beautiful apps'],
-      contentUrl: 'https://flutter.io',
-      testDevices: <String>['A6CB091DD6E765C87ED74D092E4568FE']);
-
-  void handleEvent(
-      AdmobAdEvent event, Map<String, dynamic> args, String adType) {
-    switch (event) {
-      case AdmobAdEvent.loaded:
-        showSnackBar('New Admob $adType Ad loaded!');
-        break;
-      case AdmobAdEvent.opened:
-        showSnackBar('Admob $adType Ad opened!');
-        break;
-      case AdmobAdEvent.closed:
-        showSnackBar('Admob $adType Ad closed!');
-        rewardAd.load();
-        break;
-      case AdmobAdEvent.failedToLoad:
-        showSnackBar('Admob $adType failed to load. :(');
-        Future.delayed(Duration(minutes: 1), () {
-          final re = rewardAd;
-          re?.load();
-        });
-        break;
-      case AdmobAdEvent.rewarded:
-        int rewardsPoint = 0;
-        if (count < 5) {
-          rewardsPoint = 100 + Random().nextInt(400);
-        } else if (count < 10) {
-          rewardsPoint = 500 + Random().nextInt(500);
-        } else {
-          rewardsPoint = 1000;
-        }
-        RewardsModel rewardsModel = RewardsModel();
-        rewardsModel.id = Global.instance.userId;
-        rewardsModel.rewardPoint = rewardsPoint;
-        rewardsModel.type = 'ads';
-        rewardsModel.consecutive = count;
-        BlocProvider.of<AdsRewardsBloc>(homeContext)..add(UpdateAdsRewards(rewardsModel: rewardsModel));
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return WillPopScope(
-              child: AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text('Reward callback fired. Thanks Andrew!'),
-                    Text('Type: ${args['type']}'),
-                    Text('Amount: $rewardsPoint'),
-                  ],
-                ),
-              ),
-              onWillPop: () async {
-                // scaffoldState.currentState.hideCurrentSnackBar();
-                return true;
-              },
-            );
-          },
-        );
-        break;
-      default:
-    }
-  }
-
-  void showSnackBar(String content) {
-    // scaffoldState.currentState.showSnackBar(
-    //   SnackBar(
-    //     content: Text(content),
-    //     duration: Duration(milliseconds: 1500),
-    //   ),
-    // );
-  }
-
 
 }
