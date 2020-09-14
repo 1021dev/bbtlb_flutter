@@ -583,11 +583,42 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                               )
                           );
                         },
-                        onSchedule: () {
+                        onSchedule: () async {
+                          final date = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1900),
+                              initialDate: DateTime.now(),
+                              lastDate: DateTime(2100));
+                          if (date != null) {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime:
+                              TimeOfDay.fromDateTime(DateTime.now()),
+                            );
+                            print(date);
+                            print(time);
+                            int dateValue = date.millisecondsSinceEpoch;
+                            int timeValue = time.hour * 2600000 + time.minute * 60000;
+                            BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                                RequestChallengeEvent(
+                                  type: 'schedule',
+                                  challengeTime: dateValue.toDouble() + timeValue.toDouble(),
+                                  userModel: userModel,
+                                )
+                            );
+                          } else {
+                            print(date);
+                          }
                           Navigator.pop(context);
                         },
                         onLive: () {
                           Navigator.pop(context);
+                          BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                              RequestChallengeEvent(
+                                type: 'live',
+                                userModel: userModel,
+                              )
+                          );
                         },
                       );
                     },

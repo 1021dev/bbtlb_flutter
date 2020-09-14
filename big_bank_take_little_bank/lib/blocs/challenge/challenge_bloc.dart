@@ -18,6 +18,10 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   StreamSubscription _streamRequestedChallenges;
   StreamSubscription _streamReceivedChallenges;
   StreamSubscription _streamCurrentChallenge;
+  StreamSubscription _streamSubscriptionLiveChallenge;
+  StreamSubscription _streamSubscriptionLiveChallengeFinished;
+  StreamSubscription _streamSubscriptionScheduleChallenge;
+  StreamSubscription _streamSubscriptionScheduleChallengeRequest;
 
   ChallengeState get initialState {
     return ChallengeState();
@@ -55,6 +59,10 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       }
     } else if (event is ResponseChallengeRequestEvent) {
       yield* updateChallenge(event.challengeModel, event.response);
+    } else if (event is LiveChallengeScreenInitEvent) {
+
+    } else if (event is LiveChallengeScreenLoadedEvent) {
+
     }
   }
 
@@ -143,12 +151,20 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     });
   }
 
+  Stream<ChallengeState> loadLiveChallenge() async* {
+
+  }
+
   @override
   Future<void> close() {
     _streamChallengeList?.cancel();
     _streamRequestedChallenges?.cancel();
     _streamReceivedChallenges?.cancel();
     _streamCurrentChallenge?.cancel();
+    _streamSubscriptionLiveChallenge?.cancel();
+    _streamSubscriptionLiveChallengeFinished?.cancel();
+    _streamSubscriptionScheduleChallenge?.cancel();
+    _streamSubscriptionScheduleChallengeRequest?.cancel();
     return super.close();
   }
 

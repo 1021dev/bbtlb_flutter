@@ -5,8 +5,14 @@ class TitleBackgroundWidget extends StatelessWidget {
   final double height;
   final bool isShadow;
   final String title;
+  final EdgeInsets padding;
 
-  TitleBackgroundWidget({this.height = 60, this.isShadow = true, this.title = '',});
+  TitleBackgroundWidget({
+    this.height = 60, 
+    this.isShadow = true, 
+    this.title = '',
+    this.padding = const EdgeInsets.all(8),
+  });
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,18 +78,21 @@ class TitleBackgroundWidget extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            title ?? '',
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Lucky',
-              fontSize: 20,
-              shadows: [
-                Shadow(
-                  color: Colors.black87,
-                  offset: Offset(4.0, 4.0),
-                ),
-              ],
+          Padding(
+            padding: padding,
+            child: Text(
+              title ?? '',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Lucky',
+                fontSize: 20,
+                shadows: [
+                  Shadow(
+                    color: Colors.black87,
+                    offset: Offset(4.0, 4.0),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

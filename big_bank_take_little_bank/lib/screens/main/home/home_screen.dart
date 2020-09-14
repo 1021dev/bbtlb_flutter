@@ -6,6 +6,7 @@ import 'package:big_bank_take_little_bank/screens/main/challenge/challenge_pendi
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
+import 'package:big_bank_take_little_bank/screens/main/live/live_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
@@ -110,7 +111,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         InkWell(
                           onTap: () {
-
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: LiveChallengeScreen(
+                                  screenBloc: widget.screenBloc,
+                                  homeContext: widget.homeContext,
+                                ),
+                                type: PageTransitionType.rightToLeft,
+                                duration: Duration(microseconds: 3000),
+                              ),
+                            );
                           },
                           child: Container(
                             width: MediaQuery.of(context).size.width / 4,
@@ -349,11 +360,42 @@ class _HomeScreenState extends State<HomeScreen> {
                                         )
                                     );
                                   },
-                                  onSchedule: () {
+                                  onSchedule: () async {
+                                    final date = await showDatePicker(
+                                        context: context,
+                                        firstDate: DateTime(1900),
+                                        initialDate: DateTime.now(),
+                                        lastDate: DateTime(2100));
+                                    if (date != null) {
+                                      final time = await showTimePicker(
+                                        context: context,
+                                        initialTime:
+                                        TimeOfDay.fromDateTime(DateTime.now()),
+                                      );
+                                      print(date);
+                                      print(time);
+                                      int dateValue = date.millisecondsSinceEpoch;
+                                      int timeValue = time.hour * 2600000 + time.minute * 60000;
+                                      BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
+                                          RequestChallengeEvent(
+                                            type: 'schedule',
+                                            challengeTime: dateValue.toDouble() + timeValue.toDouble(),
+                                            userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
+                                          )
+                                      );
+                                    } else {
+                                      print(date);
+                                    }
                                     Navigator.pop(context);
                                   },
                                   onLive: () {
                                     Navigator.pop(context);
+                                    BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
+                                        RequestChallengeEvent(
+                                          type: 'live',
+                                          userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
+                                        )
+                                    );
                                   },
                                 );
                               },

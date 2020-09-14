@@ -87,7 +87,6 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
 
         }
       };
-      load();
 
       yield* checkDailyRewards();
     } else if (event is AvailableDailyRewards) {

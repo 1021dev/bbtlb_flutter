@@ -9,6 +9,10 @@ class ChallengeState extends Equatable {
   final List<ChallengeModel> pendingRequestList;
   final List<ChallengeModel> receivedRequestList;
   final List<ChallengeModel> upcomingChallengeList;
+  final List<ChallengeModel> liveChallengeList;
+  final List<ChallengeModel> liveChallengeResultList;
+  final List<ChallengeModel> scheduleChallengeList;
+  final List<ChallengeModel> scheduleChallengeRequestList;
 
   ChallengeState({
     this.isLoading = false,
@@ -18,6 +22,10 @@ class ChallengeState extends Equatable {
     this.pendingRequestList = const [],
     this.receivedRequestList = const [],
     this.upcomingChallengeList = const [],
+    this.liveChallengeList = const [],
+    this.liveChallengeResultList = const [],
+    this.scheduleChallengeList = const [],
+    this.scheduleChallengeRequestList = const [],
   });
 
   @override
@@ -29,6 +37,10 @@ class ChallengeState extends Equatable {
     pendingRequestList,
     receivedRequestList,
     upcomingChallengeList,
+    liveChallengeResultList,
+    liveChallengeList,
+    scheduleChallengeList,
+    scheduleChallengeRequestList,
   ];
   ChallengeState copyWith({
     bool isLoading,
@@ -38,6 +50,10 @@ class ChallengeState extends Equatable {
     List<ChallengeModel> pendingRequestList,
     List<ChallengeModel> receivedRequestList,
     List<ChallengeModel> upcomingChallengeList,
+    List<ChallengeModel> liveChallengeList,
+    List<ChallengeModel> liveChallengeResultList,
+    List<ChallengeModel> scheduleChallengeList,
+    List<ChallengeModel> scheduleChallengeRequestList,
   }) {
     return ChallengeState(
       isLoading: isLoading ?? this.isLoading,
@@ -47,6 +63,10 @@ class ChallengeState extends Equatable {
       pendingRequestList: pendingRequestList ?? this.pendingRequestList,
       receivedRequestList: receivedRequestList ?? this.receivedRequestList,
       upcomingChallengeList: upcomingChallengeList ?? this.upcomingChallengeList,
+      liveChallengeList: liveChallengeList ?? this.liveChallengeList,
+      liveChallengeResultList: liveChallengeResultList ?? this.liveChallengeResultList,
+      scheduleChallengeList: scheduleChallengeList ?? this.scheduleChallengeList,
+      scheduleChallengeRequestList: scheduleChallengeRequestList ?? this.scheduleChallengeRequestList,
     );
   }
 }
