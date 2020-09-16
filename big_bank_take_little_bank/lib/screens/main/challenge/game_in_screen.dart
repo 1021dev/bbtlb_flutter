@@ -39,7 +39,11 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
   void initState() {
 
     gameBloc = BlocProvider.of<GameBloc>(Global.instance.homeContext);
-    _animationController = new AnimationController(vsync: this, duration: Duration(seconds: 10))..addListener(() {
+    int countDown = 10;
+    if (widget.challengeModel.type == 'live') {
+      countDown = 120;
+    }
+    _animationController = new AnimationController(vsync: this, duration: Duration(seconds: countDown))..addListener(() {
       setState(() {});
     })..addStatusListener((status)async {
       if(status == AnimationStatus.completed){
@@ -113,7 +117,11 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
       child: BlocBuilder<GameBloc, GameState>(
         cubit: gameBloc,
         builder: (BuildContext context, GameState state) {
-          int time = 10 - (_animationController.value * 10).toInt();
+          int countDown = 10;
+          if (widget.challengeModel.type == 'live') {
+            countDown = 120;
+          }
+          int time = countDown - (_animationController.value * countDown).toInt();
           if (time < 0) {
             time = 0;
           }

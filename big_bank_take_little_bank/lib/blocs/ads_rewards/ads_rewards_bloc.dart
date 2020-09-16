@@ -6,7 +6,7 @@ import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-const String testDevice = 'YOUR_DEVICE_ID';
+const String testDevice = null;
 
 class AdsRewardsBloc extends Bloc<AdsRewardsEvent, AdsRewardsState> {
 

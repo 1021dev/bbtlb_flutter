@@ -316,6 +316,20 @@ class FirestoreService {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> streamLiveChallenge(String uid) {
+    return challengeCollection
+        .where('type', isEqualTo: 'live')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamScheduleChallenges(String uid) {
+    return challengeCollection
+        .where('type', isEqualTo: 'schedule')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
   Stream<DocumentSnapshot> streamChallenge(String uid, String challengeId) {
     return challengeCollection
         .doc(challengeId)

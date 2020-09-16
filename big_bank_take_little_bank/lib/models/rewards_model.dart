@@ -32,7 +32,7 @@ class RewardsModel {
   Map<String, dynamic> toJson() => _rewardsToJson(this);
 
   @override
-  String toString() => "FirebaseUser <$id>";
+  String toString() => "Rewwards Model <$consecutive>";
 
 
   Map<String, dynamic> _rewardsToJson(RewardsModel instance) =>

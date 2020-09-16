@@ -5,6 +5,8 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
+import '../bloc.dart';
+
 @immutable
 abstract class MainScreenEvent extends Equatable {
   const MainScreenEvent();
@@ -51,4 +53,9 @@ class SearchUserEvent extends MainScreenEvent {
   final String query;
 
   SearchUserEvent({this.query});
+}
+
+class ReceivedLocalNotificationEvent extends MainScreenEvent {
+  final ReceivedNotification receivedNotification;
+  ReceivedLocalNotificationEvent({this.receivedNotification});
 }

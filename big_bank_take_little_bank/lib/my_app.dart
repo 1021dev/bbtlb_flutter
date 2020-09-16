@@ -1,13 +1,9 @@
-import 'dart:io';
 import 'dart:ui' as ui;
-import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/provider/store/store.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -17,9 +13,7 @@ final FirebaseFirestore firestore = FirebaseFirestore.instance;
 final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
 Future<void> myMain() async {
-  WidgetsFlutterBinding.ensureInitialized();
   await DefaultStore.instance.init();
-  Firebase.initializeApp();
   Crashlytics.instance.enableInDevMode = true;
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
   runApp(MyApp());
@@ -32,7 +26,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 //  final mainBloc = MainBloc.instance;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   BuildContext contextNo;
 
   void _showItemDialog(Map<String, dynamic> message) {
@@ -78,30 +71,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _firebaseMessaging.requestNotificationPermissions();
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-      },
-      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-      },
-    );
-
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      print("Push Messaging token: $token");
-      Global.instance.setToken(token);
-    });
-    _firebaseMessaging.subscribeToTopic("matchscore");
   }
 
   @override
@@ -174,5 +143,6 @@ class AppContent extends StatelessWidget {
 
   // After widget initialized.
   void onAfterBuild(BuildContext context) {
+    // GADMobileAds.sharedInstance.requestConfiguration.testDeviceIdentifiers = @[ kGADSimulatorID ];
   }
 }

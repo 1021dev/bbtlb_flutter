@@ -2,6 +2,7 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 /// Environment declare here
@@ -41,8 +42,10 @@ class Global extends ChangeNotifier{
   Env env;
   void setToken(String token) async {
     _pushToken = token;
-    if (FirebaseAuth.instance.currentUser != null && (token ?? '') != '') {
-      await firestore.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
+    if (FirebaseAuth != null) {
+      if (FirebaseAuth.instance.currentUser != null && (token ?? '') != '') {
+        await firestore.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
+      }
     }
   }
 }

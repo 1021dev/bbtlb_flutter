@@ -23,8 +23,7 @@ class LiveChallengeScreen extends StatefulWidget {
 }
 
 class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
-  NotificationScreenBloc notificationScreenBloc;
-  SlidableController slidableController;
+  ChallengeBloc challengeBloc;
 // a key to set on our Text widget, so we can measure later
   GlobalKey myTextKey = GlobalKey();
 // a RenderBox object to use in state
@@ -35,11 +34,7 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
 
   @override
   void initState() {
-    slidableController = SlidableController(
-      onSlideAnimationChanged: null,
-      onSlideIsOpenChanged: null,
-    );
-    notificationScreenBloc = BlocProvider.of<NotificationScreenBloc>(Global.instance.homeContext);
+    challengeBloc = BlocProvider.of<ChallengeBloc>(Global.instance.homeContext);
     WidgetsBinding.instance.addPostFrameCallback((_) => _recordSize());
     super.initState();
   }
@@ -52,29 +47,12 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: notificationScreenBloc,
-      listener: (BuildContext context, NotificationScreenState state) async {
-        if (state is NotificationScreenSuccess) {
-        } else if (state is NotificationScreenFailure) {
-          showCupertinoDialog(context: context, builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-              title: Text('Oops'),
-              content: Text(state.error),
-              actions: [
-                CupertinoDialogAction(
-                  child: Text('Ok'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            );
-          });
-        }
+      cubit: challengeBloc,
+      listener: (BuildContext context, ChallengeState state) async {
       },
-      child: BlocBuilder<NotificationScreenBloc, NotificationScreenState>(
-        cubit: notificationScreenBloc,
-        builder: (BuildContext context, NotificationScreenState state) {
+      child: BlocBuilder<ChallengeBloc, ChallengeState>(
+        cubit: challengeBloc,
+        builder: (BuildContext context, ChallengeState state) {
           return Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -99,7 +77,7 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
     });
   }
 
-  Widget _body(NotificationScreenState state) {
+  Widget _body(ChallengeState state) {
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -301,16 +279,7 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
                         ),
                       ): Container(),
                       Expanded(
-                        child: state.notifications.length > 0 ? _challengeListWidget(state): Center(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: AppLabel(
-                              title: 'There are currently no games.',
-                              maxLine: 2,
-                              alignment: TextAlign.center,
-                            ),
-                          ),
-                        ),
+                        child: _challengeListWidget(state)
                       ),
                     ],
                   ),
@@ -455,51 +424,91 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
     );
   }
 
-  Widget _challengeListWidget(NotificationScreenState state) {
-    return Container(
-      child: ListView.separated(
-        shrinkWrap: false,
-        itemBuilder: (context, index) {
-          if (currentChallengeType == 0) {
-            if (currentIndex == 0) {
-              return LiveChallengeOnGoingCell(
-                notificationModel: state.notifications[index],
-                onTap: () {
+  Widget _challengeListWidget(ChallengeState state) {
+    if (currentChallengeType == 0 && currentIndex == 0) {
+      return Container(
+        child: ListView.separated(
+          shrinkWrap: false,
+          itemBuilder: (context, index) {
+            return LiveChallengeOnGoingCell(
+              challengeModel: state.liveChallengeList[index],
+              onTap: () {
 
-                },
-              );
-            } else {
-              return LiveChallengeFinishedCell(
-                notificationModel: state.notifications[index],
-                onTap: () {
+              },
+            );
+          },
+          separatorBuilder: (context, index) {
+            return Divider(color: Colors.transparent, height: 4,);
+          },
+          itemCount: state.liveChallengeList.length,
+        ),
+      );
+    } else if (currentChallengeType == 0 && currentIndex == 1) {
+      return Container(
+        child: ListView.separated(
+          shrinkWrap: false,
+          itemBuilder: (context, index) {
+            return LiveChallengeFinishedCell(
+              challengeModel: state.liveChallengeResultList[index],
+              onTap: () {
 
-                },
-              );
-            }
-          } else {
-            if (currentIndex == 0) {
-              return ScheduleChallengeRequestCell(
-                notificationModel: state.notifications[index],
-                onTap: () {
+              },
+            );
+          },
+          separatorBuilder: (context, index) {
+            return Divider(color: Colors.transparent, height: 4,);
+          },
+          itemCount: state.liveChallengeResultList.length,
+        ),
+      );
+    } else if (currentChallengeType == 1 && currentIndex == 0) {
+      return Container(
+        child: ListView.separated(
+          shrinkWrap: false,
+          itemBuilder: (context, index) {
+            return ScheduleChallengeRequestCell(
+              challengeModel: state.scheduleChallengeList[index],
+              onTap: () {
 
-                },
-              );
-            } else {
-              return ScheduleChallengeScheduledCell(
-                notificationModel: state.notifications[index],
-                onTap: () {
+              },
+            );
+          },
+          separatorBuilder: (context, index) {
+            return Divider(color: Colors.transparent, height: 4,);
+          },
+          itemCount: state.scheduleChallengeList.length,
+        ),
+      );
+    } else if (currentChallengeType == 1 && currentIndex == 1) {
+      return Container(
+        child: ListView.separated(
+          shrinkWrap: false,
+          itemBuilder: (context, index) {
+            return ScheduleChallengeScheduledCell(
+              challengeModel: state.scheduleChallengeRequestList[index],
+              onTap: () {
 
-                },
-              );
-            }
-          }
-        },
-        separatorBuilder: (context, index) {
-          return Divider(color: Colors.transparent, height: 4,);
-        },
-        itemCount: state.notifications.length,
-      ),
-    );
+              },
+            );
+          },
+          separatorBuilder: (context, index) {
+            return Divider(color: Colors.transparent, height: 4,);
+          },
+          itemCount: state.scheduleChallengeRequestList.length,
+        ),
+      );
+    } else {
+      return Center(
+        child: Align(
+          alignment: Alignment.center,
+          child: AppLabel(
+            title: 'There are currently no games.',
+            maxLine: 2,
+            alignment: TextAlign.center,
+          ),
+        ),
+      );
+    }
   }
 
   Shader getTextGradient(RenderBox renderBox) {

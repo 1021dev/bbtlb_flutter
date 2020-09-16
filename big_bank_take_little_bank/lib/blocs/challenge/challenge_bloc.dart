@@ -33,6 +33,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   Stream<ChallengeState> mapEventToState(ChallengeEvent event) async* {
     if (event is ChallengeInitEvent) {
       yield* loadInitChallenge();
+      yield* loadLiveChallenge();
     } else if (event is RequestChallengeEvent) {
       yield* requestChallenge(event.type, event.userModel, event.challengeTime);
     } else if (event is LoadedRequestedChallengeEvent) {
@@ -60,9 +61,11 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     } else if (event is ResponseChallengeRequestEvent) {
       yield* updateChallenge(event.challengeModel, event.response);
     } else if (event is LiveChallengeScreenInitEvent) {
-
+      yield* loadLiveChallenge();
     } else if (event is LiveChallengeScreenLoadedEvent) {
-
+      yield state.copyWith(liveChallengeList: event.liveChallengeList, liveChallengeResultList: event.liveChallengeResultList);
+    } else if (event is ScheduleChallengeScreenLoadedEvent) {
+      yield state.copyWith(scheduleChallengeList: event.scheduleChallengeList, scheduleChallengeRequestList: event.scheduleChallengeRequestList);
     }
   }
 
@@ -94,7 +97,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   }
 
   Stream<ChallengeState> updateChallenge(ChallengeModel model, String status) async* {
-    await service.updateChallenge(model.id, {'status': status});
+    await service.updateChallenge(model.id, {'status': status, 'updatedAt': DateTime.now()});
     if (status == 'accept') {
       BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameInEvent(challengeModel: model));
     }
@@ -152,7 +155,48 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   }
 
   Stream<ChallengeState> loadLiveChallenge() async* {
+    await _streamSubscriptionLiveChallenge?.cancel();
+    _streamSubscriptionLiveChallenge = service.streamLiveChallenge(Global.instance.userId).listen((event) {
+      if (event.size > 0) {
+        List<ChallengeModel> liveChallenges = [];
+        List<ChallengeModel> liveChallengesFinished = [];
+        event.docs.forEach((element) {
+          ChallengeModel challengeModel = ChallengeModel.fromJson(element.data());
+          if (challengeModel.status == 'accept') {
+            liveChallenges.add(challengeModel);
+          } else if (challengeModel.status == 'completed') {
+            liveChallengesFinished.add(challengeModel);
+          }
+        });
+        add(LiveChallengeScreenLoadedEvent(liveChallengeList: liveChallenges, liveChallengeResultList: liveChallengesFinished));
+      } else {
+        add(LiveChallengeScreenLoadedEvent(liveChallengeList: [], liveChallengeResultList: []));
+      }
+    });
+    await _streamSubscriptionScheduleChallenge?.cancel();
+    _streamSubscriptionScheduleChallenge = service.streamScheduleChallenges(Global.instance.userId).listen((event) {
+      if (event.size > 0) {
+        List<ChallengeModel> scheduleChallenges = [];
+        List<ChallengeModel> scheduleChallengesRequest = [];
+        event.docs.forEach((element) {
+          ChallengeModel challengeModel = ChallengeModel.fromJson(element.data());
+          if (challengeModel.sender == Global.instance.userId || challengeModel.receiver == Global.instance.userId) {
+            if (challengeModel.receiver == Global.instance.userId) {
+              if (challengeModel.status == 'pending') {
+                scheduleChallenges.add(challengeModel);
+              }
+            }
+            if (challengeModel.status == 'accept') {
+              scheduleChallengesRequest.add(challengeModel);
+            }
 
+          }
+        });
+        add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: scheduleChallenges, scheduleChallengeRequestList: scheduleChallengesRequest));
+      } else {
+        add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: [], scheduleChallengeRequestList: []));
+      }
+    });
   }
 
   @override

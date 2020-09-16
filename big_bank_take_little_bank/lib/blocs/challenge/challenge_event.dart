@@ -73,12 +73,18 @@ class LiveChallengeScreenInitEvent extends ChallengeEvent {}
 class LiveChallengeScreenLoadedEvent extends ChallengeEvent {
   final List<ChallengeModel> liveChallengeList;
   final List<ChallengeModel> liveChallengeResultList;
-  final List<ChallengeModel> scheduleChallengeList;
-  final List<ChallengeModel> scheduleChallengeRequestList;
 
   LiveChallengeScreenLoadedEvent({
     this.liveChallengeList,
     this.liveChallengeResultList,
+  });
+}
+
+class ScheduleChallengeScreenLoadedEvent extends ChallengeEvent {
+  final List<ChallengeModel> scheduleChallengeList;
+  final List<ChallengeModel> scheduleChallengeRequestList;
+
+  ScheduleChallengeScreenLoadedEvent({
     this.scheduleChallengeList,
     this.scheduleChallengeRequestList,
   });

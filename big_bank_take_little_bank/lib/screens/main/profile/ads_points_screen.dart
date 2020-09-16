@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:big_bank_take_little_bank/blocs/ads_rewards/ads_rewards.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/daily_rewards/ads_rewards_screen.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:big_bank_take_little_bank/widgets/animated_button.dart';
 import 'package:big_bank_take_little_bank/widgets/app_button.dart';
@@ -50,6 +51,15 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       print("RewardedVideoAd event $event");
       if (event == RewardedVideoAdEvent.rewarded) {
+        List<RewardsModel> list = (BlocProvider.of(Global.instance.homeContext).state as AdsRewardsLoadState).rewardsList;
+        if (list.length > 0) {
+          count = list.last.consecutive + 1;
+        } else {
+          count = 0;
+        }
+        if (count > 10) {
+          count = 0;
+        }
         int rewardsPoint = 0;
         if (count < 5) {
           rewardsPoint = 100 + Random().nextInt(400);
@@ -66,25 +76,14 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
         BlocProvider.of<AdsRewardsBloc>(homeContext)..add(UpdateAdsRewards(rewardsModel: rewardsModel));
         showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return WillPopScope(
-              child: AlertDialog(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text('Reward callback fired. Thanks Andrew!'),
-                    Text('Type: $rewardType'),
-                    Text('Amount: $rewardAmount'),
-                  ],
-                ),
-              ),
-              onWillPop: () async {
-                // scaffoldState.currentState.hideCurrentSnackBar();
-                return true;
-              },
-            );
+          builder: (BuildContext con) {
+            return AdsRewardsDialog(homeContext: context, rewardsModel: rewardsModel,);
           },
         );
+        setState(() {
+          _isRewardedAdReady = false;
+        });
+        load();
       } else if (event == RewardedVideoAdEvent.loaded) {
         setState(() {
           _isRewardedAdReady = true;
@@ -102,9 +101,7 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
   }
 
   load() {
-    RewardedVideoAd.instance.load(
-        adUnitId: RewardedVideoAd.testAdUnitId,
-        targetingInfo: targetingInfo);
+    RewardedVideoAd.instance.load(adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: targetingInfo);
   }
 
   @override
@@ -117,12 +114,19 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AdsRewardsBloc, AdsRewardsState>(
       cubit: BlocProvider.of<AdsRewardsBloc>(homeContext),
+      listenWhen: (previous, current) => true,
       listener: (context, state) {
+        print('$state');
         if (state is AdsRewardsLoadState ) {
-          if (count != state.rewardsList.length) {
-            setState(() {
-              count = state.rewardsList.length;
-            });
+          if (state.rewardsList.length > 0) {
+
+            if (count != state.rewardsList.last.consecutive) {
+              setState(() {
+                count = state.rewardsList.last.consecutive + 1;
+              });
+            }
+          } else {
+
           }
         }
       },
@@ -150,7 +154,12 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
   Widget _body(AdsRewardsState state) {
     double progress = 0;
     if (state is AdsRewardsLoadState) {
-      progress = MediaQuery.of(context).size.width * 0.08 * state.rewardsList.length.toDouble();
+      if (state.rewardsList.length > 0) {
+        count = state.rewardsList.last.consecutive + 1;
+      } else {
+        count = 0;
+      }
+      progress = MediaQuery.of(context).size.width * 0.08 * count.toDouble();
     }
     return Stack(
       fit: StackFit.expand,
@@ -264,6 +273,9 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
                         onTap: () async {
                           if (_isRewardedAdReady) {
                             RewardedVideoAd.instance.show();
+                            setState(() {
+                              _isRewardedAdReady = false;
+                            });
                           } else {
                             Toast.show( 'Reward ad is still loading...', context);
                           }

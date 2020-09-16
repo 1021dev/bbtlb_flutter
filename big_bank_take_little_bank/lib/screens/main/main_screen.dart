@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
@@ -12,11 +14,13 @@ import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
+import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:big_bank_take_little_bank/widgets/pulse_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/radial_menu.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +28,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'challenge/challenge_pending_screen.dart';
-
 
 
 class MainScreen extends StatefulWidget {
@@ -38,12 +41,37 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
   final GlobalKey<CircularMenuState> key = GlobalKey<CircularMenuState>();
   // ignore: close_sinks
   final MainScreenBloc mainScreenBloc = MainScreenBloc(MainScreenInitState());
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
     super.initState();
     mainScreenBloc.add(UserLoginEvent());
     WidgetsBinding.instance.addObserver(this);
+    _firebaseMessaging.requestNotificationPermissions();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+      },
+      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+      },
+    );
+
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+    _firebaseMessaging.getToken().then((String token) {
+      assert(token != null);
+      print("Push Messaging token: $token");
+      Global.instance.setToken(token);
+    });
+    _firebaseMessaging.subscribeToTopic("matchscore");
   }
 
   @override

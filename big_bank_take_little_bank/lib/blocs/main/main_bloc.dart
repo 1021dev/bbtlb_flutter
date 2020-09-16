@@ -1,12 +1,19 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/block_model.dart';
+import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:rxdart/rxdart.dart';
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
 
 class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
@@ -15,6 +22,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   StreamSubscription _userSubscription;
   StreamSubscription _usersSubscription;
   StreamSubscription _blockUsersSubscription;
+  final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject = BehaviorSubject<ReceivedNotification>();
 
   MainScreenState get initialState {
     return MainScreenInitState();
@@ -46,10 +54,38 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       yield* blockListLoaded(event.blockList);
     } else if (event is UserLoginEvent) {
       yield* userLogin();
+    } else if (event is ReceivedLocalNotificationEvent) {
+
     }
   }
 
   Stream<MainScreenState> init() async* {
+    notificationAppLaunchDetails = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    var initializationSettingsAndroid = AndroidInitializationSettings('ic_launcher');
+    // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
+    // of the `IOSFlutterLocalNotificationsPlugin` class
+    var initializationSettingsIOS = IOSInitializationSettings(
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
+        onDidReceiveLocalNotification:
+            (int id, String title, String body, String payload) async {
+          didReceiveLocalNotificationSubject.add(ReceivedNotification(
+              id: id, title: title, body: body, payload: payload));
+        });
+    var initializationSettings = InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String payload) async {
+          if (payload != null) {
+            debugPrint('notification payload: ' + payload);
+          }
+          selectNotificationSubject.add(payload);
+        });
+    didReceiveLocalNotificationSubject.stream
+        .listen((ReceivedNotification receivedNotification) async {
+      add(ReceivedLocalNotificationEvent(receivedNotification: receivedNotification));
+    });
     User user = FirebaseAuth.instance.currentUser;
     await _userSubscription?.cancel();
     _userSubscription = service.streamUser(user.uid).listen((event) {
@@ -156,4 +192,55 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     return super.close();
   }
 
+  Future<void> _scheduleNotification(ChallengeModel challengeModel) async {
+    var scheduledNotificationDateTime = challengeModel.challengeTime;
+    var vibrationPattern = Int64List(4);
+    vibrationPattern[0] = 0;
+    vibrationPattern[1] = 1000;
+    vibrationPattern[2] = 5000;
+    vibrationPattern[3] = 2000;
+
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'schedule',
+        'schedule challenge notification',
+        'schedule challenge notification',
+        sound: RawResourceAndroidNotificationSound('slow_spring_board'),
+        largeIcon: DrawableResourceAndroidBitmap('sample_large_icon'),
+        vibrationPattern: vibrationPattern,
+        enableLights: true,
+        color: const Color.fromARGB(255, 255, 0, 0),
+        ledColor: const Color.fromARGB(255, 255, 0, 0),
+        ledOnMs: 1000,
+        ledOffMs: 500);
+    var iOSPlatformChannelSpecifics =
+    IOSNotificationDetails(sound: 'slow_spring_board.aiff');
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.schedule(
+        0,
+        'Schedule notification',
+        'You scheduled new Challenge at ${challengeModel.challengeTime}',
+        scheduledNotificationDateTime,
+        platformChannelSpecifics);
+  }
+
+}
+
+final BehaviorSubject<String> selectNotificationSubject =
+BehaviorSubject<String>();
+
+NotificationAppLaunchDetails notificationAppLaunchDetails;
+
+class ReceivedNotification {
+  final int id;
+  final String title;
+  final String body;
+  final String payload;
+
+  ReceivedNotification({
+    @required this.id,
+    @required this.title,
+    @required this.body,
+    @required this.payload,
+  });
 }
