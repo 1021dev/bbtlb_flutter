@@ -51,7 +51,7 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       print("RewardedVideoAd event $event");
       if (event == RewardedVideoAdEvent.rewarded) {
-        List<RewardsModel> list = (BlocProvider.of(Global.instance.homeContext).state as AdsRewardsLoadState).rewardsList;
+        List<RewardsModel> list = (BlocProvider.of<AdsRewardsBloc>(Global.instance.homeContext).state as AdsRewardsLoadState).rewardsList;
         if (list.length > 0) {
           count = list.last.consecutive + 1;
         } else {

@@ -52,6 +52,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
+        if (Platform.isAndroid) {
+          mainScreenBloc.add(ShowAndroidNotificationsEvent(notification: message));
+        }
       },
       onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
       onLaunch: (Map<String, dynamic> message) async {

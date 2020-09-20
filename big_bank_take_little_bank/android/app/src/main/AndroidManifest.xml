@@ -21,7 +21,7 @@
 
     <application
         android:name=".Application"
-        android:label="big_bank_take_little_bank"
+        android:label="BigBankTakeLittleBank"
         android:icon="@mipmap/ic_launcher">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

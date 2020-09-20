@@ -59,3 +59,12 @@ class ReceivedLocalNotificationEvent extends MainScreenEvent {
   final ReceivedNotification receivedNotification;
   ReceivedLocalNotificationEvent({this.receivedNotification});
 }
+
+class ShowAndroidNotificationsEvent extends MainScreenEvent {
+  final dynamic notification;
+  ShowAndroidNotificationsEvent({this.notification});
+}
+class ShowAndroidDataNotificationsEvent extends MainScreenEvent {
+  final dynamic data;
+  ShowAndroidDataNotificationsEvent({this.data});
+}

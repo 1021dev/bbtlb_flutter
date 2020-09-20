@@ -48,7 +48,7 @@ dependencies:
 
   flutter_bloc: ^6.0.5
   equatable: ^1.2.5
-  flutter_tags: ^0.4.8+2
+  flutter_tags: ^0.4.9
   date_format: ^1.0.9
   pull_to_refresh: ^1.6.1
   dropdown_formfield: 0.1.2

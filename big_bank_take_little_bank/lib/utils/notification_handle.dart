@@ -1,6 +1,9 @@
 
 import 'dart:async';
+import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 //////////////////////////////////////////////////////////////////////////////
 /// HANDLE NOTIFICATION
@@ -9,10 +12,12 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
   if (message.containsKey('data')) {
     // Handle data message
     final dynamic data = message['data'];
+    BlocProvider.of<MainScreenBloc>(Global.instance.homeContext).add(ShowAndroidDataNotificationsEvent(data: data));
   }
   if (message.containsKey('notification')) {
     // Handle notification message
     final dynamic notification = message['notification'];
+    BlocProvider.of<MainScreenBloc>(Global.instance.homeContext).add(ShowAndroidNotificationsEvent(notification: notification));
   }
   // Or do other work.
 }
