@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
@@ -9,6 +10,7 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/app_constant.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 
 class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
@@ -99,7 +101,12 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   Stream<ChallengeState> updateChallenge(ChallengeModel model, String status) async* {
     await service.updateChallenge(model.id, {'status': status, 'updatedAt': DateTime.now()});
     if (status == 'accept') {
-      BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameInEvent(challengeModel: model));
+      if (model.type == 'schedule') {
+        yield* _scheduleNotification(model);
+        // BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameInEvent(challengeModel: model));
+      } else {
+        BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameInEvent(challengeModel: model));
+      }
     }
   }
 
@@ -197,6 +204,38 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
         add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: [], scheduleChallengeRequestList: []));
       }
     });
+  }
+
+  /// Schedules a notification that specifies a different icon, sound and vibration pattern
+  Stream<ChallengeState> _scheduleNotification(ChallengeModel challengeModel) async* {
+    var scheduledNotificationDateTime =
+    challengeModel.challengeTime.subtract(Duration(minutes: 1));
+    var vibrationPattern = Int64List(4);
+    vibrationPattern[0] = 0;
+    vibrationPattern[1] = 1000;
+    vibrationPattern[2] = 5000;
+    vibrationPattern[3] = 2000;
+
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'your other channel id',
+        'your other channel name',
+        'your other channel description',
+        icon: 'ic_launcher',
+        sound: RawResourceAndroidNotificationSound('slow_spring_board'),
+        vibrationPattern: vibrationPattern,
+        enableLights: true,
+        ledOnMs: 1000,
+        ledOffMs: 500);
+    var iOSPlatformChannelSpecifics =
+    IOSNotificationDetails(sound: 'slow_spring_board.aiff');
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.schedule(
+        0,
+        'You have schedule challenge at ',
+        'scheduled body',
+        scheduledNotificationDateTime,
+        platformChannelSpecifics);
   }
 
   @override

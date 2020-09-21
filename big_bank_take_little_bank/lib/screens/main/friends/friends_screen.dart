@@ -354,7 +354,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                                 print(date);
                                 print(time);
                                 int dateValue = date.millisecondsSinceEpoch;
-                                int timeValue = time.hour * 2600000 + time.minute * 60000;
+                                int timeValue = time.hour * 3600000 + time.minute * 60000;
                                 BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
                                     RequestChallengeEvent(
                                       type: 'schedule',

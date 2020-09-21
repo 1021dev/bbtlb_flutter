@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
@@ -7,24 +9,57 @@ import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sprintf/sprintf.dart';
 
-class ScheduleChallengeScheduledCell extends StatelessWidget {
+class ScheduleChallengeScheduledCell extends StatefulWidget {
   final ChallengeModel challengeModel;
   final Function onTap;
+
   ScheduleChallengeScheduledCell({
     this.challengeModel,
     this.onTap,
   });
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _ScheduleChallengeScheduledCellState();
+  }
+
+}
+
+class _ScheduleChallengeScheduledCellState extends State<ScheduleChallengeScheduledCell> {
+
+  Timer timer;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    timer = new Timer.periodic(new Duration(microseconds: 500), (Timer t) {
+      setState(() {
+
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double avatarSize = MediaQuery.of(context).size.width * 0.22;
     double width = MediaQuery.of(context).size.width - 64;
     double height = width * 0.7;
     String otherUserId = '';
-    if (challengeModel.sender == Global.instance.userId) {
-      otherUserId = challengeModel.receiver;
+    if (widget.challengeModel.sender == Global.instance.userId) {
+      otherUserId = widget.challengeModel.receiver;
     } else {
-      otherUserId = challengeModel.sender;
+      otherUserId = widget.challengeModel.sender;
     }
     return FutureBuilder(
       future: FirestoreService().getUserWithId(otherUserId),
@@ -34,15 +69,22 @@ class ScheduleChallengeScheduledCell extends StatelessWidget {
         }
         UserModel sender;
         UserModel receiver;
-        if (challengeModel.sender == Global.instance.userId) {
+        if (widget.challengeModel.sender == Global.instance.userId) {
           sender = Global.instance.userModel;
           receiver = snapshot.data;
         } else {
           sender = snapshot.data;
           receiver = Global.instance.userModel;
         }
+        int remain = (widget.challengeModel.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+        int h = remain ~/ 60;
+        int m = remain % 60;
+        if (remain < 0) {
+          h = 0;
+          m = 0;
+        }
         return GestureDetector(
-          onTap: onTap,
+          onTap: widget.onTap,
           child: Container(
             width: width,
             height: height,
@@ -155,7 +197,7 @@ class ScheduleChallengeScheduledCell extends StatelessWidget {
                   left: 0,
                   top: 0,
                   child: TitleBackgroundWidget(
-                    title: '04:00',
+                    title: sprintf('%02d:%02d', [h, m]),
                     height: 44,
                     isShadow: true,
                     padding: EdgeInsets.only(left: 16, right: 24),
