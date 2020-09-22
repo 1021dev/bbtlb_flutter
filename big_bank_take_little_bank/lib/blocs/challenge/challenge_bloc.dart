@@ -57,7 +57,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       }
       if (event.challengeList.length > 0) {
         if ((event.challengeList.first.id ?? '') != '') {
-          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
+          // BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
         }
       }
     } else if (event is ResponseChallengeRequestEvent) {

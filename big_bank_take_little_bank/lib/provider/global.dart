@@ -48,4 +48,12 @@ class Global extends ChangeNotifier{
       }
     }
   }
+
+  void updatePushToken() async {
+    if (FirebaseAuth != null) {
+      if (FirebaseAuth.instance.currentUser != null && (token ?? '') != '') {
+        await firestore.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
+      }
+    }
+  }
 }
