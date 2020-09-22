@@ -155,7 +155,7 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
     double progress = 0;
     if (state is AdsRewardsLoadState) {
       if (state.rewardsList.length > 0) {
-        count = state.rewardsList.last.consecutive + 1;
+        count = state.rewardsList.first.consecutive + 1;
       } else {
         count = 0;
       }

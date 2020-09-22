@@ -23,7 +23,11 @@ class GameAcceptEvent extends GameEvent {
   GameAcceptEvent({this.challengeModel, this.userModel});
 }
 
-class GameResultEvent extends GameEvent {}
+class GameResultEvent extends GameEvent {
+  final ChallengeModel model;
+  final UserModel userModel;
+  GameResultEvent({this.model, this.userModel});
+}
 
 class GameRequestedEvent extends GameEvent {
   final ChallengeModel challengeModel;

@@ -1,6 +1,7 @@
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_request_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_scheduled_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'live_challenge_finished_cell.dart';
 import 'live_challenge_ongoing_cell.dart';
@@ -486,8 +488,21 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
           itemBuilder: (context, index) {
             return ScheduleChallengeScheduledCell(
               challengeModel: state.scheduleChallengeRequestList[index],
-              onTap: () {
-
+              onTap: (user) {
+                int remain = (state.scheduleChallengeRequestList[index].challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+                if (remain < 60) {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: GameInScreen(
+                        userModel: user,
+                        challengeModel: state.scheduleChallengeRequestList[index],
+                      ),
+                      type: PageTransitionType.fade,
+                      duration: Duration(milliseconds: 300),
+                    ),
+                  );
+                }
               },
             );
           },

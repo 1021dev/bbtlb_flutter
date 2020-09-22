@@ -45,8 +45,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       yield GameCanceledState(challengeModel: event.challengeModel);
     } else if (event is GameResultEvent) {
       final currentState = state;
-      if (currentState is GameInState) {
-        yield GameResultState(challengeModel: currentState.challengeModel, userModel: currentState.userModel);
+      if (event.model.type == 'schedule') {
+        yield GameResultState(challengeModel: event.model, userModel: event.userModel);
+      } else {
+        if (currentState is GameInState) {
+          yield GameResultState(challengeModel: currentState.challengeModel, userModel: currentState.userModel);
+        }
       }
     } else if (event is GameRequestedEvent) {
       yield* gameRequested(event.challengeModel);

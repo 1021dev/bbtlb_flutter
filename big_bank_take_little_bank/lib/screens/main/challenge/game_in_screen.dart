@@ -42,6 +42,10 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
     int countDown = 10;
     if (widget.challengeModel.type == 'live') {
       countDown = 120;
+    } else if (widget.challengeModel.type == 'schedule') {
+      DateTime challengeTime = widget.challengeModel.challengeTime;
+      int duration = challengeTime.difference(DateTime.now()).inSeconds;
+      countDown = duration;
     }
     _animationController = new AnimationController(vsync: this, duration: Duration(seconds: countDown))..addListener(() {
       setState(() {});
@@ -49,7 +53,7 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
       if(status == AnimationStatus.completed){
         _animationController.dispose();
         print('resykt');
-        BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameResultEvent());
+        BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameResultEvent(model: widget.challengeModel, userModel: widget.userModel));
       }
     });
 
@@ -120,6 +124,10 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
           int countDown = 10;
           if (widget.challengeModel.type == 'live') {
             countDown = 120;
+          } else if (widget.challengeModel.type == 'schedule') {
+            DateTime challengeTime = widget.challengeModel.challengeTime;
+            int duration = challengeTime.difference(DateTime.now()).inSeconds;
+            countDown = duration;
           }
           int time = countDown - (_animationController.value * countDown).toInt();
           if (time < 0) {

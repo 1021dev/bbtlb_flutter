@@ -84,7 +84,13 @@ class _ScheduleChallengeScheduledCellState extends State<ScheduleChallengeSchedu
           m = 0;
         }
         return GestureDetector(
-          onTap: widget.onTap,
+          onTap: () {
+            if (widget.challengeModel.sender == Global.instance.userId) {
+              widget.onTap(receiver);
+            } else {
+              widget.onTap(sender);
+            }
+          },
           child: Container(
             width: width,
             height: height,

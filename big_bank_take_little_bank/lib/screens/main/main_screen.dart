@@ -195,6 +195,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
             },
             listener: (BuildContext gCtx, GameState gstate) async {
               if (gstate is GameInState) {
+                if (gstate.challengeModel.type == 'schedule') {
+                  return;
+                }
                 Navigator.push(
                   gCtx,
                   PageTransition(

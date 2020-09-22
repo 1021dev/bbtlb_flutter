@@ -56,8 +56,15 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
         yield state.copyWith(isGamePlay: false, receivedRequestList: event.challengeList);
       }
       if (event.challengeList.length > 0) {
-        if ((event.challengeList.first.id ?? '') != '') {
-          // BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
+        ChallengeModel challengeModel = event.challengeList.first;
+        if ((challengeModel.id ?? '') != '') {
+          if (challengeModel.type == 'schedule') {
+            if (challengeModel.tasks != '') {
+              BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
+            }
+          } else {
+            BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
+          }
         }
       }
     } else if (event is ResponseChallengeRequestEvent) {
