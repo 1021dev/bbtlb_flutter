@@ -14,10 +14,12 @@ import 'package:sprintf/sprintf.dart';
 class ScheduleChallengeScheduledCell extends StatefulWidget {
   final ChallengeModel challengeModel;
   final Function onTap;
+  final Function tapUser;
 
   ScheduleChallengeScheduledCell({
     this.challengeModel,
     this.onTap,
+    this.tapUser,
   });
 
   @override
@@ -134,9 +136,14 @@ class _ScheduleChallengeScheduledCellState extends State<ScheduleChallengeSchedu
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ProfileAvatar(
-                            avatarSize: width * 0.3,
-                            image: sender.image ?? '',
+                          GestureDetector(
+                            onTap: () {
+                              widget.tapUser(sender);
+                            },
+                            child: ProfileAvatar(
+                              avatarSize: width * 0.3,
+                              image: sender.image ?? '',
+                            ),
                           ),
                           SizedBox(height: 8,),
                           Container(
@@ -165,9 +172,14 @@ class _ScheduleChallengeScheduledCellState extends State<ScheduleChallengeSchedu
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ProfileAvatar(
-                            avatarSize: width * 0.3,
-                            image: receiver.image ?? '',
+                          GestureDetector(
+                            onTap: () {
+                              widget.tapUser(receiver);
+                            },
+                            child: ProfileAvatar(
+                              avatarSize: width * 0.3,
+                              image: receiver.image ?? '',
+                            ),
                           ),
                           SizedBox(height: 8,),
                           Container(

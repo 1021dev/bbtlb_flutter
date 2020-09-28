@@ -11,9 +11,11 @@ import 'package:flutter/material.dart';
 class ScheduleChallengeRequestCell extends StatelessWidget {
   final ChallengeModel challengeModel;
   final Function onTap;
+  final Function tapUser;
   ScheduleChallengeRequestCell({
     this.challengeModel,
     this.onTap,
+    this.tapUser,
   });
   @override
   Widget build(BuildContext context) {
@@ -39,9 +41,14 @@ class ScheduleChallengeRequestCell extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ProfileAvatar(
-                    avatarSize: avatarSize,
-                    image: sender.image ?? '',
+                  GestureDetector(
+                    onTap: () {
+                      tapUser(sender);
+                    },
+                    child: ProfileAvatar(
+                      avatarSize: avatarSize,
+                      image: sender.image ?? '',
+                    ),
                   ),
                   SizedBox(width: 8,),
                   Flexible(

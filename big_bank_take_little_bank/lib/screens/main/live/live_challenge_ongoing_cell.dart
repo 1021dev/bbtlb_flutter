@@ -13,10 +13,12 @@ import 'package:flutter/material.dart';
 class LiveChallengeOnGoingCell extends StatefulWidget {
   final ChallengeModel challengeModel;
   final Function onTap;
+  final Function tapUser;
 
   LiveChallengeOnGoingCell({
     this.challengeModel,
     this.onTap,
+    this.tapUser,
   });
 
   @override
@@ -118,9 +120,14 @@ class _LiveChallengeOnGoingCellState extends State<LiveChallengeOnGoingCell> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ProfileAvatar(
-                                avatarSize: width * 0.3,
-                                image: sender.image ?? '',
+                              GestureDetector(
+                                onTap: () {
+                                  widget.tapUser(sender);
+                                },
+                                child: ProfileAvatar(
+                                  avatarSize: width * 0.3,
+                                  image: sender.image ?? '',
+                                ),
                               ),
                               SizedBox(height: 8,),
                               Container(
@@ -149,9 +156,14 @@ class _LiveChallengeOnGoingCellState extends State<LiveChallengeOnGoingCell> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ProfileAvatar(
-                                avatarSize: width * 0.3,
-                                image: receiver.image ?? '',
+                              GestureDetector(
+                                onTap: () {
+                                  widget.tapUser(receiver);
+                                },
+                                child: ProfileAvatar(
+                                  avatarSize: width * 0.3,
+                                  image: receiver.image ?? '',
+                                ),
                               ),
                               SizedBox(height: 8,),
                               Container(

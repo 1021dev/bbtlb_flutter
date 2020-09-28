@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/auth/auth.dart';
+import 'package:big_bank_take_little_bank/screens/login/login_screen.dart';
 import 'package:big_bank_take_little_bank/utils/app_helper.dart';
 import 'package:big_bank_take_little_bank/widgets/input_done_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -83,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       cubit: screenBloc,
       listener: (BuildContext context, AuthScreenState state) async {
         if (state is AuthScreenSuccess) {
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RegisterScreen()));
+          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: LoginScreen()));
         } else if (state is AuthScreenFailure) {
           showCupertinoDialog(context: context, builder: (BuildContext context) {
             return CupertinoAlertDialog(

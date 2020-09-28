@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 class LiveChallengeFinishedCell extends StatelessWidget {
   final ChallengeModel challengeModel;
   final Function onTap;
+  final Function tapUser;
   LiveChallengeFinishedCell({
     this.challengeModel,
     this.onTap,
+    this.tapUser,
   });
   @override
   Widget build(BuildContext context) {
@@ -50,9 +52,14 @@ class LiveChallengeFinishedCell extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ProfileAvatar(
-                              avatarSize: avatarSize,
-                              image: winner.image ?? '',
+                            GestureDetector(
+                              onTap: () {
+                                tapUser(winner);
+                              },
+                              child: ProfileAvatar(
+                                avatarSize: avatarSize,
+                                image: winner.image ?? '',
+                              ),
                             ),
                             Expanded(
                               child: Center(
@@ -85,9 +92,14 @@ class LiveChallengeFinishedCell extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            ProfileAvatar(
-                              avatarSize: avatarSize,
-                              image: loser.image ?? '',
+                            GestureDetector(
+                              onTap: () {
+                                tapUser(loser);
+                              },
+                              child: ProfileAvatar(
+                                avatarSize: avatarSize,
+                                image: loser.image ?? '',
+                              ),
                             ),
                           ],
                         ),

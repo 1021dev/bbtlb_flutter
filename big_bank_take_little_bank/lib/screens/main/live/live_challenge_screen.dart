@@ -2,6 +2,7 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_request_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_scheduled_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
@@ -437,6 +438,18 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
               onTap: () {
 
               },
+              tapUser: (user) {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: OtherUserProfileScreen(
+                      screenBloc: widget.screenBloc,
+                      userModel: user,
+                    ),
+                    type: PageTransitionType.fade,
+                  ),
+                );
+              },
             );
           },
           separatorBuilder: (context, index) {
@@ -455,6 +468,18 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
               onTap: () {
 
               },
+              tapUser: (user) {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: OtherUserProfileScreen(
+                      screenBloc: widget.screenBloc,
+                      userModel: user,
+                    ),
+                    type: PageTransitionType.fade,
+                  ),
+                );
+              },
             );
           },
           separatorBuilder: (context, index) {
@@ -472,6 +497,18 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
               challengeModel: state.scheduleChallengeList[index],
               onTap: () {
 
+              },
+              tapUser: (user) {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: OtherUserProfileScreen(
+                      screenBloc: widget.screenBloc,
+                      userModel: user,
+                    ),
+                    type: PageTransitionType.fade,
+                  ),
+                );
               },
             );
           },
@@ -503,6 +540,18 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
                     ),
                   );
                 }
+              },
+              tapUser: (user) {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: OtherUserProfileScreen(
+                      screenBloc: widget.screenBloc,
+                      userModel: user,
+                    ),
+                    type: PageTransitionType.fade,
+                  ),
+                );
               },
             );
           },

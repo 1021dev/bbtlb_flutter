@@ -12,7 +12,7 @@ EventBus eventBus = EventBus();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = AppBlocObserver();
-  Firebase.initializeApp();
+  await Firebase.initializeApp();
   global.Global(environment: global.Env.dev());
   await myMain();
 }
