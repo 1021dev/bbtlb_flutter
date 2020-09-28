@@ -9,6 +9,7 @@ import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/live_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
+import 'package:big_bank_take_little_bank/utils/app_helper.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   screenBloc: widget.screenBloc,
                                   homeContext: widget.homeContext,
                                 ),
-                                type: PageTransitionType.rightToLeft,
+                                type: PageTransitionType.fade,
                                 duration: Duration(microseconds: 3000),
                               ),
                             );
@@ -363,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onSchedule: () async {
                                     final date = await showDatePicker(
                                         context: context,
-                                        firstDate: DateTime(1900),
+                                        firstDate: DateTime.now(),
                                         initialDate: DateTime.now(),
                                         lastDate: DateTime(2100));
                                     if (date != null) {
@@ -376,17 +377,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                       print(time);
                                       int dateValue = date.millisecondsSinceEpoch;
                                       int timeValue = time.hour * 3600000 + time.minute * 60000;
-                                      BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
-                                          RequestChallengeEvent(
-                                            type: 'schedule',
-                                            challengeTime: dateValue.toDouble() + timeValue.toDouble(),
-                                            userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
-                                          )
-                                      );
+                                      if (timeValue < DateTime.now().millisecondsSinceEpoch + 600000) {
+                                        Navigator.pop(context);
+                                        AppHelper.showMyDialog(context, 'The schedule time should be 10 minutes later than now.');
+                                      } else {
+                                        Navigator.pop(context);
+                                        BlocProvider.of<ChallengeBloc>(widget.homeContext).add(
+                                            RequestChallengeEvent(
+                                              type: 'schedule',
+                                              challengeTime: dateValue.toDouble() + timeValue.toDouble(),
+                                              userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
+                                            )
+                                        );
+                                      }
                                     } else {
-                                      print(date);
+                                      Navigator.pop(context);
+                                      AppHelper.showMyDialog(context, 'The schedule time should be 10 minutes later than now.');
                                     }
-                                    Navigator.pop(context);
                                   },
                                   onLive: () {
                                     Navigator.pop(context);

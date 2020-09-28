@@ -1,15 +1,17 @@
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/live/message_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_request_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_scheduled_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -31,9 +33,12 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
   GlobalKey myTextKey = GlobalKey();
 // a RenderBox object to use in state
   RenderBox myTextRenderBox;
+  final TextEditingController messageController = new TextEditingController();
+  final FocusNode messageFocus = new FocusNode();
 
   int currentChallengeType = 0;
   int currentIndex = 0;
+  bool isPrivate = false;
 
   @override
   void initState() {
@@ -65,6 +70,8 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
             ),
             child: Scaffold(
               backgroundColor: Colors.transparent,
+              resizeToAvoidBottomPadding: true,
+              resizeToAvoidBottomInset: true,
               body: _body(state),
             ),
           );
@@ -412,6 +419,99 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
             },
           ),
         ),
+        state.isChatMode ? Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black45,
+            ),
+          ),
+        ): Container(),
+        state.isChatMode ? Positioned(
+          top: MediaQuery.of(context).viewPadding.top,
+          left: 0,
+          right: 0,
+          bottom: MediaQuery.of(context).viewPadding.bottom,
+          child: SingleChildScrollView(
+            child: _showChatView(state),
+          ),
+        ): Container(),
+        state.isChatMode ? Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/images/bg_input_message.png'),
+                    fit: BoxFit.fill
+                ),
+              ),
+              child: Row(
+                children: [
+                  Flexible(
+                    child: TextField(
+                      focusNode: messageFocus,
+                      controller: messageController,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.send,
+                      style: TextStyle(
+                        fontFamily: 'BackToSchool',
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all( 16),
+                        prefixIcon: Image.asset('assets/images/pencil.png'),
+                        hintText: 'Enter your message',
+                        hintStyle: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (val) {
+                        if (val != '') {
+                          BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                              SendChallengeMessageEvent(
+                                type: isPrivate ? 'private': 'public',
+                                message: messageController.text,
+                                userId: Global.instance.userId,
+                                userName: Global.instance.userModel.name,
+                                userImage: Global.instance.userModel.image,
+                              )
+                          );
+                        }
+                        messageController.clear();
+                      },
+                    ),
+                  ),
+                  MaterialButton(
+                    onPressed: () {
+                      if (messageController.text != '') {
+                        BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                            SendChallengeMessageEvent(
+                              type: isPrivate ? 'private': 'public',
+                              message: messageController.text,
+                              userId: Global.instance.userId,
+                              userName: Global.instance.userModel.name,
+                              userImage: Global.instance.userModel.image,
+                            )
+                        );
+                      }
+                      messageController.clear();
+                    },
+                    padding: EdgeInsets.zero,
+                    minWidth: 0,
+                    height: 50,
+                    shape: CircleBorder(),
+                    child: Image.asset('assets/images/btn_send.png', width: 50, height: 50,),
+                  ),
+                ],
+              ),
+            ),
+        ): Container(),
         state.isLoading ? Positioned(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -433,10 +533,14 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
         child: ListView.separated(
           shrinkWrap: false,
           itemBuilder: (context, index) {
+            ChallengeModel challengeModel = state.liveChallengeList[index];
             return LiveChallengeOnGoingCell(
-              challengeModel: state.liveChallengeList[index],
-              onTap: () {
+              challengeModel: challengeModel,
+              onTap: (ChallengeModel model) {
+                if (model.sender == Global.instance.userId || model.receiver == Global.instance.userId) {
 
+                } else {
+                }
               },
               tapUser: (user) {
                 Navigator.push(
@@ -466,7 +570,6 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
             return LiveChallengeFinishedCell(
               challengeModel: state.liveChallengeResultList[index],
               onTap: () {
-
               },
               tapUser: (user) {
                 Navigator.push(
@@ -523,37 +626,71 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
         child: ListView.separated(
           shrinkWrap: false,
           itemBuilder: (context, index) {
-            return ScheduleChallengeScheduledCell(
-              challengeModel: state.scheduleChallengeRequestList[index],
-              onTap: (user) {
-                int remain = (state.scheduleChallengeRequestList[index].challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
-                if (remain < 60) {
+            ChallengeModel challengeModel = state.scheduleChallengeRequestList[index];
+            if (challengeModel.status == 'completed') {
+              return LiveChallengeFinishedCell(
+                challengeModel: challengeModel,
+                onTap: () {
+
+                },
+                tapUser: (user) {
                   Navigator.push(
                     context,
                     PageTransition(
-                      child: GameInScreen(
+                      child: OtherUserProfileScreen(
+                        screenBloc: widget.screenBloc,
                         userModel: user,
-                        challengeModel: state.scheduleChallengeRequestList[index],
                       ),
                       type: PageTransitionType.fade,
-                      duration: Duration(milliseconds: 300),
                     ),
                   );
-                }
-              },
-              tapUser: (user) {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    child: OtherUserProfileScreen(
-                      screenBloc: widget.screenBloc,
-                      userModel: user,
+                },
+              );
+            } else {
+              return ScheduleChallengeScheduledCell(
+                challengeModel: challengeModel,
+                onTap: (user) {
+                  if (challengeModel.sender == Global.instance.userId || challengeModel.receiver == Global.instance.userId) {
+                    int remain = (challengeModel.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+                    if (remain < 60 && remain > 0) {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          child: GameInScreen(
+                            userModel: user,
+                            challengeModel: challengeModel,
+                          ),
+                          type: PageTransitionType.fade,
+                          duration: Duration(milliseconds: 300),
+                        ),
+                      );
+                    } else {
+                      BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
+                      setState(() {
+                        isPrivate = false;
+                      });
+                    }
+                  } else {
+                    BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
+                    setState(() {
+                      isPrivate = false;
+                    });
+                  }
+                },
+                tapUser: (user) {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: OtherUserProfileScreen(
+                        screenBloc: widget.screenBloc,
+                        userModel: user,
+                      ),
+                      type: PageTransitionType.fade,
                     ),
-                    type: PageTransitionType.fade,
-                  ),
-                );
-              },
-            );
+                  );
+                },
+              );
+            }
           },
           separatorBuilder: (context, index) {
             return Divider(color: Colors.transparent, height: 4,);
@@ -589,6 +726,184 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
         renderBox.localToGlobal(Offset.zero).dy,
         renderBox.size.width,
         renderBox.size.height));
+  }
+
+  Widget _showChatView(ChallengeState state) {
+    return Container(
+      height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom,
+      child: Column(
+        children: [
+          currentChallengeType == 0 ? LiveChallengeOnGoingCell(
+            challengeModel: state.selectedChallenge,
+            onTap: (ChallengeModel model) {
+              if (model.sender == Global.instance.userId || model.receiver == Global.instance.userId) {
+
+              } else {
+                BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: model));
+                setState(() {
+                  isPrivate = false;
+                });
+              }
+            },
+            tapUser: (user) {
+              Navigator.push(
+                context,
+                PageTransition(
+                  child: OtherUserProfileScreen(
+                    screenBloc: widget.screenBloc,
+                    userModel: user,
+                  ),
+                  type: PageTransitionType.fade,
+                ),
+              );
+            },
+          ) : ScheduleChallengeScheduledCell(
+            challengeModel: state.selectedChallenge,
+            onTap: (user) {
+              if (state.selectedChallenge.sender == Global.instance.userId || state.selectedChallenge.receiver == Global.instance.userId) {
+                int remain = (state.selectedChallenge.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+                if (remain < 60 && remain > 0) {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: GameInScreen(
+                        userModel: user,
+                        challengeModel: state.selectedChallenge,
+                      ),
+                      type: PageTransitionType.fade,
+                      duration: Duration(milliseconds: 300),
+                    ),
+                  );
+                }
+              }
+            },
+            tapUser: (user) {
+              Navigator.push(
+                context,
+                PageTransition(
+                  child: OtherUserProfileScreen(
+                    screenBloc: widget.screenBloc,
+                    userModel: user,
+                  ),
+                  type: PageTransitionType.fade,
+                ),
+              );
+            },
+          ),
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: Image.asset('assets/images/bg_challenge_chat.png',).image,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  height: 100,
+                  left: 50,
+                  right: 50,
+                  top: 0,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: state.selectedChallenge.sender == Global.instance.userId || state.selectedChallenge.receiver == Global.instance.userId ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Opacity(
+                            opacity: isPrivate ? 0.5 : 1,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isPrivate = false;
+                                });
+                              },
+                              child: Container(
+                                height: 64,
+                                width: 64,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: isPrivate ? Colors.transparent : Colors.white24,
+                                ),
+                                child: Image.asset('assets/images/public_message.png',),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8,),
+                        Expanded(
+                          flex: 1,
+                          child: Opacity(
+                            opacity: isPrivate ? 1 : 0.5,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isPrivate = true;
+                                });
+                              },
+                              child: Container(
+                                height: 64,
+                                width: 64,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: isPrivate ? Colors.white24 : Colors.transparent,
+                                ),
+                                child: Image.asset('assets/images/private_message.png',),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ) : Container(
+                      height: 64,
+                      width: 64,
+                      child: Image.asset('assets/images/public_message.png',),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    child: MaterialButton(
+                      onPressed: () {
+                        BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(HideChatEvent());
+                      },
+                      child: Image.asset('assets/images/close_button.png'),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 100,
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      MessageModel messageModel = isPrivate ? state.privateMessages[index] : state.publicMessages[index];
+                      return MessageCell(
+                        messageModel: messageModel,
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return Container(height: 8,);
+                    },
+                    itemCount: isPrivate ? state.privateMessages.length: state.publicMessages.length,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
 }

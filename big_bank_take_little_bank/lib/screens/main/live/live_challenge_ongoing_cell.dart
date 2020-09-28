@@ -76,7 +76,7 @@ class _LiveChallengeOnGoingCellState extends State<LiveChallengeOnGoingCell> {
               m = 0;
             }
             return GestureDetector(
-              onTap: widget.onTap,
+              onTap: widget.onTap(widget.challengeModel),
               child: Container(
                 width: width,
                 height: height,

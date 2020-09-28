@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:equatable/equatable.dart';
 
 class ChallengeState extends Equatable {
@@ -14,6 +15,11 @@ class ChallengeState extends Equatable {
   final List<ChallengeModel> scheduleChallengeList;
   final List<ChallengeModel> scheduleChallengeRequestList;
 
+  final ChallengeModel selectedChallenge;
+  final List<MessageModel> publicMessages;
+  final List<MessageModel> privateMessages;
+  final bool isChatMode;
+
   ChallengeState({
     this.isLoading = false,
     this.isRequesting = false,
@@ -26,6 +32,10 @@ class ChallengeState extends Equatable {
     this.liveChallengeResultList = const [],
     this.scheduleChallengeList = const [],
     this.scheduleChallengeRequestList = const [],
+    this.selectedChallenge,
+    this.publicMessages = const [],
+    this.privateMessages = const [],
+    this.isChatMode = false,
   });
 
   @override
@@ -41,6 +51,10 @@ class ChallengeState extends Equatable {
     liveChallengeList,
     scheduleChallengeList,
     scheduleChallengeRequestList,
+    selectedChallenge,
+    publicMessages,
+    privateMessages,
+    isChatMode,
   ];
   ChallengeState copyWith({
     bool isLoading,
@@ -54,6 +68,10 @@ class ChallengeState extends Equatable {
     List<ChallengeModel> liveChallengeResultList,
     List<ChallengeModel> scheduleChallengeList,
     List<ChallengeModel> scheduleChallengeRequestList,
+    ChallengeModel selectedChallenge,
+    List<MessageModel> publicMessages,
+    List<MessageModel> privateMessages,
+    bool isChatMode,
   }) {
     return ChallengeState(
       isLoading: isLoading ?? this.isLoading,
@@ -67,6 +85,10 @@ class ChallengeState extends Equatable {
       liveChallengeResultList: liveChallengeResultList ?? this.liveChallengeResultList,
       scheduleChallengeList: scheduleChallengeList ?? this.scheduleChallengeList,
       scheduleChallengeRequestList: scheduleChallengeRequestList ?? this.scheduleChallengeRequestList,
+      selectedChallenge: selectedChallenge ?? this.selectedChallenge,
+      publicMessages: publicMessages ?? this.publicMessages,
+      privateMessages: privateMessages ?? this.privateMessages,
+      isChatMode: isChatMode ?? this.isChatMode,
     );
   }
 }

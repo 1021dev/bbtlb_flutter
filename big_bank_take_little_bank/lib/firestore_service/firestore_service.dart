@@ -1,8 +1,10 @@
 import 'package:big_bank_take_little_bank/models/block_model.dart';
+import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/comment_model.dart';
 import 'package:big_bank_take_little_bank/models/friends_model.dart';
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/liket_model.dart';
+import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/my_app.dart';
@@ -379,6 +381,21 @@ class FirestoreService {
         .collection('notifications')
         .doc(notificationId)
         .delete();
+  }
+
+  Stream<QuerySnapshot> streamChallengeChat(ChallengeModel model) {
+    return challengeCollection
+        .doc(model.id)
+        .collection('chat')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  Future<void> sendChallengeMessage(String id, MessageModel model) async {
+    return challengeCollection
+        .doc(id)
+        .collection('chat')
+        .add(model.toJson()).then((value) => value.update({'id': value.id}));
   }
 
 

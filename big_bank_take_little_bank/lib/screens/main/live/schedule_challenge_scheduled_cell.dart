@@ -79,8 +79,9 @@ class _ScheduleChallengeScheduledCellState extends State<ScheduleChallengeSchedu
           receiver = Global.instance.userModel;
         }
         int remain = (widget.challengeModel.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
-        int h = remain ~/ 60;
-        int m = remain % 60;
+        int h = remain ~/ 3600;
+        int m = (remain % 3600) ~/ 60;
+        int s = (remain % 3600) % 60;
         if (remain < 0) {
           h = 0;
           m = 0;
@@ -124,6 +125,18 @@ class _ScheduleChallengeScheduledCellState extends State<ScheduleChallengeSchedu
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  padding: EdgeInsets.only(
+                    left: 6,
+                    top: 6,
+                    bottom: 12,
+                    right: 12,
+                  ),
+                ),
+                Positioned(
+                  child: Image.asset('assets/images/ic_live_vs.png'),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 24),
                   padding: EdgeInsets.only(
                     left: 6,
                     top: 6,
@@ -209,13 +222,11 @@ class _ScheduleChallengeScheduledCellState extends State<ScheduleChallengeSchedu
                   ),
                 ),
                 Positioned(
-                  child: Image.asset('assets/images/ic_live_vs.png'),
-                ),
-                Positioned(
                   left: 0,
                   top: 0,
+                  height: 44,
                   child: TitleBackgroundWidget(
-                    title: sprintf('%02d:%02d', [h, m]),
+                    title: h == 0 ? sprintf('%02d:%02d', [m, s]) : sprintf('%02d:%02d:%02d', [h, m, s]),
                     height: 44,
                     isShadow: true,
                     padding: EdgeInsets.only(left: 16, right: 24),

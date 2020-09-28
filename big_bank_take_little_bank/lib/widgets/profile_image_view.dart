@@ -16,7 +16,18 @@ class ProfileImageView extends StatelessWidget {
         borderRadius: BorderRadius.circular(avatarSize / 2),
         color: Colors.white,
       ),
-      child: CachedNetworkImage(
+      child: imageUrl == '' || imageUrl == null ? Container(
+        height: avatarSize,
+        width: avatarSize,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(avatarSize / 2),
+          color: Colors.white,
+          image: DecorationImage(
+            image: Image.asset('assets/images/ic_person.png',).image,
+            fit: BoxFit.fill,
+          ),
+        ),
+      ) : CachedNetworkImage(
         imageUrl: imageUrl,
         imageBuilder: (context, imageProvider) => Container(
           height: avatarSize,

@@ -1,4 +1,5 @@
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -87,5 +88,38 @@ class ScheduleChallengeScreenLoadedEvent extends ChallengeEvent {
   ScheduleChallengeScreenLoadedEvent({
     this.scheduleChallengeList,
     this.scheduleChallengeRequestList,
+  });
+}
+
+class ShowChatEvent extends ChallengeEvent {
+  final ChallengeModel selectedChallenge;
+  ShowChatEvent({this.selectedChallenge});
+}
+
+class HideChatEvent extends ChallengeEvent {
+  final ChallengeModel selectedChallenge;
+  HideChatEvent({this.selectedChallenge});
+}
+
+class LoadChallengeChatEvent extends ChallengeEvent{
+  final List<MessageModel> privateMessages;
+  final List<MessageModel> publicMessage;
+
+  LoadChallengeChatEvent({this.privateMessages, this.publicMessage});
+}
+
+class SendChallengeMessageEvent extends ChallengeEvent {
+  final String message;
+  final String userId;
+  final String userName;
+  final String userImage;
+  final String type;
+
+  SendChallengeMessageEvent({
+    this.message,
+    this.userId,
+    this.userName,
+    this.userImage,
+    this.type,
   });
 }

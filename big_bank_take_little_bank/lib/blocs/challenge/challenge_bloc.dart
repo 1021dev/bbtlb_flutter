@@ -6,9 +6,11 @@ import 'dart:typed_data';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/app_constant.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +26,8 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
   StreamSubscription _streamSubscriptionLiveChallengeFinished;
   StreamSubscription _streamSubscriptionScheduleChallenge;
   StreamSubscription _streamSubscriptionScheduleChallengeRequest;
+
+  StreamSubscription _streamChallengeChat;
 
   ChallengeState get initialState {
     return ChallengeState();
@@ -75,6 +79,16 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       yield state.copyWith(liveChallengeList: event.liveChallengeList, liveChallengeResultList: event.liveChallengeResultList);
     } else if (event is ScheduleChallengeScreenLoadedEvent) {
       yield state.copyWith(scheduleChallengeList: event.scheduleChallengeList, scheduleChallengeRequestList: event.scheduleChallengeRequestList);
+    } else if (event is ShowChatEvent) {
+      yield state.copyWith(isChatMode: true, selectedChallenge: event.selectedChallenge, privateMessages: [], publicMessages: []);
+      yield* loadChallengeChat(event.selectedChallenge);
+    } else if (event is HideChatEvent) {
+      await _streamChallengeChat?.cancel();
+      yield state.copyWith(privateMessages: [], publicMessages: [], selectedChallenge: null, isChatMode: false);
+    } else if (event is SendChallengeMessageEvent) {
+      yield* sendMessage(event);
+    } else if (event is LoadChallengeChatEvent) {
+      yield state.copyWith(privateMessages: event.privateMessages, publicMessages: event.publicMessage);
     }
   }
 
@@ -196,14 +210,13 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
           ChallengeModel challengeModel = ChallengeModel.fromJson(element.data());
           if (challengeModel.sender == Global.instance.userId || challengeModel.receiver == Global.instance.userId) {
             if (challengeModel.receiver == Global.instance.userId) {
-              if (challengeModel.status == 'pending') {
+              if (challengeModel.status == 'pending' ) {
                 scheduleChallenges.add(challengeModel);
               }
             }
-            if (challengeModel.status == 'accept') {
-              scheduleChallengesRequest.add(challengeModel);
-            }
-
+          }
+          if (challengeModel.status == 'accept' || challengeModel.status == 'completed') {
+            scheduleChallengesRequest.add(challengeModel);
           }
         });
         add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: scheduleChallenges, scheduleChallengeRequestList: scheduleChallengesRequest));
@@ -211,6 +224,39 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
         add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: [], scheduleChallengeRequestList: []));
       }
     });
+  }
+
+  Stream<ChallengeState> loadChallengeChat(ChallengeModel challengeModel) async* {
+    await _streamChallengeChat?.cancel();
+    _streamChallengeChat = service.streamChallengeChat(challengeModel).listen((event) {
+      if (event.size > 0) {
+        List<MessageModel> privateMessages = [];
+        List<MessageModel> publicMessages = [];
+        event.docs.forEach((element) {
+          MessageModel messageModel = MessageModel.fromJson(element.data());
+          if (messageModel.type == 'public') {
+            publicMessages.add(messageModel);
+          } else {
+            privateMessages.add(messageModel);
+          }
+        });
+        add(LoadChallengeChatEvent(privateMessages: privateMessages, publicMessage: publicMessages));
+      } else {
+        add(LoadChallengeChatEvent(privateMessages: [], publicMessage: []));
+      }
+    });
+  }
+
+  Stream<ChallengeState> sendMessage(SendChallengeMessageEvent event) async* {
+    MessageModel model = MessageModel();
+    model.userId = event.userId;
+    model.userName = event.userName;
+    model.userImage = event.userImage;
+    model.type = event.type;
+    model.message = event.message;
+    model.createdAt = DateTime.now();
+
+    await service.sendChallengeMessage(state.selectedChallenge.id, model);
   }
 
   /// Schedules a notification that specifies a different icon, sound and vibration pattern
@@ -255,6 +301,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     _streamSubscriptionLiveChallengeFinished?.cancel();
     _streamSubscriptionScheduleChallenge?.cancel();
     _streamSubscriptionScheduleChallengeRequest?.cancel();
+    _streamChallengeChat.cancel();
     return super.close();
   }
 

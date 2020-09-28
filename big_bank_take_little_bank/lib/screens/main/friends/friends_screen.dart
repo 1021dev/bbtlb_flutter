@@ -8,6 +8,7 @@ import 'package:big_bank_take_little_bank/screens/main/challenge/challenge_pendi
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
+import 'package:big_bank_take_little_bank/utils/app_helper.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -342,7 +343,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                             onSchedule: () async {
                               final date = await showDatePicker(
                                   context: context,
-                                  firstDate: DateTime(1900),
+                                  firstDate: DateTime.now(),
                                   initialDate: DateTime.now(),
                                   lastDate: DateTime(2100));
                               if (date != null) {
@@ -355,17 +356,24 @@ class _FriendsScreenState extends State<FriendsScreen> {
                                 print(time);
                                 int dateValue = date.millisecondsSinceEpoch;
                                 int timeValue = time.hour * 3600000 + time.minute * 60000;
-                                BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
-                                    RequestChallengeEvent(
-                                      type: 'schedule',
-                                      challengeTime: dateValue.toDouble() + timeValue.toDouble(),
-                                      userModel: userModel,
-                                    )
-                                );
+                                if (timeValue < DateTime.now().millisecondsSinceEpoch + 600000) {
+                                  Navigator.pop(context);
+                                  AppHelper.showMyDialog(context, 'The schedule time should be 10 minutes later than now.');
+                                } else {
+                                  Navigator.pop(context);
+                                  BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                                      RequestChallengeEvent(
+                                        type: 'schedule',
+                                        challengeTime: dateValue.toDouble() + timeValue.toDouble(),
+                                        userModel: userModel,
+                                      )
+                                  );
+                                }
                               } else {
+                                Navigator.pop(context);
                                 print(date);
+                                AppHelper.showMyDialog(context, 'The schedule time should be 10 minutes later than now.');
                               }
-                              Navigator.pop(context);
                             },
                             onLive: () {
                               Navigator.pop(context);
