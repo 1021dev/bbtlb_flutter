@@ -600,7 +600,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                             print(time);
                             int dateValue = date.millisecondsSinceEpoch;
                             int timeValue = time.hour * 3600000 + time.minute * 60000;
-                            if (timeValue < DateTime.now().millisecondsSinceEpoch + 600000) {
+                            if (dateValue + timeValue < DateTime.now().millisecondsSinceEpoch + 600000) {
                               Navigator.pop(context);
                               AppHelper.showMyDialog(context, 'The schedule time should be 10 minutes later than now.');
                             } else {

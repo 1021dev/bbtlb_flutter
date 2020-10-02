@@ -124,6 +124,10 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
               setState(() {
                 count = state.rewardsList.last.consecutive + 1;
               });
+            } else {
+              setState(() {
+                count = 0;
+              });
             }
           } else {
 

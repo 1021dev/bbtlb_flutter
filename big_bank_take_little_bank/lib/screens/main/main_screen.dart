@@ -84,11 +84,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      mainScreenBloc.add(UserOnlineEvent());
-      Global.instance.updatePushToken();
-    } else {
-      mainScreenBloc.add(UserOfflineEvent());
+    if (mainScreenBloc != null) {
+      if (state == AppLifecycleState.resumed) {
+        mainScreenBloc.add(UserOnlineEvent());
+        Global.instance.updatePushToken();
+      } else {
+        mainScreenBloc.add(UserOfflineEvent());
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 class ChallengeState extends Equatable {
   final bool isLoading;
@@ -19,6 +20,9 @@ class ChallengeState extends Equatable {
   final List<MessageModel> publicMessages;
   final List<MessageModel> privateMessages;
   final bool isChatMode;
+  final ChallengeModel standardChallenge;
+  final ChallengeModel liveChallenge;
+  final ChallengeModel scheduleChallenge;
 
   ChallengeState({
     this.isLoading = false,
@@ -36,6 +40,9 @@ class ChallengeState extends Equatable {
     this.publicMessages = const [],
     this.privateMessages = const [],
     this.isChatMode = false,
+    this.standardChallenge,
+    this.liveChallenge,
+    this.scheduleChallenge,
   });
 
   @override
@@ -55,6 +62,9 @@ class ChallengeState extends Equatable {
     publicMessages,
     privateMessages,
     isChatMode,
+    standardChallenge,
+    liveChallenge,
+    scheduleChallenge,
   ];
   ChallengeState copyWith({
     bool isLoading,
@@ -72,6 +82,9 @@ class ChallengeState extends Equatable {
     List<MessageModel> publicMessages,
     List<MessageModel> privateMessages,
     bool isChatMode,
+    ChallengeModel standardChallenge,
+    ChallengeModel liveChallenge,
+    ChallengeModel scheduleChallenge,
   }) {
     return ChallengeState(
       isLoading: isLoading ?? this.isLoading,
@@ -89,6 +102,9 @@ class ChallengeState extends Equatable {
       publicMessages: publicMessages ?? this.publicMessages,
       privateMessages: privateMessages ?? this.privateMessages,
       isChatMode: isChatMode ?? this.isChatMode,
+      standardChallenge: standardChallenge ?? this.standardChallenge,
+      liveChallenge: liveChallenge ?? this.liveChallenge,
+      scheduleChallenge: scheduleChallenge ?? this.scheduleChallenge,
     );
   }
 }
