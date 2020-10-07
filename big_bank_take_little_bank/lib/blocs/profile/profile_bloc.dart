@@ -70,7 +70,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
 
   Stream<ProfileScreenState> uploadProfileImage(File file) async* {
     yield state.copyWith(isLoading: true);
-    StorageReference ref = firebaseStorage.ref().child('users').child(state.currentUser.id);
+    StorageReference ref = FirebaseStorage.instance.ref().child('users').child(state.currentUser.id);
     StorageUploadTask task = ref.putFile(file);
     task.events.listen((event) async* {
       double progress = event.snapshot.bytesTransferred.toDouble();

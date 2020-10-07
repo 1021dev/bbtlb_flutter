@@ -3,6 +3,7 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/login/login_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +29,9 @@ class _SplashScreenState extends State<SplashScreen> {
    // await auth.signOut();
     User currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
-      Global.instance.userRef = firestore.collection('users').doc(currentUser.uid);
+      Global.instance.userRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
       Global.instance.userId = currentUser.uid;
     }
-    print(currentUser);
     Navigator.pushReplacement(
       context,
       PageTransition(

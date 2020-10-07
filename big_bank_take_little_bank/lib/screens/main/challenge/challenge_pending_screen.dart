@@ -1,12 +1,14 @@
 
+import 'dart:async';
+
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
-import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class ChallengePendingDialog extends StatelessWidget {
+class ChallengePendingDialog extends StatefulWidget {
   final ChallengeModel challengeModel;
   final Function onChallenge;
   final Function onSchedule;
@@ -19,12 +21,38 @@ class ChallengePendingDialog extends StatelessWidget {
     this.onLive,
   });
 
+  _ChallengePendingDialogState createState() => _ChallengePendingDialogState();
+
+}
+class _ChallengePendingDialogState extends State<ChallengePendingDialog> {
+
+  Timer timer;
+  int seconds = 0;
+  @override
+  void initState() {
+    super.initState();
+    timer = new Timer.periodic(new Duration(microseconds: 500), (Timer t) {
+      DateTime dateTime = widget.challengeModel.challengeTime;
+      Duration duration = DateTime.now().difference(dateTime);
+      int seconds = (duration.inSeconds - 60);
+      if (seconds < 0) {
+        t.cancel();
+        Navigator.pop(context);
+      } else {
+        setState(() {
+
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
-    DateTime dateTime = challengeModel.challengeTime;
-    print(dateTime);
-    Duration duration = DateTime.now().difference(dateTime);
-    print(duration);
-    int seconds = (duration.inSeconds - 60).abs();
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -117,16 +145,9 @@ class ChallengePendingDialog extends StatelessWidget {
                                       height: 16,
                                     ),
                                     Center(
-                                      child: FlipClock.countdown(
-                                        duration: Duration(seconds: seconds),
-                                        digitColor: Color(0xfff49926),
-                                        backgroundColor: Colors.transparent,
-                                        digitSize: 48.0,
-                                        spacing: EdgeInsets.all(0),
-                                        flipDirection: FlipDirection.down,
-                                        onDone: () {
-                                          Navigator.pop(context);
-                                        },
+                                      child: AppGradientLabel(
+                                        title: DateFormat('mm:ss').format(DateTime.fromMillisecondsSinceEpoch(seconds * 1000)),
+                                        fontSize: 24,
                                       ),
                                     ),
                                     AppGradientLabel(

@@ -1,8 +1,8 @@
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,10 +41,10 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
       userModel.location = event.location;
       userModel.age = event.age;
       await service.createUser(userModel);
-      Global.instance.userRef = firestore.collection('users').doc(result.user.uid);
+      Global.instance.userRef = FirebaseFirestore.instance.collection('users').doc(result.user.uid);
       Global.instance.userId = result.user.uid;
       if (state.file != null) {
-        StorageReference ref = firebaseStorage.ref().child('users').child(result.user.uid);
+        StorageReference ref = FirebaseStorage.instance.ref().child('users').child(result.user.uid);
         StorageUploadTask task = ref.putFile(state.file);
         task.events.listen((event) async* {
           double progress = event.snapshot.bytesTransferred.toDouble();

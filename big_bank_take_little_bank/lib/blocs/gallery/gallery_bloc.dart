@@ -6,7 +6,6 @@ import 'package:big_bank_take_little_bank/firestore_service/firestore_service.da
 import 'package:big_bank_take_little_bank/models/gallery_model.dart';
 import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -54,7 +53,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
     if (currentState is GalleryLoadState) {
       yield currentState.copyWith(isUploading: true);
     }
-    StorageReference ref = firebaseStorage.ref().child('gallery').child(uid).child(galleryModel.id);
+    StorageReference ref = FirebaseStorage.instance.ref().child('gallery').child(uid).child(galleryModel.id);
     StorageUploadTask task = ref.putFile(file);
     task.events.listen((event) async* {
       double progress = event.snapshot.bytesTransferred.toDouble();
