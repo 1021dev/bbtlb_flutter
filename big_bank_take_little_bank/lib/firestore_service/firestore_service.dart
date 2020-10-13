@@ -56,7 +56,7 @@ class FirestoreService {
 
   Future<void> updateCurrentUser(Map<String, dynamic> body) async {
     body['updatedAt'] = Timestamp.now();
-    return Global.instance.userRef.update(
+    return FirebaseFirestore.instance.collection('users').doc(Global.instance.userId).update(
       body,
     );
   }

@@ -41,7 +41,6 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
       userModel.location = event.location;
       userModel.age = event.age;
       await service.createUser(userModel);
-      Global.instance.userRef = FirebaseFirestore.instance.collection('users').doc(result.user.uid);
       Global.instance.userId = result.user.uid;
       if (state.file != null) {
         StorageReference ref = FirebaseStorage.instance.ref().child('users').child(result.user.uid);
@@ -59,7 +58,7 @@ class AuthScreenBloc extends Bloc<AuthScreenEvent, AuthScreenState> {
         });
         await task.onComplete.then((value) async* {
           value.ref.getDownloadURL().then((url){
-            Global.instance.userRef.update({
+            service.updateCurrentUser({
               'image': url.toString(),
             });
           }).then((snap) async* {

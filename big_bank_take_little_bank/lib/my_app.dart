@@ -1,20 +1,16 @@
 import 'dart:ui' as ui;
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
-import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-// final FirebaseAuth auth = FirebaseAuth.instance;
-// final FirebaseFirestore firestore = FirebaseFirestore.instance;
-// final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
 Future<void> myMain() async {
   // await DefaultStore.instance.init();
   await Firebase.initializeApp();
-  // Crashlytics.instance.enableInDevMode = true;
-  // FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   runApp(MyApp());
 }
 
@@ -24,46 +20,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  // void _showItemDialog(Map<String, dynamic> message) {
-  //   showDialog<bool>(
-  //     context: contextNo,
-  //     builder: (_) => _buildDialog(contextNo, itemForMessage(message)),
-  //   ).then((bool shouldNavigate) {
-  //     if (shouldNavigate == true) {
-  //       _navigateToItemDetail(message);
-  //     }
-  //   });
-  // }
-  //
-  // void _navigateToItemDetail(Map<String, dynamic> message) {
-  //   final Item item = itemForMessage(message);
-  //   // Clear away dialogs
-  //   Navigator.popUntil(contextNo, (Route<dynamic> route) => route is PageRoute);
-  //   if (!item.route.isCurrent) {
-  //     Navigator.push(contextNo, item.route);
-  //   }
-  // }
-
-  Widget _buildDialog(BuildContext context, Item item) {
-    return AlertDialog(
-      content: Text("${item.matchteam} with score: ${item.score}"),
-      actions: <Widget>[
-        FlatButton(
-          child: const Text('CLOSE'),
-          onPressed: () {
-            Navigator.pop(context, false);
-          },
-        ),
-        FlatButton(
-          child: const Text('SHOW'),
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
-        ),
-      ],
-    );
-  }
 
   @override
   void initState() {
@@ -127,10 +83,10 @@ class AppContent extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           SplashScreen(),
-          // SpinKitDoubleBounce(
-          //   color: Colors.red,
-          //   size: 50.0,
-          // ),
+          SpinKitDoubleBounce(
+            color: Colors.red,
+            size: 50.0,
+          ),
         ],
       ),
     );

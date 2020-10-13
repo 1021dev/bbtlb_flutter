@@ -24,11 +24,12 @@ class GameRequestedScreen extends StatelessWidget {
 
   Widget build(BuildContext context) {
 
-    DateTime dateTime = challengeModel.challengeTime;
+    DateTime dateTime = challengeModel.type == 'schedule' ? challengeModel.createdAt: challengeModel.challengeTime;
     print(dateTime);
     Duration duration = DateTime.now().difference(dateTime);
     print(duration);
-    int seconds = (duration.inSeconds - 60).abs();
+
+    int seconds = (duration.inSeconds - 120).abs();
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(

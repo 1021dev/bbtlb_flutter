@@ -21,7 +21,6 @@ class Global extends ChangeNotifier{
   Global._private();
 
   static final Global instance = Global._private();
-  DocumentReference userRef;
   String userId = '';
   UserModel userModel;
   BuildContext homeContext;

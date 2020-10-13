@@ -2,117 +2,77 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>$(DEVELOPMENT_LANGUAGE)</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>BigBankTakeLittleBank</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$(FLUTTER_BUILD_NAME)</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
-    <key>CFBundleVersion</key>
-    <string>$(FLUTTER_BUILD_NUMBER)</string>
-    <key>LSRequiresIPhoneOS</key>
-    <true/>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-    </dict>
-    <key>NSCameraUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your camera to upload your profile photo</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
-    <key>NSLocationUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your mic to upload your profile photo</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your photo library to upload your profile photo</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your photo library to upload your profile photo</string>
-    <key>NSContactsUsageDescription</key>
-    <string>BigBankTakeLittleBank needs to access to your contacts to invite your friends</string>
-    <key>UIBackgroundModes</key>
-    <array>
-		<string>fetch</string>
-        <string>processing</string>
-        <string>remote-notification</string>
-    </array>
-    <key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
-    <key>UIMainStoryboardFile</key>
-    <string>Main</string>
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-    </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <key>UIViewControllerBasedStatusBarAppearance</key>
-    <false/>
-	<key>CFBundleURLTypes</key>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>BigBankTakeLittleBank</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your camera to upload your profile photo</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
+	<key>NSLocationUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your location to find your nearby friends</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your mic to upload your profile photo</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your photo library to upload your profile photo</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your photo library to upload your profile photo</string>
+	<key>NSContactsUsageDescription</key>
+	<string>BigBankTakeLittleBank needs to access to your contacts to invite your friends</string>
+	<key>UIBackgroundModes</key>
 	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb2429866657105129</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.216981814626-okc56gk3unsgpsuguvl0nhajcigmbpg0</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>Twitter</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>twitterkit-oH0K0ZElYB1OrL0e0ivAR1OsL</string>
-			</array>
-		</dict>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
 	</array>
-	<key>FacebookAppID</key>
-	<string>2429866657105129</string>
-	<key>FacebookDisplayName</key>
-	<string>Big Bank Take Little Bank</string>
-	<key>FirebaseAppDelegateProxyEnabled</key>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
-    <key>io.flutter.embedded_views_preview</key>
-    <true/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-share-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-		<string>twitterauth</string>
-		<string>twitter</string>
-	</array>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>

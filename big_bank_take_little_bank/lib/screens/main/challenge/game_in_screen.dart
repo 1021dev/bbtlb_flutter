@@ -79,6 +79,7 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
   void dispose() {
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener(

@@ -284,7 +284,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                             if (gstate.challengeModel != null) {
                               DateTime dateTime = gstate.challengeModel.challengeTime;
                               Duration duration = DateTime.now().difference(dateTime);
-                              int seconds = (duration.inSeconds - 60);
+                              int seconds = (duration.inSeconds - 120);
                               if (seconds < 0) {
                                 BlocProvider.of<ChallengeBloc>(gCtx)..add(ResponseChallengeRequestEvent(
                                   challengeModel: gstate.challengeModel, response: 'accept',
@@ -297,7 +297,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                             if (gstate.challengeModel != null) {
                               DateTime dateTime = gstate.challengeModel.challengeTime;
                               Duration duration = DateTime.now().difference(dateTime);
-                              int seconds = (duration.inSeconds - 60);
+                              int seconds = (duration.inSeconds - 120);
                               if (seconds < 0) {
                                 BlocProvider.of<ChallengeBloc>(gCtx).add(ResponseChallengeRequestEvent(
                                     challengeModel: gstate.challengeModel, response: 'decline'
@@ -458,7 +458,7 @@ class _MainScreenContentState extends State<MainScreenContent>
                                   if (challengeState.receivedRequestList.length > 0) {
                                     DateTime dateTime = challengeState.receivedRequestList.first.challengeTime;
                                     Duration duration = DateTime.now().difference(dateTime);
-                                    int seconds = (duration.inSeconds - 60);
+                                    int seconds = (duration.inSeconds - 120);
                                     if (seconds < 0) {
                                       BlocProvider.of<ChallengeBloc>(context)..add(ResponseChallengeRequestEvent(
                                           challengeModel: model, response: 'accept'
@@ -471,7 +471,7 @@ class _MainScreenContentState extends State<MainScreenContent>
                                   if (challengeState.receivedRequestList.length > 0) {
                                     DateTime dateTime = challengeState.receivedRequestList.first.challengeTime;
                                     Duration duration = DateTime.now().difference(dateTime);
-                                    int seconds = (duration.inSeconds - 60);
+                                    int seconds = (duration.inSeconds - 120);
                                     if (seconds < 0) {
                                       BlocProvider.of<ChallengeBloc>(context).add(ResponseChallengeRequestEvent(
                                           challengeModel: model, response: 'decline'

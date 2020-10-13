@@ -198,7 +198,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                           screenBloc: widget.screenBloc,
                           friendsModel: element.friendsModel,
                         ),
-                        type: PageTransitionType.downToUp,
+                        type: PageTransitionType.bottomToTop,
                       ),
                     );
                   },
@@ -221,7 +221,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                           screenBloc: widget.screenBloc,
                           friendsModel: element.friendsModel,
                         ),
-                        type: PageTransitionType.downToUp,
+                        type: PageTransitionType.bottomToTop,
                       ),
                     );
                   },

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/login/login_screen.dart';
@@ -16,23 +18,25 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  BuildContext contextNo;
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 1500)).then((value) {
-      checkAuth(context);
-    });
+    Timer(
+      Duration(milliseconds: 3000),
+        () {
+          checkAuth();
+        }
+    );
   }
 
-  void checkAuth(BuildContext context) async {
+  void checkAuth() async {
    // await auth.signOut();
     User currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
-      Global.instance.userRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
       Global.instance.userId = currentUser.uid;
     }
-    Navigator.pushReplacement(
+    print(currentUser);
+    await Navigator.pushReplacement(
       context,
       PageTransition(
         child: currentUser != null ? MainScreen(): LoginScreen(),
@@ -45,7 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    contextNo = context;
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.height,
