@@ -14,6 +14,7 @@ import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
+import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:big_bank_take_little_bank/widgets/pulse_widget.dart';
@@ -314,6 +315,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
               },
           ),
           BlocListener<ChallengeBloc, ChallengeState>(
+            cubit: challengeBloc,
             listener: (BuildContext cblCtx, ChallengeState cState) async {
 
             },
@@ -343,12 +345,12 @@ class _MainScreenContentState extends State<MainScreenContent>
     _controller = new AnimationController(
       vsync: this,
     );
+    _initAdMob();
     _startAnimation();
   }
 
   @override
   void dispose() {
-    _initAdMob();
     _controller.dispose();
     super.dispose();
   }
@@ -612,7 +614,7 @@ class _MainScreenContentState extends State<MainScreenContent>
   }
 
   Future<void> _initAdMob() {
-    return FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
+    return FirebaseAdMob.instance.initialize(appId: AdManager.appId, analyticsEnabled: true);
   }
 
 }

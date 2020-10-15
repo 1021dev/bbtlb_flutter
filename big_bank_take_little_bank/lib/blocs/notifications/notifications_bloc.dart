@@ -6,7 +6,6 @@ import 'package:big_bank_take_little_bank/models/notification_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_contact/contacts.dart';
 
 class NotificationScreenBloc extends Bloc<NotificationScreenEvent, NotificationScreenState> {
 

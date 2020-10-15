@@ -29,13 +29,7 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
 
   final BuildContext homeContext;
   _AdsPointsScreenState(this.homeContext);
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    testDevices: testDevice != null ? <String>[testDevice] : null,
-    keywords: <String>['foo', 'bar'],
-    contentUrl: 'http://foo.com/bar.html',
-    childDirected: true,
-    nonPersonalizedAds: true,
-  );
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo();
   // MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
   //     keywords: <String>['flutterio', 'beautiful apps'],
   //     contentUrl: 'https://flutter.io',
@@ -89,8 +83,8 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
           _isRewardedAdReady = true;
         });
       } else if (event == RewardedVideoAdEvent.failedToLoad) {
-        Future.delayed(Duration(minutes: 1), () {
-          load();
+        Future.delayed(Duration(minutes: 1), () async {
+          await load();
         });
       } else if (event == RewardedVideoAdEvent.closed) {
 
@@ -100,8 +94,8 @@ class _AdsPointsScreenState extends State<AdsPointsScreen> {
     super.initState();
   }
 
-  load() {
-    RewardedVideoAd.instance.load(adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: targetingInfo);
+  Future<bool> load() async {
+    return await RewardedVideoAd.instance.load(adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: targetingInfo);
   }
 
   @override

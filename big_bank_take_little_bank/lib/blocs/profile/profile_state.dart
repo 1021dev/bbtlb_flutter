@@ -1,8 +1,8 @@
 import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_contact/contacts.dart';
 
 class ProfileScreenState extends Equatable {
   final bool isLoading;
