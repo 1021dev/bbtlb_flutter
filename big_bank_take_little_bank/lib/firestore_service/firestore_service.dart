@@ -13,8 +13,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestoreService {
-  final userCollection = firestore.collection('users');
-  final challengeCollection = firestore.collection('challenge');
+  final userCollection = FirebaseFirestore.instance.collection('users');
+  final challengeCollection = FirebaseFirestore.instance.collection('challenge');
   // User Manager
   Future<UserModel> getUserWithId(String id) async {
     DocumentSnapshot snap = await userCollection.doc(id).get();
@@ -56,7 +56,7 @@ class FirestoreService {
 
   Future<void> updateCurrentUser(Map<String, dynamic> body) async {
     body['updatedAt'] = Timestamp.now();
-    return Global.instance.userRef.update(
+    return FirebaseFirestore.instance.collection('users').doc(Global.instance.userId).update(
       body,
     );
   }

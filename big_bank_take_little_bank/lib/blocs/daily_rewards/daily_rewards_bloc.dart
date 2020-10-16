@@ -7,6 +7,7 @@ import 'package:big_bank_take_little_bank/firestore_service/firestore_service.da
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,13 +17,7 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
   DailyRewardsBloc(DailyRewardsState initialState) : super(initialState);
   StreamSubscription _rewardsSubscription;
   static RewardsModel currentRewards;
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    testDevices: testDevice != null ? <String>[testDevice] : null,
-    keywords: <String>['foo', 'bar'],
-    contentUrl: 'http://foo.com/bar.html',
-    childDirected: true,
-    nonPersonalizedAds: true,
-  );
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo();
 
   DailyRewardsState get initialState {
     return DailyRewardsInitState();
@@ -80,8 +75,8 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
         } else if (event == RewardedVideoAdEvent.loaded) {
           RewardedVideoAd.instance.show();
         } else if (event == RewardedVideoAdEvent.failedToLoad) {
-          Future.delayed(Duration(minutes: 1), () {
-            load();
+          Future.delayed(Duration(minutes: 1), () async {
+            await load();
           });
         } else if (event == RewardedVideoAdEvent.closed) {
 
@@ -96,8 +91,8 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
     }
   }
 
-  load() {
-    RewardedVideoAd.instance.load(
+  Future<bool> load() async {
+    return await RewardedVideoAd.instance.load(
         adUnitId: RewardedVideoAd.testAdUnitId,
         targetingInfo: targetingInfo);
   }
@@ -105,7 +100,7 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
   Stream<DailyRewardsState> checkDailyRewards() async* {
     String userId = FirebaseAuth.instance.currentUser.uid;
     await _rewardsSubscription?.cancel();
-    _rewardsSubscription = service.streamLastRewards(userId).listen((event) {
+    _rewardsSubscription = service.streamLastRewards(userId).listen((event) async {
       if (event.docs.length > 0) {
         RewardsModel lastRewards = RewardsModel.fromJson(event.docs.first.data());
         num consecutive = lastRewards.consecutive ?? 0;
@@ -116,13 +111,13 @@ class DailyRewardsBloc extends Bloc<DailyRewardsEvent, DailyRewardsState> {
         if (rewardsAt.year == now.year && rewardsAt.month == now.month && rewardsAt.day == now.day) {
 
         } else {
-          load();
+          await load();
           currentRewards = lastRewards;
           add(ShouldShowAds(isAvailable: true));
           _rewardsSubscription.cancel();
         }
       } else {
-        load();
+        await load();
         add(ShouldShowAds(isAvailable: false));
       }
     });

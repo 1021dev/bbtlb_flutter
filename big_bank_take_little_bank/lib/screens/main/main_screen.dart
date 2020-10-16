@@ -14,6 +14,7 @@ import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
+import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:big_bank_take_little_bank/widgets/pulse_widget.dart';
@@ -40,45 +41,47 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
   final GlobalKey<CircularMenuState> key = GlobalKey<CircularMenuState>();
   // ignore: close_sinks
-  final MainScreenBloc mainScreenBloc = MainScreenBloc(MainScreenInitState());
+  MainScreenBloc mainScreenBloc;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
     super.initState();
+    mainScreenBloc = MainScreenBloc(MainScreenInitState());
     mainScreenBloc.add(UserLoginEvent());
-    WidgetsBinding.instance.addObserver(this);
-    _firebaseMessaging.requestNotificationPermissions();
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        if (Platform.isAndroid) {
-          mainScreenBloc.add(ShowAndroidNotificationsEvent(notification: message));
-        }
-      },
-      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-      },
-    );
-
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      print("Push Messaging token: $token");
-      Global.instance.setToken(token);
-    });
-    _firebaseMessaging.subscribeToTopic("matchscore");
+    // WidgetsBinding.instance.addObserver(this);
+    // _firebaseMessaging.requestNotificationPermissions();
+    // _firebaseMessaging.configure(
+    //   onMessage: (Map<String, dynamic> message) async {
+    //     print("onMessage: $message");
+    //     if (Platform.isAndroid) {
+    //       mainScreenBloc.add(ShowAndroidNotificationsEvent(notification: message));
+    //     }
+    //   },
+    //   onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
+    //   onLaunch: (Map<String, dynamic> message) async {
+    //     print("onLaunch: $message");
+    //   },
+    //   onResume: (Map<String, dynamic> message) async {
+    //     print("onResume: $message");
+    //   },
+    // );
+    //
+    // _firebaseMessaging.onIosSettingsRegistered
+    //     .listen((IosNotificationSettings settings) {
+    //   print("Settings registered: $settings");
+    // });
+    // _firebaseMessaging.getToken().then((String token) {
+    //   assert(token != null);
+    //   print("Push Messaging token: $token");
+    //   Global.instance.setToken(token);
+    // });
+    // _firebaseMessaging.subscribeToTopic("matchscore");
   }
 
   @override
   void dispose() {
+    mainScreenBloc.close();
     super.dispose();
   }
 
@@ -282,7 +285,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                             if (gstate.challengeModel != null) {
                               DateTime dateTime = gstate.challengeModel.challengeTime;
                               Duration duration = DateTime.now().difference(dateTime);
-                              int seconds = (duration.inSeconds - 60);
+                              int seconds = (duration.inSeconds - 120);
                               if (seconds < 0) {
                                 BlocProvider.of<ChallengeBloc>(gCtx)..add(ResponseChallengeRequestEvent(
                                   challengeModel: gstate.challengeModel, response: 'accept',
@@ -295,7 +298,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                             if (gstate.challengeModel != null) {
                               DateTime dateTime = gstate.challengeModel.challengeTime;
                               Duration duration = DateTime.now().difference(dateTime);
-                              int seconds = (duration.inSeconds - 60);
+                              int seconds = (duration.inSeconds - 120);
                               if (seconds < 0) {
                                 BlocProvider.of<ChallengeBloc>(gCtx).add(ResponseChallengeRequestEvent(
                                     challengeModel: gstate.challengeModel, response: 'decline'
@@ -312,6 +315,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
               },
           ),
           BlocListener<ChallengeBloc, ChallengeState>(
+            cubit: challengeBloc,
             listener: (BuildContext cblCtx, ChallengeState cState) async {
 
             },
@@ -341,12 +345,12 @@ class _MainScreenContentState extends State<MainScreenContent>
     _controller = new AnimationController(
       vsync: this,
     );
+    _initAdMob();
     _startAnimation();
   }
 
   @override
   void dispose() {
-    _initAdMob();
     _controller.dispose();
     super.dispose();
   }
@@ -456,7 +460,7 @@ class _MainScreenContentState extends State<MainScreenContent>
                                   if (challengeState.receivedRequestList.length > 0) {
                                     DateTime dateTime = challengeState.receivedRequestList.first.challengeTime;
                                     Duration duration = DateTime.now().difference(dateTime);
-                                    int seconds = (duration.inSeconds - 60);
+                                    int seconds = (duration.inSeconds - 120);
                                     if (seconds < 0) {
                                       BlocProvider.of<ChallengeBloc>(context)..add(ResponseChallengeRequestEvent(
                                           challengeModel: model, response: 'accept'
@@ -469,7 +473,7 @@ class _MainScreenContentState extends State<MainScreenContent>
                                   if (challengeState.receivedRequestList.length > 0) {
                                     DateTime dateTime = challengeState.receivedRequestList.first.challengeTime;
                                     Duration duration = DateTime.now().difference(dateTime);
-                                    int seconds = (duration.inSeconds - 60);
+                                    int seconds = (duration.inSeconds - 120);
                                     if (seconds < 0) {
                                       BlocProvider.of<ChallengeBloc>(context).add(ResponseChallengeRequestEvent(
                                           challengeModel: model, response: 'decline'
@@ -610,7 +614,7 @@ class _MainScreenContentState extends State<MainScreenContent>
   }
 
   Future<void> _initAdMob() {
-    return FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
+    return FirebaseAdMob.instance.initialize(appId: AdManager.appId, analyticsEnabled: true);
   }
 
 }

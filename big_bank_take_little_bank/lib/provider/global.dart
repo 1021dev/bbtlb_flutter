@@ -21,7 +21,6 @@ class Global extends ChangeNotifier{
   Global._private();
 
   static final Global instance = Global._private();
-  DocumentReference userRef;
   String userId = '';
   UserModel userModel;
   BuildContext homeContext;
@@ -44,7 +43,7 @@ class Global extends ChangeNotifier{
     _pushToken = token;
     if (FirebaseAuth != null) {
       if (FirebaseAuth.instance.currentUser != null && (token ?? '') != '') {
-        await firestore.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
+        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
       }
     }
   }
@@ -52,7 +51,7 @@ class Global extends ChangeNotifier{
   void updatePushToken() async {
     if (FirebaseAuth != null) {
       if (FirebaseAuth.instance.currentUser != null && (token ?? '') != '') {
-        await firestore.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
+        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).update({'deviceToken': token});
       }
     }
   }

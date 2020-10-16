@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/login/login_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,24 +18,25 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  BuildContext contextNo;
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 1500)).then((value) {
-      checkAuth(context);
-    });
+    Timer(
+      Duration(milliseconds: 3000),
+        () {
+          checkAuth();
+        }
+    );
   }
 
-  void checkAuth(BuildContext context) async {
+  void checkAuth() async {
    // await auth.signOut();
     User currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
-      Global.instance.userRef = firestore.collection('users').doc(currentUser.uid);
       Global.instance.userId = currentUser.uid;
     }
     print(currentUser);
-    Navigator.pushReplacement(
+    await Navigator.pushReplacement(
       context,
       PageTransition(
         child: currentUser != null ? MainScreen(): LoginScreen(),
@@ -45,7 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    contextNo = context;
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.height,

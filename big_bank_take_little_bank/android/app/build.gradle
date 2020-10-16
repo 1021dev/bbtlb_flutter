@@ -53,7 +53,13 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    ndkVersion '21.2.6472646'
 }
+//rootProject.ext {
+//    set('FlutterFire', [
+//            FirebaseSDKVersion: '21.1.0'
+//    ])
+//}
 
 flutter {
     source '../..'
@@ -63,7 +69,13 @@ dependencies {
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.firebase:firebase-messaging:20.2.4'
+    implementation 'com.google.firebase:firebase-messaging:20.3.0'
+    // Add the Firebase Crashlytics SDK.
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
+
+    // Recommended: Add the Google Analytics SDK.
+    implementation 'com.google.firebase:firebase-analytics:17.6.0'
+
 }
-apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'

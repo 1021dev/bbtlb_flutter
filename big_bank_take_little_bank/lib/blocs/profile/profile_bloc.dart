@@ -5,14 +5,13 @@ import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_contact/contacts.dart';
 
 class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
 
@@ -21,7 +20,6 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   StreamSubscription _userSubscription;
   StreamSubscription _blockListSubscription;
   FirestoreService service = FirestoreService();
-  ContactService _contactService = UnifiedContacts;
 
   ProfileScreenState get initialState {
     return ProfileScreenState(isLoading: true);
@@ -70,7 +68,7 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
 
   Stream<ProfileScreenState> uploadProfileImage(File file) async* {
     yield state.copyWith(isLoading: true);
-    StorageReference ref = firebaseStorage.ref().child('users').child(state.currentUser.id);
+    StorageReference ref = FirebaseStorage.instance.ref().child('users').child(state.currentUser.id);
     StorageUploadTask task = ref.putFile(file);
     task.events.listen((event) async* {
       double progress = event.snapshot.bytesTransferred.toDouble();
@@ -109,17 +107,9 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   Stream<ProfileScreenState> getContacts() async* {
     yield state.copyWith(isLoading: true);
 
-    final contacts = _contactService.listContacts(
-        withUnifyInfo: true,
-        withThumbnails: true,
-        withHiResPhoto: true,
-        sortBy: ContactSortOrder.firstName());
-    final tmp = <Contact>[];
-    while (await contacts.moveNext()) {
-      tmp.add(await contacts.current);
-    }
+    final contacts = await ContactsService.getContacts(withThumbnails: true);
 
-    yield state.copyWith(isLoading: false, contacts: tmp);
+    yield state.copyWith(isLoading: false, contacts: contacts.toList());
   }
 
   Stream<ProfileScreenState> updatePassword(String oldPassword, String newPassword) async* {
@@ -184,8 +174,8 @@ class ProfileScreenBloc extends Bloc<ProfileScreenEvent, ProfileScreenState> {
   }
 }
 
-extension DateComponentsFormat on DateComponents {
-  String format() {
-    return [year, month, day].where((d) => d != null).join('-');
-  }
-}
+// extension DateComponentsFormat on DateComponents {
+//   String format() {
+//     return [year, month, day].where((d) => d != null).join('-');
+//   }
+// }

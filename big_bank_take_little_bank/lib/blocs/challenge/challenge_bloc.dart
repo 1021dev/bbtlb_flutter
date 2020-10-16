@@ -48,6 +48,20 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       } else {
         yield state.copyWith(isGamePlay: false, pendingRequestList: event.challengeList);
       }
+      ChallengeModel scheduleChallenge, liveChallenge, standardChallenge;
+      List list1 = event.challengeList.where((element) => element.type == 'schedule').toList();
+      if (list1.length > 0) {
+        scheduleChallenge = list1.first;
+      }
+      List list2 = event.challengeList.where((element) => element.type == 'live').toList();
+      if (list2.length > 0) {
+        liveChallenge = list2.first;
+      }
+      List list3 = event.challengeList.where((element) => element.type == 'standard').toList();
+      if (list3.length > 0) {
+        standardChallenge = list3.first;
+      }
+      yield state.copyWith(scheduleChallenge: scheduleChallenge, liveChallenge: liveChallenge, standardChallenge: standardChallenge);
       if (event.challengeList.length > 0) {
         if ((event.challengeList.first.id ?? '') != '') {
           yield* observerChallenge(event.challengeList.first);
@@ -55,20 +69,28 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       }
     } else if (event is LoadedReceivedChallengeEvent) {
       if (event.challengeList.length > 0 || state.pendingRequestList.length > 0) {
-         yield state.copyWith(isGamePlay: true, receivedRequestList: event.challengeList);
+        yield state.copyWith(isGamePlay: true, pendingRequestList: event.challengeList);
       } else {
         yield state.copyWith(isGamePlay: false, receivedRequestList: event.challengeList);
       }
+      ChallengeModel scheduleChallenge, liveChallenge, standardChallenge;
+      List list1 = event.challengeList.where((element) => element.type == 'schedule').toList();
+      if (list1.length > 0) {
+        scheduleChallenge = list1.first;
+      }
+      List list2 = event.challengeList.where((element) => element.type == 'live').toList();
+      if (list2.length > 0) {
+        liveChallenge = list2.first;
+      }
+      List list3 = event.challengeList.where((element) => element.type == 'standard').toList();
+      if (list3.length > 0) {
+        standardChallenge = list3.first;
+      }
+      yield state.copyWith(scheduleChallenge: scheduleChallenge, liveChallenge: liveChallenge, standardChallenge: standardChallenge);
       if (event.challengeList.length > 0) {
         ChallengeModel challengeModel = event.challengeList.first;
         if ((challengeModel.id ?? '') != '') {
-          if (challengeModel.type == 'schedule') {
-            if (challengeModel.tasks != '') {
-              BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
-            }
-          } else {
-            BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
-          }
+          BlocProvider.of<GameBloc>(Global.instance.homeContext)..add(GameRequestedEvent(challengeModel: event.challengeList.first));
         }
       }
     } else if (event is ResponseChallengeRequestEvent) {
@@ -282,7 +304,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     var iOSPlatformChannelSpecifics =
     IOSNotificationDetails(sound: 'slow_spring_board.aiff');
     var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+        android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.schedule(
         0,
         'You have schedule challenge at ',

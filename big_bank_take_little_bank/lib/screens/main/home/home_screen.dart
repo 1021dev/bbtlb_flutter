@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 screenBloc: widget.screenBloc,
                                 userModel: (searchController.text ?? '') == '' ? state.activeUsers[index]: state.filterUsers[index],
                               ),
-                              type: PageTransitionType.downToUp,
+                              type: PageTransitionType.bottomToTop,
                             ),
                           );
                         },

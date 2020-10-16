@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/title_background_widget.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_contact/contact.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -144,10 +144,6 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen>  with SingleT
                                 contactInfo = contact.phones.first.value;
                               } else if (contact.emails.length > 0) {
                                 contactInfo = contact.emails.first.value;
-                              }
-                              Uint8List image;
-                              if (contact.hasAvatar) {
-                                image = contact.avatar;
                               }
                               return Container(
                                 child: Row(
