@@ -55,4 +55,17 @@ class Global extends ChangeNotifier{
       }
     }
   }
+  String fbId = '2429866657105129';
+  String fbRedirectUrl = '//www.facebook.com/connect/login_success.html';
+  String instagramClientId = '697751964172815';
+  String instagramClentSecret = 'd925f737dc36fcafb38508eb14cbd66a';
+  // String instagramRedirectUrl = 'https://bigbanktakelittlebank-95940.firebaseapp.com/popup.html';
+  String instagramRedirectUrl = 'https://www.bigbanktakelittlebank.net/auth/';
+
+  //Twitter accessToken 1040307659721760768-39fQ81Ib9lY62KrNKfJXQoqU9tQsHZ
+  //Twitter secret 6dsVbGH8RtJGuyUJXPMngtMdUVrUsaBMkbNzp51xfQyzD
+
+// Instagram client ID  697751964172815
+// Instagram Client Secret d925f737dc36fcafb38508eb14cbd66a
+// Redirect Url https://www.bigbanktakelittlebank.net/
 }

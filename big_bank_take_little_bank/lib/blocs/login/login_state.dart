@@ -5,11 +5,13 @@ class LoginScreenState extends Equatable {
   final bool isLoading;
   final String password;
   final String email;
+  final int socialRequest;
 
   LoginScreenState({
     this.isLoading = false,
     this.password,
     this.email,
+    this.socialRequest,
   });
 
   @override
@@ -17,17 +19,20 @@ class LoginScreenState extends Equatable {
     isLoading,
     email,
     password,
+    socialRequest,
   ];
 
   LoginScreenState copyWith({
     bool isLoading,
     String password,
     String email,
+    int socialRequest,
   }) {
     return LoginScreenState(
       isLoading: isLoading ?? this.isLoading,
       email: email ?? this.email,
       password: password ?? this.password,
+      socialRequest: socialRequest ?? this.socialRequest,
     );
   }
 }

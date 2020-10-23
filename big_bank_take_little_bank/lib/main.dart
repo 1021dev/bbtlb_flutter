@@ -1,3 +1,4 @@
+import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:big_bank_take_little_bank/blocs/app_bloc_delegate.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart' as global;

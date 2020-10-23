@@ -1,10 +1,26 @@
+import 'dart:async';
 import 'dart:ui' as ui;
+import 'package:apple_sign_in/apple_sign_in.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:big_bank_take_little_bank/screens/splash/splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+
+class AppleSignInAvailable {
+  AppleSignInAvailable(this.isAvailable);
+  final bool isAvailable;
+
+  static Future<AppleSignInAvailable> check() async {
+    return AppleSignInAvailable(await AppleSignIn.isAvailable());
+  }
+}
 
 Future<void> myMain() async {
   // await DefaultStore.instance.init();
@@ -12,7 +28,11 @@ Future<void> myMain() async {
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   await FirebaseCrashlytics.instance.checkForUnsentReports();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  runApp(MyApp());
+  final appleSignInAvailable = await AppleSignInAvailable.check();
+  runApp(Provider<AppleSignInAvailable>.value(
+    value: appleSignInAvailable,
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -75,15 +95,68 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class AppContent extends StatelessWidget {
+class AppContent extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() {
+    return AppContentState();
+  }
+}
+
+class AppContentState extends State<AppContent> {
+
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+      Duration(milliseconds: 1000),
+        () {
+          checkAuth();
+        }
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void checkAuth() async {
+    // await FirebaseAuth.instance.signOut();
+    User currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      Global.instance.userId = currentUser.uid;
+    }
+    print(currentUser);
+    Navigator.pushReplacement(
+      context,
+      PageTransition(
+        child: currentUser != null ? MainScreen(): SplashScreen(),
+        type: PageTransitionType.fade,
+        duration: Duration(microseconds: 0),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          SplashScreen(),
+          Container(
+            width: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xff0e5073),
+                  Color(0xff35996a),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
           SpinKitDoubleBounce(
             color: Colors.red,
             size: 50.0,
@@ -92,5 +165,4 @@ class AppContent extends StatelessWidget {
       ),
     );
   }
-
 }

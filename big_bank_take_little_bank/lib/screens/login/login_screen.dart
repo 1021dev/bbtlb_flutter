@@ -1,17 +1,24 @@
+import 'package:apple_sign_in/apple_sign_in.dart';
+import 'package:apple_sign_in/apple_sign_in_button.dart';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/my_app.dart';
+import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/main_screen.dart';
 import 'package:big_bank_take_little_bank/screens/register/register_screen.dart';
 import 'package:big_bank_take_little_bank/utils/app_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({Key key}) : super(key: key);
+  LoginScreen({Key key, this.appleSignInAvailable}) : super(key: key);
 
+  final AppleSignInAvailable appleSignInAvailable;
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -52,20 +59,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
           Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: MainScreen()));
         } else if (state is LoginScreenFailure) {
-          showCupertinoDialog(context: context, builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-              title: Text('Oops'),
-              content: Text(state.error),
-              actions: [
-                CupertinoDialogAction(
-                  child: Text('Ok'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            );
-          });
+          if (!state.error.contains('canceled') && !state.error.contains('NoSuchMethod')) {
+            showCupertinoDialog(context: context, builder: (BuildContext context) {
+              return CupertinoAlertDialog(
+                title: Text('Oops'),
+                content: Text(state.error),
+                actions: [
+                  CupertinoDialogAction(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              );
+            });
+          }
         } else if (state is LoginScreenPasswordResetSent) {
           showCupertinoDialog(context: context, builder: (BuildContext context) {
             return CupertinoAlertDialog(
@@ -258,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             flex: 1,
                             child: MaterialButton(
                               onPressed: () {
-
+                                screenBloc.add(SignInWithFacebookEvent());
                               },
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -272,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             flex: 1,
                             child: MaterialButton(
                               onPressed: () {
-
+                                screenBloc.add(SignInWithTwitterEvent());
                               },
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -286,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             flex: 1,
                             child: MaterialButton(
                               onPressed: () {
-
+                                screenBloc.add(SignInWithGoogleEvent());
                               },
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -296,6 +305,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Image.asset('assets/images/btn_google.png'),
                             ),
                           ),
+                          widget.appleSignInAvailable.isAvailable ? Flexible(
+                            flex: 1,
+                            child: MaterialButton(
+                              onPressed: () {
+                                screenBloc.add(SignInWithAppleEvent());
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              minWidth: 0,
+                              height: 50,
+                              child: Image.asset('assets/images/apple.png'),
+                            ),
+                          ): Container(),
                         ],
                       ),
                       Padding(
@@ -362,4 +385,27 @@ class _LoginScreenState extends State<LoginScreen> {
       screenBloc.add(LoginUserEvent(email: emailController.text, password: passwordController.text));
     }
   }
+
+  loginWithFacebook() async{
+    screenBloc.add(SignInWithFacebookEvent());
+
+    // String result = await Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (context) => CustomWebView(
+    //         selectedUrl:
+    //         'https://www.facebook.com/dialog/oauth?client_id=${Global.instance.fbId}&redirect_uri=${Global.instance.fbRedirectUrl}&response_type=token&scope=email,public_profile,',
+    //       ),
+    //       maintainState: true),
+    // );
+    // if (result != null) {
+    //   try {
+    //     final facebookAuthCred = FacebookAuthProvider.credential(result);
+    //     screenBloc.add(SignInWithFacebookEvent(credential: facebookAuthCred));
+    //   } catch (e) {
+    //     AppHelper.showToast(e.toString(), context);
+    //   }
+    // }
+  }
+
 }

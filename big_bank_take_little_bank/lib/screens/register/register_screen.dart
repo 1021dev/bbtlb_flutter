@@ -498,6 +498,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 36),
+                      ),
                     ],
                   ),
                 ),
