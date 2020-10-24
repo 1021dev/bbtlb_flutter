@@ -263,22 +263,34 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
   }
 
   Stream<LoginScreenState> updateUserProfile(UserCredential result) async* {
-    UserModel userModel = UserModel();
-    userModel.id = result.user.uid;
-    userModel.name = result.user.displayName;
-    userModel.email = result.user.email;
-    userModel.image = result.user.photoURL ?? '';
-    await service.createUser(userModel);
-    Global.instance.userId = result.user.uid;
-
     yield state.copyWith(isLoading: true);
-    if (!result.user.emailVerified) {
-      await result.user.sendEmailVerification();
-      yield state.copyWith(isLoading: false);
-      yield LoginScreenFailure(error: 'Email verification link sent, please check your inbox');
+    UserModel u = await service.getUserWithId(result.user.uid);
+    if (u == null) {
+      UserModel userModel = UserModel();
+      userModel.id = result.user.uid;
+      userModel.name = result.user.displayName;
+      userModel.email = result.user.email;
+      userModel.image = result.user.photoURL ?? '';
+      await service.createUser(userModel);
+      Global.instance.userId = result.user.uid;
+
+      if (!result.user.emailVerified) {
+        await result.user.sendEmailVerification();
+        yield state.copyWith(isLoading: false);
+        yield LoginScreenFailure(error: 'Email verification link sent, please check your inbox');
+      } else {
+        yield state.copyWith(isLoading: false);
+        yield LoginScreenSuccess();
+      }
     } else {
-      yield state.copyWith(isLoading: false);
-      yield LoginScreenSuccess();
+      if (!result.user.emailVerified) {
+        await result.user.sendEmailVerification();
+        yield state.copyWith(isLoading: false);
+        yield LoginScreenFailure(error: 'Email verification link sent, please check your inbox');
+      } else {
+        yield state.copyWith(isLoading: false);
+        yield LoginScreenSuccess();
+      }
     }
 
   }
