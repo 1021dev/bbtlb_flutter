@@ -39,7 +39,9 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
     } else if (event is SignInWithAppleEvent) {
       yield* signInWithApple();
     } else if (event is RegisterUserProfileEvent) {
-      yield* updateUserProfile(event.credential);
+      yield* updateUserProfile(event.credential, event.id);
+    } else if (event is LinkAccountEvent) {
+      yield* linkAccount(event);
     }
   }
 
@@ -71,12 +73,43 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
         }
       }
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-        yield LoginScreenFailure(error: 'No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-        yield LoginScreenFailure(error: 'Wrong password provided for that user');
+      switch (e.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          yield LoginScreenFailure(error: 'Email already used. Go to login page');
+          break;
+        case "ERROR_WRONG_PASSWORD":
+        case "wrong-password":
+          yield LoginScreenFailure(error: 'Wrong email/password combination');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No user found with this email');
+          break;
+        case "ERROR_USER_DISABLED":
+        case "user-disabled":
+          yield LoginScreenFailure(error: 'User disabled');
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Too many requests to log into this account');
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Server error, please try again later');
+          break;
+        case "ERROR_INVALID_EMAIL":
+        case "invalid-email":
+          yield LoginScreenFailure(error: 'Email address is invalid');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No account found with this email');
+          break;
+        default:
+          yield LoginScreenFailure(error: 'Login failed. Please try again.');
+          break;
       }
     } catch (e) {
       print(e.toString());
@@ -113,15 +146,84 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
         final User currentUser = FirebaseAuth.instance.currentUser;
         assert(user.uid == currentUser.uid);
         print('signInWithGoogle succeeded: $user');
-        add(RegisterUserProfileEvent(credential: authResult));
+        add(RegisterUserProfileEvent(credential: authResult, id: googleSignInAuthentication.idToken));
       } else {
         yield state.copyWith(isLoading: false);
         yield LoginScreenFailure(error: 'user doesn\'t exist');
       }
     } on FirebaseAuthException catch (e) {
       yield state.copyWith(isLoading: false);
-      print(e);
-      yield LoginScreenFailure(error: e.message);
+      switch (e.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          String existingEmail = e.email;
+          AuthCredential pendingCred = e.credential;
+          List<String> providers = await FirebaseAuth.instance.fetchSignInMethodsForEmail(existingEmail);
+          if (providers.contains(EmailAuthProvider.PROVIDER_ID)) {
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: GoogleAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: EmailAuthProvider.PROVIDER_ID
+            );
+          } else if (providers.contains(FacebookAuthProvider.PROVIDER_ID)) {
+            FacebookAuthProvider provider = new FacebookAuthProvider();
+            provider.setCustomParameters({'login_hint': existingEmail});
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: GoogleAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: provider.providerId
+            );
+          } else if (providers.contains(TwitterAuthProvider.PROVIDER_ID)) {
+            TwitterAuthProvider provider = new TwitterAuthProvider();
+            provider.setCustomParameters({'login_hint': existingEmail});
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: GoogleAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: provider.providerId
+            );
+          } else {
+            yield LoginScreenFailure(error: 'Email already used. User other email');
+          }
+          break;
+        case "ERROR_WRONG_PASSWORD":
+        case "wrong-password":
+          yield LoginScreenFailure(error: 'Wrong email/password combination');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No user found with this email');
+          break;
+        case "ERROR_USER_DISABLED":
+        case "user-disabled":
+          yield LoginScreenFailure(error: 'User disabled');
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Too many requests to log into this account');
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Server error, please try again later');
+          break;
+        case "ERROR_INVALID_EMAIL":
+        case "invalid-email":
+          yield LoginScreenFailure(error: 'Email address is invalid');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No account found with this email');
+          break;
+        default:
+          yield LoginScreenFailure(error: 'Login failed. Please try again.');
+          break;
+      }
     } catch (e) {
       yield state.copyWith(isLoading: false);
       yield LoginScreenFailure(error: e.message);
@@ -166,14 +268,86 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
           final User currentUser = FirebaseAuth.instance.currentUser;
           assert(user.uid == currentUser.uid);
 
-          add(RegisterUserProfileEvent(credential: authResult));
+          add(RegisterUserProfileEvent(credential: authResult, id: facebookAuthCredential.idToken));
 
         } else {
           yield state.copyWith(isLoading: false);
           yield LoginScreenFailure(error: 'user doesn\'t exist');
         }
       }
-
+    } on FirebaseAuthException catch (e) {
+      yield state.copyWith(isLoading: false);
+      switch (e.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          String existingEmail = e.email;
+          AuthCredential pendingCred = e.credential;
+          List<String> providers = await FirebaseAuth.instance.fetchSignInMethodsForEmail(existingEmail);
+          if (providers.contains(EmailAuthProvider.PROVIDER_ID)) {
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: FacebookAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: EmailAuthProvider.PROVIDER_ID
+            );
+          } else if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
+            GoogleAuthProvider provider = new GoogleAuthProvider();
+            provider.setCustomParameters({'login_hint': existingEmail});
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: FacebookAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: provider.providerId
+            );
+          } else if (providers.contains(TwitterAuthProvider.PROVIDER_ID)) {
+            TwitterAuthProvider provider = new TwitterAuthProvider();
+            provider.setCustomParameters({'login_hint': existingEmail});
+            yield EmailAlreadyExistingState(
+              error: 'Email already used. Are you want to link to existing account',
+              provider: FacebookAuthProvider.PROVIDER_ID,
+              credential: pendingCred,
+              email: existingEmail,
+              linkProvider: provider.providerId
+            );
+          } else {
+            yield LoginScreenFailure(error: 'Email already used. User other email');
+          }
+          break;
+        case "ERROR_WRONG_PASSWORD":
+        case "wrong-password":
+          yield LoginScreenFailure(error: 'Wrong email/password combination');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No user found with this email');
+          break;
+        case "ERROR_USER_DISABLED":
+        case "user-disabled":
+          yield LoginScreenFailure(error: 'User disabled');
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Too many requests to log into this account');
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Server error, please try again later');
+          break;
+        case "ERROR_INVALID_EMAIL":
+        case "invalid-email":
+          yield LoginScreenFailure(error: 'Email address is invalid');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No account found with this email');
+          break;
+        default:
+          yield LoginScreenFailure(error: 'Login failed. Please try again.');
+          break;
+      }
     } catch (e) {
       yield state.copyWith(isLoading: false);
       yield LoginScreenFailure(error: e.message);
@@ -210,8 +384,7 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
             final User currentUser = FirebaseAuth.instance.currentUser;
             assert(user.uid == currentUser.uid);
 
-            add(RegisterUserProfileEvent(credential: authResult));
-
+            add(RegisterUserProfileEvent(credential: authResult, id: loginResult.session.userId));
 
           } else {
             yield state.copyWith(isLoading: false);
@@ -227,6 +400,79 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
       } else {
         yield state.copyWith(isLoading: false);
         yield LoginScreenFailure(error: loginResult.errorMessage);
+      }
+    } on FirebaseAuthException catch (e) {
+      yield state.copyWith(isLoading: false);
+      switch (e.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          String existingEmail = e.email;
+          AuthCredential pendingCred = e.credential;
+          List<String> providers = await FirebaseAuth.instance.fetchSignInMethodsForEmail(existingEmail);
+          if (providers.contains(EmailAuthProvider.PROVIDER_ID)) {
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: TwitterAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: EmailAuthProvider.PROVIDER_ID
+            );
+          } else if (providers.contains(FacebookAuthProvider.PROVIDER_ID)) {
+            FacebookAuthProvider provider = new FacebookAuthProvider();
+            provider.setCustomParameters({'login_hint': existingEmail});
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: TwitterAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: provider.providerId
+            );
+          } else if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
+            GoogleAuthProvider provider = new GoogleAuthProvider();
+            provider.setCustomParameters({'login_hint': existingEmail});
+            yield EmailAlreadyExistingState(
+                error: 'Email already used. Are you want to link to existing account',
+                provider: TwitterAuthProvider.PROVIDER_ID,
+                credential: pendingCred,
+                email: existingEmail,
+                linkProvider: provider.providerId
+            );
+          } else {
+            yield LoginScreenFailure(error: 'Email already used. User other email');
+          }
+          break;
+        case "ERROR_WRONG_PASSWORD":
+        case "wrong-password":
+          yield LoginScreenFailure(error: 'Wrong email/password combination');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No user found with this email');
+          break;
+        case "ERROR_USER_DISABLED":
+        case "user-disabled":
+          yield LoginScreenFailure(error: 'User disabled');
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Too many requests to log into this account');
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Server error, please try again later');
+          break;
+        case "ERROR_INVALID_EMAIL":
+        case "invalid-email":
+          yield LoginScreenFailure(error: 'Email address is invalid');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No account found with this email');
+          break;
+        default:
+          yield LoginScreenFailure(error: 'Login failed. Please try again.');
+          break;
       }
     } catch (e) {
       yield state.copyWith(isLoading: false);
@@ -244,13 +490,13 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
         case AuthorizationStatus.authorized:
           final appleIdCredential = result.credential;
           final oAuthProvider = OAuthProvider('apple.com');
-          final credential = oAuthProvider.getCredential(
+          final credential = oAuthProvider.credential(
             idToken: String.fromCharCodes(appleIdCredential.identityToken),
             accessToken:
             String.fromCharCodes(appleIdCredential.authorizationCode),
           );
           final authResult = await FirebaseAuth.instance.signInWithCredential(credential);
-          add(RegisterUserProfileEvent(credential: authResult));
+          add(RegisterUserProfileEvent(credential: authResult, id: String.fromCharCodes(appleIdCredential.identityToken)));
           return;
         case AuthorizationStatus.error:
           print(result.error.toString());
@@ -265,14 +511,53 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
             message: 'Sign in aborted by user',
           );
       }
-
+    } on FirebaseAuthException catch (e) {
+      yield state.copyWith(isLoading: false);
+      switch (e.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          yield LoginScreenFailure(error: 'Email already used. Go to login page');
+          break;
+        case "ERROR_WRONG_PASSWORD":
+        case "wrong-password":
+          yield LoginScreenFailure(error: 'Wrong email/password combination');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No user found with this email');
+          break;
+        case "ERROR_USER_DISABLED":
+        case "user-disabled":
+          yield LoginScreenFailure(error: 'User disabled');
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Too many requests to log into this account');
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+        case "operation-not-allowed":
+          yield LoginScreenFailure(error: 'Server error, please try again later');
+          break;
+        case "ERROR_INVALID_EMAIL":
+        case "invalid-email":
+          yield LoginScreenFailure(error: 'Email address is invalid');
+          break;
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          yield LoginScreenFailure(error: 'No account found with this email');
+          break;
+        default:
+          yield LoginScreenFailure(error: 'Login failed. Please try again.');
+          break;
+      }
     } catch (e) {
       yield state.copyWith(isLoading: false);
       yield LoginScreenFailure(error: e.message);
     }
   }
 
-  Stream<LoginScreenState> updateUserProfile(UserCredential result) async* {
+  Stream<LoginScreenState> updateUserProfile(UserCredential result, String id) async* {
     yield state.copyWith(isLoading: true);
     UserInfo user = FirebaseAuth.instance.currentUser.providerData.first;
     UserModel u = await service.getUserWithId(FirebaseAuth.instance.currentUser.uid);
@@ -284,6 +569,16 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
         userModel.name = user.displayName;
         userModel.email = user.email;
         userModel.image = user.photoURL ?? '';
+        userModel.provider = user.providerId;
+        if (user.providerId.contains('facebook')) {
+          userModel.facebookId = id;
+        } else if (user.providerId.contains('google')) {
+          userModel.googleId = id;
+        } else if (user.providerId.contains('twitter')) {
+          userModel.twitterId = id;
+        } else if (user.providerId.contains('apple')) {
+          userModel.appleId = id;
+        }
         await service.createUser(userModel);
         Global.instance.userId = FirebaseAuth.instance.currentUser.uid;
         yield LoginScreenSuccess();
@@ -300,5 +595,139 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     yield state.copyWith(isLoading: false);
     yield LoginScreenPasswordResetSent();
+  }
+
+  Stream<LoginScreenState> linkAccount(LinkAccountEvent event) async* {
+    yield state.copyWith(isLoading: true);
+    try {
+      if (event.linkProvider == EmailAuthProvider.PROVIDER_ID) {
+        UserCredential credential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: event.email, password: event.password);
+        UserCredential linkedCredential = await credential.user.linkWithCredential(event.credential);
+        UserModel u = await service.getUserWithId(linkedCredential.user.uid);
+        User user = linkedCredential.user;
+        if (u != null) {
+          u.provider = event.provider;
+          if (event.provider == FacebookAuthProvider.PROVIDER_ID) {
+            u.facebookId = linkedCredential.credential.providerId;
+          }
+          await service.updateUser(credential.user.uid, u.toJson());
+          Global.instance.userId = FirebaseAuth.instance.currentUser.uid;
+          yield LoginScreenSuccess();
+        } else {
+          yield LoginScreenFailure(error: 'Account doesn\'t exist.');
+        }
+      } else if (event.linkProvider == GoogleAuthProvider.PROVIDER_ID) {
+        final GoogleSignInAccount googleSignInAccount = await googleSignIn
+            .signIn();
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount
+            .authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        if (credential == null) {
+          yield state.copyWith(isLoading: false);
+          yield LoginScreenFailure(error: 'canceled');
+          return;
+        }
+        final UserCredential authResult = await FirebaseAuth.instance
+            .signInWithCredential(credential);
+        UserCredential linkedCredential = await authResult.user.linkWithCredential(event.credential);
+        UserModel u = await service.getUserWithId(linkedCredential.user.uid);
+        User user = linkedCredential.user;
+        if (u != null) {
+          u.provider = event.provider;
+          if (event.provider == FacebookAuthProvider.PROVIDER_ID) {
+            u.facebookId = linkedCredential.credential.providerId;
+          }
+          await service.updateUser(authResult.user.uid, u.toJson());
+          Global.instance.userId = FirebaseAuth.instance.currentUser.uid;
+          yield LoginScreenSuccess();
+        } else {
+          yield LoginScreenFailure(error: 'Account doesn\'t exist.');
+        }
+      } else if (event.linkProvider == FacebookAuthProvider.PROVIDER_ID) {
+        final LoginResult result = await FacebookAuth.instance.login();
+
+        if (result.accessToken == null) {
+          yield state.copyWith(isLoading: false);
+          yield LoginScreenFailure(error: 'canceled');
+        } else {
+          final FacebookAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(result.accessToken.token);
+
+          final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+          final User user = authResult.user;
+
+          if (user != null) {
+            UserCredential linkedCredential = await authResult.user.linkWithCredential(event.credential);
+            UserModel u = await service.getUserWithId(linkedCredential.user.uid);
+            User user = linkedCredential.user;
+            if (u != null) {
+              u.provider = event.provider;
+              if (event.provider == FacebookAuthProvider.PROVIDER_ID) {
+                u.facebookId = linkedCredential.credential.providerId;
+              }
+              await service.updateUser(authResult.user.uid, u.toJson());
+              Global.instance.userId = FirebaseAuth.instance.currentUser.uid;
+              yield LoginScreenSuccess();
+            } else {
+              yield LoginScreenFailure(error: 'Account doesn\'t exist.');
+            }
+
+          } else {
+            yield state.copyWith(isLoading: false);
+            yield LoginScreenFailure(error: 'user doesn\'t exist');
+          }
+        }
+      } else if (event.linkProvider == TwitterAuthProvider.PROVIDER_ID) {
+        final TwitterLogin twitterLogin = new TwitterLogin(
+          consumerKey: 'oH0K0ZElYB1OrL0e0ivAR1OsL',
+          consumerSecret: 'gn0qfMfRTCewHVKKcvACPC1tvWdS7zzkNpBKVKvmG0RBQqGxcM',
+        );
+
+        // Trigger the sign-in flow
+        final TwitterLoginResult loginResult = await twitterLogin.authorize();
+
+        if (loginResult.status == TwitterLoginStatus.loggedIn) {
+          // Get the Logged In session
+          final TwitterSession twitterSession = loginResult.session;
+
+          if (twitterSession != null) {
+            // Create a credential from the access token
+            final AuthCredential twitterAuthCredential = TwitterAuthProvider.credential(accessToken: twitterSession.token, secret: twitterSession.secret);
+
+            final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(twitterAuthCredential);
+            UserCredential linkedCredential = await authResult.user.linkWithCredential(event.credential);
+            UserModel u = await service.getUserWithId(linkedCredential.user.uid);
+            User user = linkedCredential.user;
+            if (u != null) {
+              u.provider = event.provider;
+              if (event.provider == FacebookAuthProvider.PROVIDER_ID) {
+                u.facebookId = linkedCredential.credential.providerId;
+              }
+              await service.updateUser(authResult.user.uid, u.toJson());
+              Global.instance.userId = FirebaseAuth.instance.currentUser.uid;
+              yield LoginScreenSuccess();
+            } else {
+              yield LoginScreenFailure(error: 'Account doesn\'t exist.');
+            }
+          } else {
+            yield state.copyWith(isLoading: false);
+            yield LoginScreenFailure(error: 'user doesn\'t exist');
+          }
+        } else if (loginResult.status == TwitterLoginStatus.cancelledByUser) {
+          yield state.copyWith(isLoading: false);
+          yield LoginScreenFailure(error: 'canceled');
+        } else {
+          yield state.copyWith(isLoading: false);
+          yield LoginScreenFailure(error: loginResult.errorMessage);
+        }
+      }
+    } catch (e) {
+      yield state.copyWith(isLoading: false);
+      yield LoginScreenFailure(error: e.message);
+    }
   }
 }

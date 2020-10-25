@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreenState extends Equatable {
@@ -48,5 +49,15 @@ class LoginScreenFailure extends LoginScreenState {
 
   @override
   String toString() => 'LoginScreenFailure { error: $error }';
+}
+
+class EmailAlreadyExistingState extends LoginScreenState {
+  final String error;
+  final String email;
+  final String provider;
+  final AuthCredential credential;
+  final String linkProvider;
+
+  EmailAlreadyExistingState({this.error, this.email, this.provider, this.credential, this.linkProvider});
 }
 

@@ -7,6 +7,10 @@ class UserModel {
   String deviceToken;
   String email;
   String facebookId;
+  String googleId;
+  String twitterId;
+  String appleId;
+  String provider;
   String id;
   String image;
   String profession;
@@ -50,6 +54,10 @@ class UserModel {
     this.image,
     this.deviceToken,
     this.facebookId,
+    this.googleId,
+    this.twitterId,
+    this.appleId,
+    this.provider,
     this.userType,
     this.isFacebookUser,
     this.isLoggedIn,
@@ -87,7 +95,11 @@ class UserModel {
       consecutiveWin: json['consecutiveWin'] as num ?? 0,
       consecutiveLogin: json['consecutiveLogin'] as num ?? 0,
       createdAt: (json['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
-      image: json['image'] as String ?? '',
+      facebookId: json['facebookId'] as String ?? '',
+      googleId: json['googleId'] as String ?? '',
+      twitterId: json['twitterId'] as String ?? '',
+      appleId: json['appleId'] as String ?? '',
+      provider: json['provider'] as String ?? '',
       isAdmin: json['isAdmin'] as bool ?? false,
       isFacebookUser: json['isFacebookUser'] as bool ?? false,
       isLoggedIn: json['isLoggedIn'] as bool ?? false,
@@ -127,6 +139,10 @@ class UserModel {
         'profession': instance.profession ?? '',
         'deviceToken': instance.deviceToken ?? '',
         'facebookId': instance.facebookId ?? '',
+        'googleId': instance.googleId ?? '',
+        'twitterId': instance.twitterId ?? '',
+        'appleId': instance.appleId ?? '',
+        'provider': instance.provider ?? '',
         'name': instance.name ?? '',
         'image': instance.image ?? '',
         'userType': instance.userType ?? '',

@@ -41,9 +41,21 @@ class SignInWithTwitterEvent extends LoginScreenEvent {
 class SignInWithAppleEvent extends LoginScreenEvent {
 
 }
+
+class LinkAccountEvent extends LoginScreenEvent {
+  final String email;
+  final String password;
+  final String provider;
+  final AuthCredential credential;
+  final String linkProvider;
+
+  LinkAccountEvent({this.email, this.password, this.provider, this.credential, this.linkProvider});
+}
+
 class RegisterUserProfileEvent extends LoginScreenEvent {
 
+  final String id;
   final UserCredential credential;
 
-  RegisterUserProfileEvent({this.credential});
+  RegisterUserProfileEvent({this.id, this.credential});
 }

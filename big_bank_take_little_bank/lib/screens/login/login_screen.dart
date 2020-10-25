@@ -90,6 +90,59 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             );
           });
+        } else if (state is EmailAlreadyExistingState) {
+          if (state.linkProvider == EmailAuthProvider.PROVIDER_ID) {
+            showCupertinoDialog(context: context, builder: (BuildContext context) {
+              return CupertinoAlertDialog(
+                title: Text('Account already exist'),
+                content: Text('Password account already exists with the same email.\nPlease login with email first,'),
+                actions: [
+                  CupertinoDialogAction(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      screenBloc.add(LoginScreenInitEvent());
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: Text('Link account'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      emailController.text = state.email;
+                    },
+                  ),
+                ],
+              );
+            });
+          } else {
+            showCupertinoDialog(context: context, builder: (BuildContext context) {
+              return CupertinoAlertDialog(
+                title: Text('Account already exist'),
+                content: Text('Other account already exists with the same email.\nPlease login with existing account first,'),
+                actions: [
+                  CupertinoDialogAction(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      screenBloc.add(LoginScreenInitEvent());
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: Text('Link account'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      screenBloc.add(LinkAccountEvent(
+                        email: state.email,
+                        provider: state.provider,
+                        credential: state.credential,
+                        linkProvider: state.linkProvider,
+                      ));
+                    },
+                  ),
+                ],
+              );
+            });
+          }
         }
       },
       child: BlocBuilder<LoginScreenBloc, LoginScreenState>(
@@ -206,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               obscureText: true,
                               onSubmitted: (val) async {
                                 FocusScope.of(context).unfocus();
-                                _login();
+                                _login(state);
                               },
                             ),
                           ],
@@ -245,7 +298,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 55,
                         child: SizedBox.expand(
                           child: MaterialButton(
-                            onPressed: _login,
+                            onPressed: () {
+                              _login(state);
+                            },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -370,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  _login() async {
+  _login(LoginScreenState state) async {
     String emailValid = AppHelper.emailValidate(emailController.text);
     String passwordValid = AppHelper.passwordValid(passwordController.text);
     if (emailValid != null) {
@@ -382,30 +437,18 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     if (_formKey.currentState.validate()) {
-      screenBloc.add(LoginUserEvent(email: emailController.text, password: passwordController.text));
+      if (state is EmailAlreadyExistingState) {
+        screenBloc.add(LinkAccountEvent(
+          email: emailController.text,
+          password: passwordController.text,
+          provider: state.provider,
+          linkProvider: state.linkProvider,
+          credential: state.credential,
+        ));
+      } else {
+        screenBloc.add(LoginUserEvent(email: emailController.text, password: passwordController.text));
+      }
     }
-  }
-
-  loginWithFacebook() async{
-    screenBloc.add(SignInWithFacebookEvent());
-
-    // String result = await Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => CustomWebView(
-    //         selectedUrl:
-    //         'https://www.facebook.com/dialog/oauth?client_id=${Global.instance.fbId}&redirect_uri=${Global.instance.fbRedirectUrl}&response_type=token&scope=email,public_profile,',
-    //       ),
-    //       maintainState: true),
-    // );
-    // if (result != null) {
-    //   try {
-    //     final facebookAuthCred = FacebookAuthProvider.credential(result);
-    //     screenBloc.add(SignInWithFacebookEvent(credential: facebookAuthCred));
-    //   } catch (e) {
-    //     AppHelper.showToast(e.toString(), context);
-    //   }
-    // }
   }
 
 }
