@@ -122,7 +122,7 @@ class AppContentState extends State<AppContent> {
   }
 
   void checkAuth() async {
-    // await FirebaseAuth.instance.signOut();
+    await FirebaseAuth.instance.signOut();
     User currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       Global.instance.userId = currentUser.uid;

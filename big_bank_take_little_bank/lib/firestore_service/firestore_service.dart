@@ -19,6 +19,9 @@ class FirestoreService {
   Future<UserModel> getUserWithId(String id) async {
     DocumentSnapshot snap = await userCollection.doc(id).get();
 
+    if (snap.data() == null) {
+      return null;
+    }
     return UserModel.fromJson(snap.data());
   }
 
