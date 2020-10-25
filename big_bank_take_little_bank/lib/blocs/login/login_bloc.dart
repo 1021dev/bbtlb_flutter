@@ -47,7 +47,7 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
     SharedPrefService prefService = SharedPrefService.internal();
     String email = await prefService.getUserEmail();
     String password = await prefService.getUserEmail();
-
+    await signOut();
     yield state.copyWith(email: email, password: password, socialRequest: 0);
   }
 
@@ -128,9 +128,20 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
     }
   }
 
-  Future<void> signOutGoogle() async {
-    await googleSignIn.signOut();
-
+  Future<void> signOut() async {
+    bool isLoggedInGoogle = await googleSignIn.isSignedIn();
+    if (isLoggedInGoogle) {
+      await googleSignIn.signOut();
+    }
+    AccessToken token = await FacebookAuth.instance.isLogged;
+    if (token != null) {
+      FacebookAuth.instance.logOut();
+    }
+    final TwitterLogin twitterLogin = new TwitterLogin(
+      consumerKey: 'oH0K0ZElYB1OrL0e0ivAR1OsL',
+      consumerSecret: 'gn0qfMfRTCewHVKKcvACPC1tvWdS7zzkNpBKVKvmG0RBQqGxcM',
+    );
+    twitterLogin.logOut();
     print("User Signed Out");
   }
 
