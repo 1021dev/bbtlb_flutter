@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/chat_user_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
@@ -271,9 +272,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
 
   Stream<ChallengeState> sendMessage(SendChallengeMessageEvent event) async* {
     MessageModel model = MessageModel();
-    model.userId = event.userId;
-    model.userName = event.userName;
-    model.userImage = event.userImage;
+    model.user = ChatUser(userId: event.userId, userImage: event.userImage, userName: event.userName);
     model.type = event.type;
     model.message = event.message;
     model.createdAt = DateTime.now();

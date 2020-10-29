@@ -1,6 +1,7 @@
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/message/chat_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,19 +9,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import 'notification_cell.dart';
-
-class MessagesScreen extends StatefulWidget {
+class ChatListScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
   final BuildContext homeContext;
-  MessagesScreen({Key key, this.screenBloc, this.homeContext}) : super(key: key);
+  ChatListScreen({Key key, this.screenBloc, this.homeContext}) : super(key: key);
 
   @override
-  _MessagesScreenState createState() => _MessagesScreenState();
+  _ChatListScreenState createState() => _ChatListScreenState();
 }
 
-class _MessagesScreenState extends State<MessagesScreen> {
-  NotificationScreenBloc notificationScreenBloc;
+class _ChatListScreenState extends State<ChatListScreen> {
+  ChatScreenBloc chatScreenBloc;
   SlidableController slidableController;
 
   @override
@@ -29,7 +28,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    notificationScreenBloc = BlocProvider.of<NotificationScreenBloc>(Global.instance.homeContext);
+    chatScreenBloc = BlocProvider.of<ChatScreenBloc>(Global.instance.homeContext);
     super.initState();
   }
 
@@ -52,10 +51,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: notificationScreenBloc,
-      listener: (BuildContext context, NotificationScreenState state) async {
+      cubit: chatScreenBloc,
+      listener: (BuildContext context, ChatScreenState state) async {
         if (state is NotificationScreenSuccess) {
-        } else if (state is NotificationScreenFailure) {
+        } else if (state is ChatScreenFailure) {
           showCupertinoDialog(context: context, builder: (BuildContext context) {
             return CupertinoAlertDialog(
               title: Text('Oops'),
@@ -72,16 +71,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
           });
         }
       },
-      child: BlocBuilder<NotificationScreenBloc, NotificationScreenState>(
-        cubit: notificationScreenBloc,
-        builder: (BuildContext context, NotificationScreenState state) {
+      child: BlocBuilder<ChatScreenBloc, ChatScreenState>(
+        cubit: chatScreenBloc,
+        builder: (BuildContext context, ChatScreenState state) {
           return _body(state);
         },
       ),
     );
   }
 
-  Widget _body(NotificationScreenState state) {
+  Widget _body(ChatScreenState state) {
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -105,11 +104,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 left: 24,
                 right: 24,
                 bottom: 24,
-                child: state.notifications.length > 0 ? _notificationListWidget(state): Center(
+                child: state.messageList.length > 0 ? _notificationListWidget(state): Center(
                   child: Align(
                     alignment: Alignment.center,
                     child: AppLabel(
-                      title: 'Currently you don\'t have any notifications',
+                      title: 'Currently you don\'t have any messages',
                       maxLine: 2,
                       alignment: TextAlign.center,
                     ),
@@ -134,17 +133,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-  Widget _notificationListWidget(NotificationScreenState state) {
+  Widget _notificationListWidget(ChatScreenState state) {
     return Container(
       child: ListView.separated(
         shrinkWrap: false,
         itemBuilder: (context, index) {
-          return NotificationCell(
-            notificationModel: state.notifications[index],
+          return ChatCell(
+            messageModel: state.messageList[index],
             controller: slidableController,
             onDelete: () {
               print('delete notifications');
-              notificationScreenBloc.add(DeleteNotificationEvent(notificationModel: state.notifications[index]));
+              chatScreenBloc.add(DeleteChatEvent(messageModel: state.messageList[index]));
             },
             onTap: () {
 
@@ -154,7 +153,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         separatorBuilder: (context, index) {
           return Divider(color: Colors.transparent,);
         },
-        itemCount: state.notifications.length,
+        itemCount: state.messageList.length,
       ),
     );
   }

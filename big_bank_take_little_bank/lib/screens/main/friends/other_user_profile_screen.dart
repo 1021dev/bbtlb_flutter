@@ -5,6 +5,7 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/challenge_pending_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/message/chat_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/gallery_screen.dart';
 import 'package:big_bank_take_little_bank/utils/app_helper.dart';
@@ -195,7 +196,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           width: 44,
           height: 44,
           child: MaterialButton(
-            child: Image.asset('assets/images/ic_back.png', ),
+            child: Image.asset('assets/images/ic_back.png',),
             shape: CircleBorder(),
             minWidth: 0,
             padding: EdgeInsets.zero,
@@ -459,7 +460,17 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
           Flexible(
             child: AnimatedButton(
               onTap: () {
-
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: ChatScreen(
+                      homeContext: Global.instance.homeContext,
+                      screenBloc: widget.screenBloc,
+                    )  ,
+                    type: PageTransitionType.fade,
+                    duration: Duration(milliseconds: 300),
+                  ),
+                );
               },
               content: Container(
                 child:  AppButton(

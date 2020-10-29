@@ -11,6 +11,7 @@ import 'package:big_bank_take_little_bank/screens/main/daily_rewards/daily_rewar
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/message/chat_list_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
@@ -108,6 +109,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
     // ignore: close_sinks
     final NotificationScreenBloc notificationScreenBloc = NotificationScreenBloc(NotificationScreenState());
     // ignore: close_sinks
+    final ChatScreenBloc chatScreenBloc = ChatScreenBloc(ChatScreenState());
+    // ignore: close_sinks
     final GameBloc gameBloc = GameBloc(GameState());
     return MultiBlocProvider(
       providers: [
@@ -139,6 +142,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
           create: (BuildContext context) {
             return notificationScreenBloc
               ..add(NotificationInitEvent());
+          },
+        ),
+        BlocProvider<ChatScreenBloc>(
+          create: (BuildContext context) {
+            return chatScreenBloc
+              ..add(ChatInitEvent());
           },
         ),
         BlocProvider<GameBloc>(
@@ -595,7 +604,10 @@ class _MainScreenContentState extends State<MainScreenContent>
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
       case 5:
-        return Container();
+        return ChatListScreen(
+          homeContext: context,
+          screenBloc: BlocProvider.of<MainScreenBloc>(context),
+        );
       case 6:
         return MessagesScreen(
           homeContext: context,

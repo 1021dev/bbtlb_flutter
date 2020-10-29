@@ -10,3 +10,5 @@ export './gallery_detail/gallery_detail.dart';
 export './challenge/challenge.dart';
 export './notifications/notifications.dart';
 export './game/game.dart';
+export './chat/chat.dart';
+export './message/message.dart';

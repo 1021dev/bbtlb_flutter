@@ -12,9 +12,9 @@ class MessageCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: FirestoreService().getUserWithId(messageModel.userId),
+      future: FirestoreService().getUserWithId(messageModel.user.userId),
       builder: (context, snapshot) {
-        if (messageModel.userId == Global.instance.userId) {
+        if (messageModel.user.userId == Global.instance.userId) {
           return Container(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +52,7 @@ class MessageCell extends StatelessWidget {
                               ),
                               Flexible(
                                 child: Text(
-                                  messageModel.userId == Global.instance.userId ? 'You' : messageModel.userName,
+                                  messageModel.user.userId == Global.instance.userId ? 'You' : messageModel.user.userName,
                                   style: TextStyle(
                                     fontFamily: 'BackToSchool',
                                     fontSize: 14,
@@ -115,7 +115,7 @@ class MessageCell extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  messageModel.userId == Global.instance.userId ? 'You': messageModel.userName,
+                                  messageModel.user.userId == Global.instance.userId ? 'You': messageModel.user.userName,
                                   style: TextStyle(
                                     fontFamily: 'BackToSchool',
                                     fontSize: 14,
