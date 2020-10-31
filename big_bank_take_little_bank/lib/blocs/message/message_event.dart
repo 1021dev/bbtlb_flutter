@@ -1,6 +1,8 @@
 
+import 'package:big_bank_take_little_bank/models/chat_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/notification_model.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +16,24 @@ abstract class MessageEvent extends Equatable {
 
 @immutable
 class MessageInitEvent extends MessageEvent {
+  final UserModel userModel;
+  final ChatModel chatModel;
+  MessageInitEvent({this.userModel, this.chatModel});
+}
+
+@immutable
+class ForumInitEvent extends MessageEvent {}
+
+@immutable
+class SendMessageEvent extends MessageEvent {
+  final MessageModel messageModel;
+  SendMessageEvent({this.messageModel});
+}
+
+@immutable
+class SendForumMessageEvent extends MessageEvent {
+  final MessageModel messageModel;
+  SendForumMessageEvent({this.messageModel});
 }
 
 @immutable
@@ -34,3 +54,7 @@ class ReadMessageEvent extends MessageEvent {
   ReadMessageEvent({this.messageModel});
 }
 
+class ForumUsersLoadEvent extends MessageEvent {
+  final List<String> users;
+  ForumUsersLoadEvent({this.users});
+}

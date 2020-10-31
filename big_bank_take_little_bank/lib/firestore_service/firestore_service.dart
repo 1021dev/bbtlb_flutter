@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:big_bank_take_little_bank/models/block_model.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/comment_model.dart';
@@ -7,14 +9,20 @@ import 'package:big_bank_take_little_bank/models/liket_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/rewards_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
-import 'package:big_bank_take_little_bank/my_app.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/utils/app_constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class FirestoreService {
   final userCollection = FirebaseFirestore.instance.collection('users');
   final challengeCollection = FirebaseFirestore.instance.collection('challenge');
+  final chatCollection = FirebaseFirestore.instance.collection('chat');
+
+  FirebaseStorage _firebaseStorage = FirebaseStorage(storageBucket: AppConstant.appBucketURI);
+  StorageUploadTask _uploadTask;
+
   // User Manager
   Future<UserModel> getUserWithId(String id) async {
     DocumentSnapshot snap = await userCollection.doc(id).get();
@@ -401,5 +409,156 @@ class FirestoreService {
         .add(model.toJson()).then((value) => value.update({'id': value.id}));
   }
 
+  Stream<QuerySnapshot> streamChatList(String uid) {
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .where('members', arrayContains: uid)
+        .orderBy('updatedAt', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamChat(String uid) {
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .doc(generateChatId(uid, Global.instance.userId))
+        .collection('messages')
+        .orderBy('createdAt', descending: false)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamForum() {
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .doc('forum')
+        .collection('messages')
+        .orderBy('createdAt', descending: false)
+        .snapshots();
+  }
+
+  Stream<DocumentSnapshot> streamForumUsers() {
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .doc('forum').snapshots();
+  }
+
+  getChats(String uid) {
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .where('members', arrayContains: uid)
+        .orderBy('lastActive', descending: true)
+        .snapshots();
+  }
+
+  generateChatId(String username1, String username2) {
+    return username1.toString().compareTo(username2.toString()) < 0
+        ? username1.toString() + '-' + username2.toString()
+        : username2.toString() + '-' + username1.toString();
+  }
+
+  Future<bool> checkChatExistsOrNot(String username1, String username2) async {
+    String chatId = generateChatId(username1, username2);
+    DocumentSnapshot doc = await FirebaseFirestore.instance.collection('chats').doc(chatId).get();
+    return doc.exists;
+  }
+
+  Future<bool> checkChatRoom(String roomId) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance.collection('chats').doc(roomId).get();
+    return doc.exists;
+  }
+
+  sendMessage({String roomId, String userId, MessageModel model}) async {
+    bool existsOrNot = await checkChatRoom(roomId);
+    FirebaseFirestore tempDb = FirebaseFirestore.instance;
+    Timestamp now = Timestamp.now();
+    if (!existsOrNot) {
+      List<String> members = [userId, Global.instance.userId];
+      DocumentReference ref = model.type == 'text'
+          ? await tempDb
+          .collection('chats')
+          .doc(roomId)
+          .collection('messages')
+          .add(model.toJson())
+          : await tempDb
+          .collection('chats')
+          .doc(roomId)
+          .collection('messages')
+          .add(model.toJson());
+      await tempDb
+          .collection('chats')
+          .doc(roomId)
+          .set({'updatedAt': now, 'createdAt': now, 'members': members});
+      await ref.update({'id': ref.id});
+    } else {
+      DocumentReference ref = model.type == 'text'
+          ? await tempDb
+          .collection('chats')
+          .doc(roomId)
+          .collection('messages')
+          .add(model.toJson())
+          : await tempDb
+          .collection('chats')
+          .doc(roomId)
+          .collection('messages')
+          .add(model.toJson());
+      await ref.update({'id': ref.id});
+      await tempDb.collection('chats').doc(roomId).update({'updatedAt': now});
+    }
+  }
+
+  sendForumMessage({MessageModel model}) async {
+    FirebaseFirestore tempDb = FirebaseFirestore.instance;
+    Timestamp now = Timestamp.now();
+    DocumentReference ref = await tempDb
+        .collection('chats')
+        .doc('forum')
+        .collection('messages')
+        .add(model.toJson());
+    await ref.update({'id': ref.id});
+    await tempDb.collection('chats').doc('forum').update({'updatedAt': now});
+  }
+
+  updateForum({List<String> users}) async {
+    FirebaseFirestore tempDb = FirebaseFirestore.instance;
+    Timestamp now = Timestamp.now();
+    await tempDb.collection('chats').doc('forum').update({'users': users, 'updatedAt': now});
+  }
+
+  uploadImage(File _image, String to, String from) {
+    String filePath =
+        'chatImages/${generateChatId(to, from)}/${DateTime.now()}.png';
+    _uploadTask = _firebaseStorage.ref().child(filePath).putFile(_image);
+    return _uploadTask;
+  }
+
+  uploadForumImage(File _image) {
+    String filePath =
+        'chatImages/forum/${DateTime.now()}.png';
+    _uploadTask = _firebaseStorage.ref().child(filePath).putFile(_image);
+    return _uploadTask;
+  }
+
+  getURLforImage(String imagePath) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    StorageReference sRef =
+    await storage.getReferenceFromUrl(AppConstant.appBucketURI);
+    StorageReference pathReference = sRef.child(imagePath);
+    return await pathReference.getDownloadURL();
+  }
+
+  Stream<List<UserModel>> streamForumUsersProfile(List<String> users) {
+    return userCollection
+        .where('id', whereIn: users)
+        .orderBy('isOnline')
+        .snapshots().map((event) {
+      List<UserModel> users = [];
+      event.docs.forEach((element) {
+        if (element.id != FirebaseAuth.instance.currentUser.uid) {
+          users.add(UserModel.fromJson(element.data()));
+        }
+      });
+
+      return users;
+    });
+  }
 
 }

@@ -10,7 +10,7 @@ class ChatModel {
   DateTime createdAt;
   DateTime updatedAt;
   List<ChatUser> users;
-  String message;
+  List<String> members;
   String type;
   LastMessage lastMessage;
 
@@ -21,38 +21,46 @@ class ChatModel {
     this.createdAt,
     this.updatedAt,
     this.users,
+    this.members,
     this.lastMessage,
-    this.message,
     this.reference,
     this.type,
   });
 
   factory ChatModel.fromJson(Map<dynamic, dynamic> json) {
-    List<ChatUser> chatUsers = [];
-    dynamic userArr = json['users'];
-    if (userArr is List) {
-      userArr.forEach((element) {
-        chatUsers.add(ChatUser.fromJson(element));
+    // List<ChatUser> chatUsers = [];
+    // if (json['users'] != null) {
+    //   dynamic userArr = json['users'];
+    //   if (userArr is List) {
+    //     userArr.forEach((element) {
+    //       chatUsers.add(ChatUser.fromJson(element));
+    //     });
+    //   }
+    // }
+    List<String> members = [];
+    dynamic list = json['members'];
+    if (list is List) {
+      list.forEach((element) {
+        members.add(element.toString());
       });
     }
     return ChatModel(
-      reference: json['reference'] as DocumentReference,
       id: json['id'] as String ?? '',
-      message: json['message'] as String ?? '',
+      members: members,
       createdAt: (json['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
       updatedAt: (json['updatedAt'] as Timestamp).toDate() ?? DateTime.now(),
-      type: json['type'] as String ?? 'public',
-      users: chatUsers,
-      lastMessage: LastMessage.fromJson(json['lastMessage']) ?? LastMessage(),
+      // type: json['type'] != null ? json['type'] as String ?? 'public': 'public',
+      // users: chatUsers,
+      // lastMessage: json['lastMessage'] != null ? LastMessage.fromJson(json['lastMessage']) ?? LastMessage() : null,
     );
   }
 
-  Map<String, dynamic> toJson() => _commentToJson(this);
+  Map<String, dynamic> toJson() => _chatToJson(this);
 
   @override
-  String toString() => "Message  <$id>";
+  String toString() => "ChatModel  <>";
 
-  Map<String, dynamic> _commentToJson(ChatModel instance) {
+  Map<String, dynamic> _chatToJson(ChatModel instance) {
     List<dynamic> userArr = [];
     instance.users.forEach((element) {
       userArr.add(element.toJson());
@@ -62,7 +70,7 @@ class ChatModel {
       'id': instance.id ?? '',
       'createdAt': Timestamp.fromDate(instance.createdAt ?? DateTime.now()),
       'updatedAt': Timestamp.fromDate(instance.updatedAt ?? DateTime.now()),
-      'message': instance.message ?? '',
+      'members': instance.members ?? [],
       'type': instance.type ?? 'public',
       'users': userArr,
       'lastMessage': instance.lastMessage.toJson(),

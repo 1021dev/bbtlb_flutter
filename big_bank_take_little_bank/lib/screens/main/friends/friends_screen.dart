@@ -7,6 +7,7 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/challenge_pending_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_cell.dart';
+import 'package:big_bank_take_little_bank/screens/main/message/chat_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/utils/app_helper.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
@@ -226,7 +227,16 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     );
                   },
                   onChat: (UserModel userModel) {
-
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        child: ChatScreen(
+                          screenBloc: widget.screenBloc,
+                          user: userModel,
+                        ),
+                        type: PageTransitionType.bottomToTop,
+                      ),
+                    );
                   },
                   onChallenge: (UserModel userModel) {
                     if (Global.instance.userModel.points == 0) {

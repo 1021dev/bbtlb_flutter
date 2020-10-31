@@ -15,9 +15,11 @@ class AppConstant {
   static const appChallengeUrl =
       'https://us-central1-bigbanktakelittlebank-95940.cloudfunctions.net/challenge';
   static const kKeyServerFireBase =
-      "key=AAAADYuzths:APA91bH1bFAAmV6-egnrrrn54F8mzAfaEA_kwHIfnNDlkEnX3W4RzjyC6-Zv4ON6p4p5uQQ4ldnN-0ynYPxSMlEXMKGAdMq3IBPiUdOzq1x2hOaGFO5JA6kdhsOCfPI9R3wOkFWBJ5c0";
+      'key=AAAADYuzths:APA91bH1bFAAmV6-egnrrrn54F8mzAfaEA_kwHIfnNDlkEnX3W4RzjyC6-Zv4ON6p4p5uQQ4ldnN-0ynYPxSMlEXMKGAdMq3IBPiUdOzq1x2hOaGFO5JA6kdhsOCfPI9R3wOkFWBJ5c0';
 
-
+  static const appBucketURI =
+      'gs://bigbanktakelittlebank-95940.appspot.com';
+  
   static const kEmail = 'email';
   static const kPassword = 'password';
 

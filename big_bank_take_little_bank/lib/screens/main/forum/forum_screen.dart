@@ -10,8 +10,10 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/message_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
+import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_image_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,22 +23,20 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ChatScreen extends StatefulWidget {
+import 'forum_message_cell.dart';
+
+class ForumScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
-  final UserModel user;
-  final ChatModel chatModel;
-  ChatScreen({
+  ForumScreen({
     Key key,
     this.screenBloc,
-    this.user,
-    this.chatModel,
   }) : super(key: key);
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _ForumScreenState createState() => _ForumScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ForumScreenState extends State<ForumScreen> {
   MessageBloc messageBloc;
   SlidableController slidableController;
   TextEditingController messageController = TextEditingController();
@@ -50,11 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
     messageBloc = MessageBloc(MessageState());
-    if (widget.user != null) {
-      messageBloc.add(MessageInitEvent(userModel: widget.user));
-    } else {
-      messageBloc.add(MessageInitEvent(chatModel: widget.chatModel));
-    }
+    messageBloc.add(ForumInitEvent());
     super.initState();
   }
 
@@ -105,15 +101,29 @@ class _ChatScreenState extends State<ChatScreen> {
               FocusScope.of(context).unfocus();
             },
             child: Container(
+              width: MediaQuery.of(context).size.height,
+              height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/bg_home.png'),
-                  fit: BoxFit.fill,
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xffce5281),
+                    Color(0xff6e1c83),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
               ),
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: _body(state),
+              child: Container(
+                width: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.height,
+                decoration: MakeCircle(
+                  strokeWidth: 36,
+                  strokeCap: StrokeCap.square,
+                ),
+                child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: _body(state),
+                ),
               ),
             ),
           );
@@ -133,60 +143,60 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
         ),
         SafeArea(
+          maintainBottomViewPadding: false,
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
               Positioned(
-                top: 24,
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: Column(
-                  children: [
-                    Container(
-                      height: 100,
-                      width: 100,
-                      child: Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: ProfileAvatar(
-                              avatarSize: 100,
-                              image: state.userModel != null ? state.userModel.image ?? '': '',
-                            ),
-                          ),
-                          Container(
-                            width: 16,
-                            height: 16,
-                            margin: EdgeInsets.all(8),
-                            alignment: Alignment.bottomRight,
-                            decoration: BoxDecoration(
-                                color: state.userModel != null ? (state.userModel.isOnline ? Colors.green: Colors.grey) : Colors.grey,
-                                border: Border.all(
-                                  color: Color(0xFF1b5c6b),
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(8)
-                            ),
-                          ),
-                        ],
+                top: 80,
+                left: 4,
+                right: 8,
+                height: 120,
+                child: Container(
+                  margin: EdgeInsets.only(top: 24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF5c9c85),
+                        Color(0xFF35777e),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                        spreadRadius: 1.0,
+                        offset: Offset(
+                          4.0,
+                          4.0,
+                        ),
                       ),
+                    ],
+                  ),
+                  padding: EdgeInsets.only(
+                    left: 8,
+                    top: 8,
+                    bottom: 8,
+                    right: 8,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color(0xFF0e3d48),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    AppLabel(
-                      title: state.userModel != null ? state.userModel.name  ?? '': '',
-                      fontSize: 24,
-                      color: Colors.white,
-                      shadow: true,
-                    ),
-                  ],
+                    child: _usersList(state),
+                  ),
                 ),
               ),
               Positioned(
-                top: 124,
+                top: 210,
                 left: 4,
                 right: 8,
-                bottom: 56,
+                bottom: 48,
                 child: Container(
-                  margin: EdgeInsets.only(top: 24, bottom: 16),
+                  margin: EdgeInsets.only(top: 0, bottom: 16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -211,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: EdgeInsets.only(
                     left: 12,
                     top: 14,
-                    bottom: 24,
+                    bottom: 16,
                     right: 12,
                   ),
                   child: Container(
@@ -219,16 +229,24 @@ class _ChatScreenState extends State<ChatScreen> {
                       color: Color(0xFF0e3d48),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Container(),
+                    child: _messageList(state),
                   ),
                 ),
               ),
+              // Positioned(
+              //   top: 210,
+              //   left: 4,
+              //   right: 8,
+              //   bottom: 44,
+              //   child: ,
+              // ),
               Positioned(
-                top: 124,
-                left: 4,
-                right: 8,
-                bottom: 56,
-                child: _messageList(state),
+                top: 0,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Container(
+                  height: 100,
+                  child: Image.asset('assets/images/forum_top.png'),
+                ),
               ),
             ],
           ),
@@ -288,7 +306,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               type: 'text',
                             );
 
-                            messageBloc.add(SendMessageEvent(messageModel: model));
+                            messageBloc.add(SendForumMessageEvent(messageModel: model));
                           }
                           messageController.clear();
                         },
@@ -307,7 +325,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             type: 'text',
                           );
 
-                          messageBloc.add(SendMessageEvent(messageModel: model));
+                          messageBloc.add(SendForumMessageEvent(messageModel: model));
                         }
                         messageController.clear();
                       },
@@ -374,13 +392,76 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget _usersList(MessageState state) {
+    if (state.forumUsers.length == 0) {
+      return Container();
+    }
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (ctx, index) {
+        String userId = state.forumUsers[index];
+        return FutureBuilder(
+          future: FirestoreService().getUserWithId(userId),
+          builder: (context, snap) {
+            UserModel user = snap.data;
+            return Container(
+              padding: EdgeInsets.all(2),
+              width: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      ProfileAvatar(
+                        avatarSize: 44,
+                        image: user.image ?? '',
+                      ),
+                      Container(
+                        width: 16,
+                        height: 16,
+                        alignment: Alignment.bottomRight,
+                        decoration: BoxDecoration(
+                            color: user.isOnline ? Colors.green: Colors.grey,
+                            border: Border.all(
+                              color: Color(0xFF1b5c6b),
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(8)
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 2,),
+                  Flexible(
+                    child: AppLabel(
+                      title: user.name ?? '',
+                      fontSize: 12,
+                      maxLine: 2,
+                      shadow: true,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+      separatorBuilder: (ctx, index) {
+        return Container(width: 8,);
+      },
+      itemCount: state.forumUsers.length,
+    );
+  }
+
   Widget _messageList(MessageState state) {
     return Container(
-      margin: EdgeInsets.only(top: 44, left: 8, right: 8, bottom: 44),
+      margin: EdgeInsets.all(4),
       child: ListView.separated(
         shrinkWrap: false,
         itemBuilder: (context, index) {
-          return MessageCell(
+          return ForumMessageCell(
             messageModel: state.messageList[index],
             controller: slidableController,
             onDelete: () {
@@ -461,7 +542,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           type: 'image',
         );
-        messageBloc.add(SendMessageEvent(messageModel: model));
+        messageBloc.add(SendForumMessageEvent(messageModel: model));
         Navigator.pop(context);
       });
 
@@ -501,8 +582,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: const Text('Send'),
                 onPressed: () async {
                   if (_imageFile != null) {
-                    _taskUpload = await FirestoreService().uploadImage(
-                        File(_imageFile.path), state.userModel.id, Global.instance.userId);
+                    _taskUpload = await FirestoreService().uploadForumImage(
+                        File(_imageFile.path));
                     setState(() => uploadBool = true);
                   }
                 },
@@ -533,7 +614,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         type: 'image',
                       );
-                      messageBloc.add(SendMessageEvent(messageModel: model));
+                      messageBloc.add(SendForumMessageEvent(messageModel: model));
                       Navigator.pop(context);
                     });
                   }

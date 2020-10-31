@@ -1,13 +1,16 @@
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/forum/forum_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/chat_cell.dart';
+import 'package:big_bank_take_little_bank/screens/main/message/chat_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ChatListScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
@@ -28,12 +31,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    chatScreenBloc = BlocProvider.of<ChatScreenBloc>(Global.instance.homeContext);
+    chatScreenBloc = ChatScreenBloc(ChatScreenState());
+    chatScreenBloc.add(ChatInitEvent());
     super.initState();
   }
 
   @override
   void dispose() {
+    chatScreenBloc.close();
     super.dispose();
   }
 
@@ -53,7 +58,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return BlocListener(
       cubit: chatScreenBloc,
       listener: (BuildContext context, ChatScreenState state) async {
-        if (state is NotificationScreenSuccess) {
+        if (state is ChatScreenSuccess) {
         } else if (state is ChatScreenFailure) {
           showCupertinoDialog(context: context, builder: (BuildContext context) {
             return CupertinoAlertDialog(
@@ -104,7 +109,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 left: 24,
                 right: 24,
                 bottom: 24,
-                child: state.messageList.length > 0 ? _notificationListWidget(state): Center(
+                child: state.chatList.length > 0 ? _chatListWidget(state): Center(
                   child: Align(
                     alignment: Alignment.center,
                     child: AppLabel(
@@ -133,27 +138,102 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  Widget _notificationListWidget(ChatScreenState state) {
+  Widget _chatListWidget(ChatScreenState state) {
     return Container(
       child: ListView.separated(
         shrinkWrap: false,
         itemBuilder: (context, index) {
+          if (index == 0) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: ForumScreen(
+                      screenBloc: widget.screenBloc,
+                    ),
+                    type: PageTransitionType.fade,
+                    duration: Duration(milliseconds: 300),
+                  ),
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.only(top: 8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF5c9c85),
+                      Color(0xFF35777e),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.5),
+                      spreadRadius: 1.0,
+                      offset: Offset(
+                        4.0,
+                        4.0,
+                      ),
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.only(
+                  left: 6,
+                  top: 6,
+                  bottom: 12,
+                  right: 12,
+                ),
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF0e3d48),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Center(
+                      child: Text(
+                        'Forum',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                  ) ,
+                ),
+              ),
+            );
+          }
           return ChatCell(
-            messageModel: state.messageList[index],
+            chatModel: state.chatList[index - 1],
             controller: slidableController,
             onDelete: () {
               print('delete notifications');
-              chatScreenBloc.add(DeleteChatEvent(messageModel: state.messageList[index]));
+              chatScreenBloc.add(DeleteChatEvent(chatModel: state.chatList[index - 1]));
             },
             onTap: () {
-
+              Navigator.push(
+                context,
+                PageTransition(
+                  child: ChatScreen(
+                    screenBloc: widget.screenBloc,
+                    chatModel: state.chatList[index - 1],
+                  ),
+                  type: PageTransitionType.fade,
+                  duration: Duration(milliseconds: 300),
+                ),
+              );
             },
           );
         },
         separatorBuilder: (context, index) {
           return Divider(color: Colors.transparent,);
         },
-        itemCount: state.messageList.length,
+        itemCount: state.chatList.length + 1,
       ),
     );
   }

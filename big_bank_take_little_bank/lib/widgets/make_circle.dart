@@ -49,13 +49,24 @@ class _CustomDecorationPainter extends BoxPainter {
       ..style = PaintingStyle.stroke; //important set stroke style
 
     Path path = Path();
-    for (int i = 1; i < 8; i++) {
-      path
-        ..moveTo(
-            bounds.size.width / 2 + 30.0 * cos(animation.value), bounds.size.height * 2 / 5 + 30.0 * sin(animation.value))
-        ..addOval(Rect.fromCircle(center: Offset(
-            bounds.size.width / 2 + 30.0 * cos(animation.value), bounds.size.height * 2 / 5 + 30.0 * sin(animation.value)),
-            radius: i.toDouble() * 80 + 40));
+    if (animation != null) {
+      for (int i = 1; i < 8; i++) {
+        path
+          ..moveTo(
+              bounds.size.width / 2 + 30.0 * cos(animation.value), bounds.size.height * 2 / 5 + 30.0 * sin(animation.value))
+          ..addOval(Rect.fromCircle(center: Offset(
+              bounds.size.width / 2 + 30.0 * cos(animation.value), bounds.size.height * 2 / 5 + 30.0 * sin(animation.value)),
+              radius: i.toDouble() * 80 + 40));
+      }
+    } else {
+      for (int i = 1; i < 8; i++) {
+        path
+          ..moveTo(
+              bounds.size.width / 2 + 30.0, bounds.size.height * 2 / 5 + 30.0)
+          ..addOval(Rect.fromCircle(center: Offset(
+              bounds.size.width / 2 + 30.0, bounds.size.height * 2 / 5 + 30.0),
+              radius: i.toDouble() * 80 + 40));
+      }
     }
 
     canvas.drawPath(path, paint);

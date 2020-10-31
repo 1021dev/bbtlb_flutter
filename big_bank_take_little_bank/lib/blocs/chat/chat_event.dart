@@ -1,4 +1,5 @@
 
+import 'package:big_bank_take_little_bank/models/chat_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/notification_model.dart';
 import 'package:equatable/equatable.dart';
@@ -18,13 +19,13 @@ class ChatInitEvent extends ChatScreenEvent {
 
 @immutable
 class ChatScreenLoadEvent extends ChatScreenEvent {
-  final List<MessageModel> messageList;
+  final List<ChatModel> chatList;
 
-  ChatScreenLoadEvent({this.messageList,});
+  ChatScreenLoadEvent({this.chatList,});
 }
 
 @immutable
 class DeleteChatEvent extends ChatScreenEvent {
-  final MessageModel messageModel;
-  DeleteChatEvent({this.messageModel});
+  final ChatModel chatModel;
+  DeleteChatEvent({this.chatModel});
 }

@@ -464,8 +464,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
                   context,
                   PageTransition(
                     child: ChatScreen(
-                      homeContext: Global.instance.homeContext,
                       screenBloc: widget.screenBloc,
+                      user: userModel,
                     )  ,
                     type: PageTransitionType.fade,
                     duration: Duration(milliseconds: 300),
@@ -981,8 +981,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>  with S
         progress = 0;
       } else {
         progress = MediaQuery.of(context).size.width * 0.6 * userModel.totalRequest.toDouble() / (userModel.totalRequest.toDouble() + userModel.totalDeclined.toDouble());
-  }
-}
+      }
+    }
     return SizedBox(
       height: 200,
       child: Stack(

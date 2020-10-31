@@ -108,6 +108,7 @@ class UserModel {
       location: json['location'] as String ?? '',
       loginAt: (json['loginAt'] as Timestamp).toDate() ?? DateTime.now(),
       notification: json['notification'] as bool ?? false,
+      image: json['image'] as String ?? '',
       points: json['points'] as num ?? 100,
       profession: json['profession'] as String ?? '',
       rewardsAt: (json['rewardsAt'] as Timestamp).toDate() ?? DateTime.now(),

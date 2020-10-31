@@ -1,35 +1,29 @@
-import 'package:big_bank_take_little_bank/models/message_model.dart';
-import 'package:big_bank_take_little_bank/models/notification_model.dart';
+import 'package:big_bank_take_little_bank/models/chat_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreenState extends Equatable {
   final bool isLoading;
-  final List<MessageModel> messageList;
-  final List<MessageModel> unreadMessages;
+  final List<ChatModel> chatList;
 
   ChatScreenState({
     this.isLoading = false,
-    this.messageList = const [],
-    this.unreadMessages = const [],
+    this.chatList = const [],
   });
 
   @override
   List<Object> get props => [
     isLoading,
-    messageList,
-    unreadMessages,
+    chatList,
   ];
 
   ChatScreenState copyWith({
     bool isLoading,
-    List<MessageModel> messageList,
-    List<MessageModel> unreadMessages,
+    List<ChatModel> chatList,
   }) {
     return ChatScreenState(
       isLoading: isLoading ?? this.isLoading,
-      messageList: messageList ?? this.messageList,
-      unreadMessages: unreadMessages ?? this.unreadMessages,
+      chatList: chatList ?? this.chatList,
     );
   }
 }

@@ -401,7 +401,7 @@ class _GalleryDetailScreenState extends State<GalleryDetailScreen>  with SingleT
                             child: Image.asset('assets/images/btn_send.png'),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
