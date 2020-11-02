@@ -109,16 +109,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 left: 24,
                 right: 24,
                 bottom: 24,
-                child: state.chatList.length > 0 ? _chatListWidget(state): Center(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: AppLabel(
-                      title: 'Currently you don\'t have any messages',
-                      maxLine: 2,
-                      alignment: TextAlign.center,
-                    ),
-                  ),
-                ),
+                child: _chatListWidget(state),
               ),
             ],
           ),

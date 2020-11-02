@@ -3,17 +3,14 @@ import 'dart:io';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
-import 'package:big_bank_take_little_bank/models/chat_model.dart';
 import 'package:big_bank_take_little_bank/models/chat_user_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
-import 'package:big_bank_take_little_bank/screens/main/message/message_cell.dart';
+import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
-import 'package:big_bank_take_little_bank/widgets/profile_image_view.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +19,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'forum_message_cell.dart';
 
@@ -404,45 +402,59 @@ class _ForumScreenState extends State<ForumScreen> {
           future: FirestoreService().getUserWithId(userId),
           builder: (context, snap) {
             UserModel user = snap.data;
-            return Container(
-              padding: EdgeInsets.all(2),
-              width: 100,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      ProfileAvatar(
-                        avatarSize: 44,
-                        image: user.image ?? '',
-                      ),
-                      Container(
-                        width: 16,
-                        height: 16,
-                        alignment: Alignment.bottomRight,
-                        decoration: BoxDecoration(
-                            color: user.isOnline ? Colors.green: Colors.grey,
-                            border: Border.all(
-                              color: Color(0xFF1b5c6b),
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8)
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 2,),
-                  Flexible(
-                    child: AppLabel(
-                      title: user.name ?? '',
-                      fontSize: 12,
-                      maxLine: 2,
-                      shadow: true,
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: OtherUserProfileScreen(
+                      screenBloc: widget.screenBloc,
+                      userModel: user,
                     ),
+                    type: PageTransitionType.fade,
                   ),
-                ],
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(2),
+                width: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        ProfileAvatar(
+                          avatarSize: 44,
+                          image: user != null ? user.image ?? '': '',
+                        ),
+                        Container(
+                          width: 16,
+                          height: 16,
+                          alignment: Alignment.bottomRight,
+                          decoration: BoxDecoration(
+                              color: user != null ? user.isOnline ? Colors.green: Colors.grey: Colors.grey,
+                              border: Border.all(
+                                color: Color(0xFF1b5c6b),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8)
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 2,),
+                    Flexible(
+                      child: AppLabel(
+                        title: user != null ? user.name ?? '': '',
+                        fontSize: 12,
+                        maxLine: 2,
+                        shadow: true,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
