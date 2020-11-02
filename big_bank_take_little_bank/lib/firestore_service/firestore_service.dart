@@ -431,6 +431,17 @@ class FirestoreService {
         .collection('chats')
         .doc('forum')
         .collection('messages')
+        .where('replyId', isNull: true)
+        .orderBy('createdAt', descending: false)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamForumReply(String messageId) {
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .doc('forum')
+        .collection('messages')
+        .where('replyId', isEqualTo: messageId)
         .orderBy('createdAt', descending: false)
         .snapshots();
   }
@@ -503,6 +514,14 @@ class FirestoreService {
       await ref.update({'id': ref.id});
       await tempDb.collection('chats').doc(roomId).update({'updatedAt': now});
     }
+  }
+
+  updateMessage({String id}) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance.collection('chats').doc('forum').collection('messages').doc(id).get();
+    int count = doc.data()['replyCount'] ?? 0;
+    return await doc.reference.update({
+      'count': count,
+    });
   }
 
   sendForumMessage({MessageModel model}) async {

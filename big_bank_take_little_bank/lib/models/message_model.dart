@@ -9,6 +9,8 @@ class MessageModel {
   String message;
   String type;
   bool isRead;
+  String replyId;
+  num replyCount;
 
   DocumentReference reference;
 
@@ -21,6 +23,8 @@ class MessageModel {
     this.reference,
     this.type,
     this.isRead,
+    this.replyId,
+    this.replyCount,
   });
 
   factory MessageModel.fromJson(Map<dynamic, dynamic> json) {
@@ -33,6 +37,8 @@ class MessageModel {
       updatedAt: (json['updatedAt'] as Timestamp).toDate() ?? DateTime.now(),
       type: json['type'] as String ?? 'public',
       isRead: json['isRead'] as bool ?? false,
+      replyId: json['replyId'] ?? '',
+      replyCount: json['replyCount'] as num ?? 0,
     );
   }
 
@@ -51,6 +57,8 @@ class MessageModel {
         'message': instance.message ?? '',
         'type': instance.type ?? 'public',
         'isRead': instance.isRead ?? false,
+        'replyId': instance.replyId ?? null,
+        'replyCount': instance.replyCount ?? 0,
       };
 
 }

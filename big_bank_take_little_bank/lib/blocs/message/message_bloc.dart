@@ -16,6 +16,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   StreamSubscription _messageSubscription;
   StreamSubscription _forumMessageSubscription;
   StreamSubscription _forumUsersSubscription;
+  StreamSubscription _forumReplayMessageSubscription;
 
   FirestoreService service = FirestoreService();
 
@@ -30,8 +31,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     } else if (event is ForumInitEvent) {
       yield* forumInit();
     } else if (event is MessageLoadEvent) {
-      List<MessageModel> unreadMessages = event.messageList.where((element) => element.isRead == false).toList();
-      yield state.copyWith(messageList: event.messageList, unreadMessages: unreadMessages);
+      // List<MessageModel> unreadMessages = event.messageList.where((element) => element.isRead == false).toList();
+      yield state.copyWith(messageList: event.messageList);
     } else if (event is ReadMessageEvent) {
       yield* readMessage(event.messageModel);
     } else if (event is DeleteMessageEvent) {
@@ -42,6 +43,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       yield state.copyWith(forumUsers: event.users);
     } else if (event is SendForumMessageEvent) {
       yield* sendForumMessage(event.messageModel);
+    } else if (event is ForumReplyInitEvent) {
+      yield* replayMessages(event.model);
+    } else if (event is MessageRepliesLoadEvent) {
+      yield state.copyWith(replyMessageList: event.messageList);
     }
   }
 
@@ -64,14 +69,16 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   }
 
   Stream<MessageState> forumInit() async* {
-    await _forumUsersSubscription?.cancel();
-    _forumUsersSubscription = service.streamForum().listen((event) {
+    await _forumMessageSubscription?.cancel();
+    _forumMessageSubscription = service.streamForum().listen((event) {
       List<MessageModel> messages = [];
       event.docs.forEach((element) {
         messages.add(MessageModel.fromJson(element.data()));
       });
+      messages = messages.reversed.toList();
       add(MessageLoadEvent(messageList: messages));
     });
+    await _forumUsersSubscription?.cancel();
     _forumUsersSubscription = service.streamForumUsers().listen((event) {
       List<String> users = [];
       if (event != null) {
@@ -88,6 +95,18 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         }
       }
       add(ForumUsersLoadEvent(users: users));
+    });
+  }
+
+  Stream<MessageState> replayMessages(MessageModel model) async* {
+    await _forumReplayMessageSubscription?.cancel();
+    _forumReplayMessageSubscription = service.streamForumReply(model.id).listen((event) {
+      print(event.docs);
+      List<MessageModel> messages = [];
+      event.docs.forEach((element) {
+        messages.add(MessageModel.fromJson(element.data()));
+      });
+      add(MessageRepliesLoadEvent(messageList : messages));
     });
   }
 
@@ -133,6 +152,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       users.add(model.user.userId);
       await service.updateForum(users: users);
     }
+    if (model.replyId != null) {
+      print(model.replyId);
+      await service.updateMessage(id: model.replyId);
+    }
     yield state.copyWith(isLoading: false);
   }
 
@@ -141,6 +164,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     _messageSubscription?.cancel();
     _forumMessageSubscription?.cancel();
     _forumUsersSubscription?.cancel();
+    _forumReplayMessageSubscription.cancel();
     return super.close();
   }
 }

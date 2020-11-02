@@ -7,6 +7,7 @@ import 'package:big_bank_take_little_bank/models/chat_user_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/forum/forum_reply_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
@@ -54,7 +55,6 @@ class _ForumScreenState extends State<ForumScreen> {
 
   @override
   void dispose() {
-    messageBloc.close();
     super.dispose();
   }
 
@@ -322,7 +322,6 @@ class _ForumScreenState extends State<ForumScreen> {
                             ),
                             type: 'text',
                           );
-
                           messageBloc.add(SendForumMessageEvent(messageModel: model));
                         }
                         messageController.clear();
@@ -483,6 +482,18 @@ class _ForumScreenState extends State<ForumScreen> {
             onTap: () {
 
             },
+            onReply: () {
+              Navigator.push(
+                context,
+                PageTransition(
+                  child: ForumReplyScreen(
+                    messageBloc: messageBloc,
+                    messageModel: state.messageList[index],
+                  ),
+                  type: PageTransitionType.fade,
+                ),
+              );
+            },
           );
         },
         separatorBuilder: (context, index) {
@@ -586,7 +597,7 @@ class _ForumScreenState extends State<ForumScreen> {
                   File image = await getImage(1);
                   setState(() {
                     _imageFile = image;
-                 });
+                  });
                 },
               ),
             if (_imageFile != null)

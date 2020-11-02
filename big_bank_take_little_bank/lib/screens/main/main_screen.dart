@@ -8,6 +8,7 @@ import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_requested_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/daily_rewards/daily_rewards_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/forum/forum_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
@@ -423,7 +424,19 @@ class _MainScreenContentState extends State<MainScreenContent>
           top: 0,
           child: RadialMenu(
             onTapMenu: (index) {
-              BlocProvider.of<MainScreenBloc>(context).add(UpdateScreenEvent(screenIndex: index));
+              if (index == 5) {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: ForumScreen(
+                      screenBloc: BlocProvider.of<MainScreenBloc>(context),
+                    ),
+                    type: PageTransitionType.fade,
+                  ),
+                );
+              } else {
+                BlocProvider.of<MainScreenBloc>(context).add(UpdateScreenEvent(screenIndex: index));
+              }
             },
           ),
         ),
@@ -604,12 +617,11 @@ class _MainScreenContentState extends State<MainScreenContent>
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
       case 5:
-        return ChatListScreen(
-          homeContext: context,
+        return ForumScreen(
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
       case 6:
-        return MessagesScreen(
+        return ChatListScreen(
           homeContext: context,
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );

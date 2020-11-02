@@ -14,13 +14,17 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class ForumMessageCell extends StatelessWidget {
   final MessageModel messageModel;
   final Function onTap;
+  final Function onReply;
   final Function onDelete;
   final SlidableController controller;
+  final bool isReply;
   ForumMessageCell({
     this.messageModel,
     this.onTap,
+    this.onReply,
     this.onDelete,
     this.controller,
+    this.isReply = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -88,54 +92,71 @@ class ForumMessageCell extends StatelessWidget {
                   child: messageModel.type == 'text'
                       ? Container(
                     padding: EdgeInsets.all(8),
-                    child: IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  FutureBuilder(
-                                    future: FirestoreService().getUserWithId(messageModel.user.userId),
-                                    builder: (context, snap) {
-                                      return AppLabel(
-                                        title: snap.hasData ? snap.data.name ?? '': '',
-                                        fontSize: 18,
-                                        shadow: true,
-                                      );
-                                    },
-                                  ),
-                                  AppLabel(
-                                    title: messageModel.message ?? '',
-                                    fontSize: 14,
-                                    maxLine: 100,
-                                    shadow: true,
-                                  ),
-                                ],
-                              ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            FutureBuilder(
+                              future: FirestoreService().getUserWithId(messageModel.user.userId),
+                              builder: (context, snap) {
+                                return AppLabel(
+                                  title: 'You',
+                                  fontSize: 18,
+                                  shadow: true,
+                                );
+                              },
+                            ),
+                            AppLabel(
+                              title: hour.toString() + ":" + minute.toString() + " " + ampm,
+                              fontSize: 10,
+                              shadow: false,
+                            ),
+                          ],
+                        ),
+                        AppLabel(
+                          title: messageModel.message ?? '',
+                          fontSize: 14,
+                          maxLine: 100,
+                          shadow: true,
+                        ),
+                        if (!isReply)  GestureDetector(
+                          onTap: onReply,
+                          child: Container(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: AppLabel(title: 'Reply', fontSize: 12,),
                             ),
                           ),
-                          AppLabel(
-                            title: hour.toString() + ":" + minute.toString() + " " + ampm,
-                            fontSize: 10,
-                            shadow: false,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ) : Container(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Container(
-                          padding: EdgeInsets.only(top: 8, right: 8),
-                          child: AppLabel(
-                            title: hour.toString() + ":" + minute.toString() + " " + ampm,
-                            fontSize: 10,
-                            shadow: false,
+                          padding: EdgeInsets.only(top: 8, right: 8, left: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              FutureBuilder(
+                                future: FirestoreService().getUserWithId(messageModel.user.userId),
+                                builder: (context, snap) {
+                                  return AppLabel(
+                                    title: 'You',
+                                    fontSize: 18,
+                                    shadow: true,
+                                  );
+                                },
+                              ),
+                              AppLabel(
+                                title: hour.toString() + ':' + minute.toString() + ' ' + ampm,
+                                fontSize: 10,
+                                shadow: false,
+                              ),
+                            ],
                           ),
                         ),
                         Container(
@@ -150,6 +171,13 @@ class ForumMessageCell extends StatelessWidget {
                             albumn: [messageModel.message ?? ''],
                             isVideo: false,
                             list: [messageModel.message ?? ''],
+                          ),
+                        ),
+                        if (!isReply)  GestureDetector(
+                          onTap: onReply,
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            child: AppLabel(title: 'Reply', fontSize: 12,),
                           ),
                         ),
                       ],
@@ -219,54 +247,71 @@ class ForumMessageCell extends StatelessWidget {
             child: messageModel.type == 'text'
                 ? Container(
               padding: EdgeInsets.all(8),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            FutureBuilder(
-                              future: FirestoreService().getUserWithId(messageModel.user.userId),
-                              builder: (context, snap) {
-                                return AppLabel(
-                                  title: snap.hasData ? snap.data.name ?? '': '',
-                                  fontSize: 18,
-                                  shadow: true,
-                                );
-                              },
-                            ),
-                            AppLabel(
-                              title: messageModel.message ?? '',
-                              fontSize: 14,
-                              maxLine: 100,
-                              shadow: true,
-                            ),
-                          ],
-                        ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      FutureBuilder(
+                        future: FirestoreService().getUserWithId(messageModel.user.userId),
+                        builder: (context, snap) {
+                          return AppLabel(
+                            title: snap.hasData ? snap.data.name ?? '': '',
+                            fontSize: 18,
+                            shadow: true,
+                          );
+                        },
+                      ),
+                      AppLabel(
+                        title: hour.toString() + ":" + minute.toString() + " " + ampm,
+                        fontSize: 10,
+                        shadow: false,
+                      ),
+                    ],
+                  ),
+                  AppLabel(
+                    title: messageModel.message ?? '',
+                    fontSize: 14,
+                    maxLine: 100,
+                    shadow: true,
+                  ),
+                  if (!isReply)  GestureDetector(
+                    onTap: onReply,
+                    child: Container(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: AppLabel(title: 'Reply', fontSize: 12,),
                       ),
                     ),
-                    AppLabel(
-                      title: hour.toString() + ":" + minute.toString() + " " + ampm,
-                      fontSize: 10,
-                      shadow: false,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ) : Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    padding: EdgeInsets.only(top: 8, right: 8),
-                    child: AppLabel(
-                      title: hour.toString() + ":" + minute.toString() + " " + ampm,
-                      fontSize: 10,
-                      shadow: false,
+                    padding: EdgeInsets.only(top: 8, right: 8, left: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FutureBuilder(
+                          future: FirestoreService().getUserWithId(messageModel.user.userId),
+                          builder: (context, snap) {
+                            return AppLabel(
+                              title: snap.hasData ? snap.data.name ?? '': '',
+                              fontSize: 18,
+                              shadow: true,
+                            );
+                          },
+                        ),
+                        AppLabel(
+                          title: hour.toString() + ':' + minute.toString() + ' ' + ampm,
+                          fontSize: 10,
+                          shadow: false,
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -281,6 +326,13 @@ class ForumMessageCell extends StatelessWidget {
                       albumn: [messageModel.message ?? ''],
                       isVideo: false,
                       list: [messageModel.message ?? ''],
+                    ),
+                  ),
+                  if (!isReply)  GestureDetector(
+                    onTap: onReply,
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      child: AppLabel(title: 'Reply', fontSize: 12,),
                     ),
                   ),
                 ],

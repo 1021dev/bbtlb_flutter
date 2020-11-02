@@ -100,16 +100,25 @@ class _ChatListScreenState extends State<ChatListScreen> {
             alignment: Alignment.topCenter,
             children: [
               Positioned(
-                top: 24,
+                top: 8,
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Image.asset('assets/images/bg_message_top.png',),
               ),
-             Positioned(
+              Positioned(
                 top: 124,
                 left: 24,
                 right: 24,
                 bottom: 24,
-                child: _chatListWidget(state),
+                child: state.chatList.length > 0 ? _chatListWidget(state): Center(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: AppLabel(
+                      title: 'Currently you don\'t have any messages',
+                      maxLine: 2,
+                      alignment: TextAlign.center,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -134,77 +143,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
       child: ListView.separated(
         shrinkWrap: false,
         itemBuilder: (context, index) {
-          if (index == 0) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    child: ForumScreen(
-                      screenBloc: widget.screenBloc,
-                    ),
-                    type: PageTransitionType.fade,
-                    duration: Duration(milliseconds: 300),
-                  ),
-                );
-              },
-              child: Container(
-                margin: EdgeInsets.only(top: 8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF5c9c85),
-                      Color(0xFF35777e),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, 0.5),
-                      spreadRadius: 1.0,
-                      offset: Offset(
-                        4.0,
-                        4.0,
-                      ),
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.only(
-                  left: 6,
-                  top: 6,
-                  bottom: 12,
-                  right: 12,
-                ),
-                child: Container(
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF0e3d48),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Center(
-                      child: Text(
-                        'Forum',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                  ) ,
-                ),
-              ),
-            );
-          }
           return ChatCell(
-            chatModel: state.chatList[index - 1],
+            chatModel: state.chatList[index],
             controller: slidableController,
             onDelete: () {
               print('delete notifications');
-              chatScreenBloc.add(DeleteChatEvent(chatModel: state.chatList[index - 1]));
+              chatScreenBloc.add(DeleteChatEvent(chatModel: state.chatList[index]));
             },
             onTap: () {
               Navigator.push(
@@ -212,7 +156,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 PageTransition(
                   child: ChatScreen(
                     screenBloc: widget.screenBloc,
-                    chatModel: state.chatList[index - 1],
+                    chatModel: state.chatList[index],
                   ),
                   type: PageTransitionType.fade,
                   duration: Duration(milliseconds: 300),
@@ -224,7 +168,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         separatorBuilder: (context, index) {
           return Divider(color: Colors.transparent,);
         },
-        itemCount: state.chatList.length + 1,
+        itemCount: state.chatList.length,
       ),
     );
   }

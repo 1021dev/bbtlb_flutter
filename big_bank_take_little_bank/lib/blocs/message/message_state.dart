@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class MessageState extends Equatable {
   final bool isLoading;
   final List<MessageModel> messageList;
-  final List<MessageModel> unreadMessages;
+  final List<MessageModel> replyMessageList;
   final ChatModel chatModel;
   final UserModel userModel;
   final List<String> forumUsers;
@@ -15,7 +15,7 @@ class MessageState extends Equatable {
   MessageState({
     this.isLoading = false,
     this.messageList = const [],
-    this.unreadMessages = const [],
+    this.replyMessageList = const [],
     this.chatModel,
     this.userModel,
     this.forumUsers = const [],
@@ -25,7 +25,7 @@ class MessageState extends Equatable {
   List<Object> get props => [
     isLoading,
     messageList,
-    unreadMessages,
+    replyMessageList,
     chatModel,
     userModel,
     forumUsers,
@@ -34,7 +34,7 @@ class MessageState extends Equatable {
   MessageState copyWith({
     bool isLoading,
     List<MessageModel> messageList,
-    List<MessageModel> unreadMessages,
+    List<MessageModel> replyMessageList,
     ChatModel chatModel,
     UserModel userModel,
     List<String> forumUsers,
@@ -42,7 +42,7 @@ class MessageState extends Equatable {
     return MessageState(
       isLoading: isLoading ?? this.isLoading,
       messageList: messageList ?? this.messageList,
-      unreadMessages: unreadMessages ?? this.unreadMessages,
+      replyMessageList: replyMessageList ?? this.replyMessageList,
       chatModel: chatModel ?? this.chatModel,
       userModel: userModel ?? this.userModel,
       forumUsers: forumUsers ?? this.forumUsers,

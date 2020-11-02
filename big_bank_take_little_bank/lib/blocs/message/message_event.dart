@@ -25,6 +25,13 @@ class MessageInitEvent extends MessageEvent {
 class ForumInitEvent extends MessageEvent {}
 
 @immutable
+class ForumReplyInitEvent extends MessageEvent {
+  final MessageModel model;
+
+  ForumReplyInitEvent({this.model});
+}
+
+@immutable
 class SendMessageEvent extends MessageEvent {
   final MessageModel messageModel;
   SendMessageEvent({this.messageModel});
@@ -41,6 +48,13 @@ class MessageLoadEvent extends MessageEvent {
   final List<MessageModel> messageList;
 
   MessageLoadEvent({this.messageList,});
+}
+
+@immutable
+class MessageRepliesLoadEvent extends MessageEvent {
+  final List<MessageModel> messageList;
+
+  MessageRepliesLoadEvent({this.messageList,});
 }
 
 @immutable
