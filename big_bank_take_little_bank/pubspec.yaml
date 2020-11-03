@@ -92,6 +92,7 @@ dev_dependencies:
   chewie: ^0.9.10
   video_player: 0.10.11+1
   flutter_simple_video_player: ^0.0.9
+  photo_manager: 0.5.8
 
 flutter:
   uses-material-design: true

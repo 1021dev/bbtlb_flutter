@@ -8,6 +8,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 class ScreenUtil {
   
@@ -131,11 +132,10 @@ Future<bool> saveNetworkImageToPhoto(String url, {bool useCache = true}) async {
   if (kIsWeb) {
     return false;
   }
-  // final Uint8List data = await getNetworkImageData(url, useCache: useCache);
-  // // var filePath = await ImagePickerSaver.saveFile(fileData: data);
-  // // return filePath != null && filePath != '';
-  // final AssetEntity imageEntity = await PhotoManager.editor.saveImage(data);
+  final Uint8List data = await getNetworkImageData(url, useCache: useCache);
+  // var filePath = await ImagePickerSaver.saveFile(fileData: data);
+  // return filePath != null && filePath != '';
+  final AssetEntity imageEntity = await PhotoManager.editor.saveImage(data); // nullable
 
-  // return imageEntity != null;
-  return false;
+  return imageEntity != null;
 }
