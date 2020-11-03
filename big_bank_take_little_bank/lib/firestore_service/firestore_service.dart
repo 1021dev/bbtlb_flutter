@@ -519,8 +519,10 @@ class FirestoreService {
   updateMessage({String id}) async {
     DocumentSnapshot doc = await FirebaseFirestore.instance.collection('chats').doc('forum').collection('messages').doc(id).get();
     int count = doc.data()['replyCount'] ?? 0;
+
+    print(count);
     return await doc.reference.update({
-      'count': count,
+      'replyCount': count + 1,
     });
   }
 

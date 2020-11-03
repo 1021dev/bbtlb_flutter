@@ -126,7 +126,7 @@ class ForumMessageCell extends StatelessWidget {
                           child: Container(
                             child: Align(
                               alignment: Alignment.centerRight,
-                              child: AppLabel(title: 'Reply', fontSize: 12,),
+                              child: AppLabel(title: 'Reply ${messageModel.replyCount ?? 0}', fontSize: 12,),
                             ),
                           ),
                         ),
@@ -177,7 +177,7 @@ class ForumMessageCell extends StatelessWidget {
                           onTap: onReply,
                           child: Container(
                             padding: EdgeInsets.all(8),
-                            child: AppLabel(title: 'Reply', fontSize: 12,),
+                            child: AppLabel(title: 'Reply ${messageModel.replyCount ?? 0}', fontSize: 12,),
                           ),
                         ),
                       ],
@@ -281,7 +281,7 @@ class ForumMessageCell extends StatelessWidget {
                     child: Container(
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: AppLabel(title: 'Reply', fontSize: 12,),
+                        child: AppLabel(title: 'Reply ${messageModel.replyCount ?? 0}', fontSize: 12,),
                       ),
                     ),
                   ),
@@ -328,11 +328,11 @@ class ForumMessageCell extends StatelessWidget {
                       list: [messageModel.message ?? ''],
                     ),
                   ),
-                  if (!isReply)  GestureDetector(
+                  if (!isReply) GestureDetector(
                     onTap: onReply,
                     child: Container(
                       padding: EdgeInsets.all(8),
-                      child: AppLabel(title: 'Reply', fontSize: 12,),
+                      child: AppLabel(title: 'Reply ${messageModel.replyCount ?? 0}', fontSize: 12,),
                     ),
                   ),
                 ],
