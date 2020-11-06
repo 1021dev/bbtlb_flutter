@@ -92,7 +92,9 @@ dev_dependencies:
   chewie: ^0.9.10
   video_player: 0.10.11+1
   flutter_simple_video_player: ^0.0.9
-  photo_manager: 0.5.8
+  photo_manager:
+    git:
+      url: https://github.com/CaiJingLong/flutter_photo_manager
 
 flutter:
   uses-material-design: true
