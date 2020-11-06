@@ -433,12 +433,12 @@ class _ForumScreenState extends State<ForumScreen> {
                           height: 16,
                           alignment: Alignment.bottomRight,
                           decoration: BoxDecoration(
-                              color: user != null ? user.isOnline ? Colors.green: Colors.grey: Colors.grey,
-                              border: Border.all(
-                                color: Color(0xFF1b5c6b),
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(8)
+                            color: user != null ? user.isOnline ? Colors.green: Colors.grey: Colors.grey,
+                            border: Border.all(
+                              color: Color(0xFF1b5c6b),
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ],

@@ -40,7 +40,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
   @override
   void initState() {
     super.initState();
-    galleryBloc = GalleryBloc(GalleryInitState(userModel: widget.userModel));
+    galleryBloc = GalleryBloc(GalleryState());
     galleryBloc.add(CheckGallery(userModel: widget.userModel));
     controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
@@ -219,7 +219,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                           child: isDeleteMode ? Image.asset('assets/images/ic_delete_selected.png') : Image.asset('assets/images/ic_delete.png'),
                         ),
                       ): Container(),
-                      state is GalleryLoadState ? Positioned(
+                      Positioned(
                         top: 56,
                         right: 40,
                         left: 30,
@@ -393,7 +393,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
                             }),
                           ),
                         ),
-                      ): Container(),
+                      ),
                     ],
                   ),
                 ),
@@ -416,7 +416,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
             },
           ),
         ),
-        state is GalleryInitState ? Positioned(
+        state.isLoading ? Positioned(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Container(
@@ -426,7 +426,7 @@ class _GalleryScreenState extends State<GalleryScreen>  with SingleTickerProvide
               size: 50.0,
             ),
           ),
-        ): Container()
+        ): Container(),
       ],
     );
   }

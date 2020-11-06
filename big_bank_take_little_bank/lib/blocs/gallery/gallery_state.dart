@@ -3,27 +3,16 @@ import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-abstract class GalleryState extends Equatable {
-
-  GalleryState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class GalleryInitState extends GalleryState {
+class GalleryState extends Equatable {
+  final bool isLoading;
   final UserModel userModel;
-  GalleryInitState({this.userModel});
-}
-
-class GalleryLoadState extends GalleryState{
   final List<GalleryModel> galleryList;
-  final UserModel userModel;
   final double uploadProgress;
   final bool isUploading;
   // final List<LikeModel> userLikeList;
 
-  GalleryLoadState({
+  GalleryState({
+    this.isLoading = false,
     this.galleryList = const [],
     this.userModel,
     this.uploadProgress = 0.0,
@@ -33,20 +22,23 @@ class GalleryLoadState extends GalleryState{
 
   @override
   List<Object> get props => [
+    isLoading,
     galleryList,
     userModel,
     uploadProgress,
     isUploading,
     // userLikeList,
   ];
-  GalleryLoadState copyWith({
+  GalleryState copyWith({
+    bool isLoading,
     List<GalleryModel> galleryList,
     UserModel userModel,
     double uploadProgress,
     bool isUploading,
     // List<LikeModel> userLikeList,
   }) {
-    return GalleryLoadState(
+    return GalleryState(
+      isLoading: isLoading ?? this.isLoading,
       galleryList: galleryList ?? this.galleryList,
       userModel: userModel ?? this.userModel,
       uploadProgress: uploadProgress ?? this.uploadProgress,

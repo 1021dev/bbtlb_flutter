@@ -1,5 +1,6 @@
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
@@ -18,6 +19,7 @@ import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
 import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
+import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:big_bank_take_little_bank/widgets/pulse_widget.dart';
 import 'package:big_bank_take_little_bank/widgets/radial_menu.dart';
@@ -322,7 +324,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
                   },
                 );
               }
-              },
+            },
           ),
           BlocListener<ChallengeBloc, ChallengeState>(
             cubit: challengeBloc,
@@ -345,15 +347,27 @@ class MainScreenContent extends StatefulWidget {
 }
 
 class _MainScreenContentState extends State<MainScreenContent>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
 
   AnimationController _controller;
+  AnimationController ringsController;
+  Animation<double> ringTransition;
 
   @override
   void initState() {
     super.initState();
     _controller = new AnimationController(
       vsync: this,
+    );
+    ringsController = new AnimationController(vsync: this);
+    ringTransition = Tween<double>(
+      begin: 0.0,
+      end: -2 * pi,
+    ).animate(
+      CurvedAnimation(
+        parent: ringsController,
+        curve: Curves.linear,
+      ),
     );
     _initAdMob();
     _startAnimation();
@@ -362,6 +376,7 @@ class _MainScreenContentState extends State<MainScreenContent>
   @override
   void dispose() {
     _controller.dispose();
+    ringsController.dispose();
     super.dispose();
   }
 
@@ -371,43 +386,73 @@ class _MainScreenContentState extends State<MainScreenContent>
     _controller.repeat(
       period: Duration(seconds: 1),
     );
+    ringsController.repeat(
+      period: Duration(seconds: 2),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/images/bg_home.png"),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        resizeToAvoidBottomInset: true,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            BlocBuilder<MainScreenBloc, MainScreenState>(
-              builder: (BuildContext context, MainScreenState state) {
-                if (state is MainScreenLoadState) {
-                  return _body(state, context);
-                }
-                return Positioned(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: Container(
-                    color: Colors.black12,
-                    child: SpinKitDoubleBounce(
-                      color: Colors.red,
-                      size: 50.0,
-                    ),
-                  ),
-                );
-              },
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: true,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xff0e5073),
+                  Color(0xff35996a),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
-          ],
-        ),
+          ),
+          AnimatedBuilder(
+            animation: ringsController,
+            builder: (context, builder) {
+              return Transform(
+                transform: Matrix4.identity()..translate(
+                  30.0 * cos(ringTransition.value),
+                  30.0 * sin(ringTransition.value),
+                ),
+                child: Container(
+                  // width: MediaQuery.of(context).size.height * 1.2,
+                  // height: MediaQuery.of(context).size.height * 1.2,
+                  decoration: MakeCircle(
+                    animation: ringTransition,
+                    strokeWidth: 36,
+                    strokeCap: StrokeCap.square,
+                  ),
+                  // child: Image.asset('assets/images/rings.png', fit: BoxFit.cover,),
+                ),
+              );
+            },
+          ),
+          BlocBuilder<MainScreenBloc, MainScreenState>(
+            builder: (BuildContext context, MainScreenState state) {
+              if (state is MainScreenLoadState) {
+                return _body(state, context);
+              }
+              return Positioned(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Container(
+                  color: Colors.black12,
+                  child: SpinKitDoubleBounce(
+                    color: Colors.red,
+                    size: 50.0,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

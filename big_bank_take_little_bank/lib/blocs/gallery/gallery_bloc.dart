@@ -14,7 +14,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
   GalleryBloc(GalleryState initialState) : super(initialState);
   StreamSubscription _gallerySubscription;
   GalleryState get initialState {
-    return GalleryInitState();
+    return GalleryState();
   }
 
   FirestoreService service = FirestoreService();
@@ -24,7 +24,7 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
     if (event is CheckGallery) {
       yield* checkGallery(event.userModel);
     } else if (event is GalleryLoadedEvent) {
-      yield GalleryLoadState(galleryList: event.galleryList, userModel: event.userModel);
+      yield state.copyWith(galleryList: event.galleryList, userModel: event.userModel);
       // yield* loadUserLikes(event.userModel);
     } else if (event is CreateGalleryEvent) {
       yield* createGallery(event.uid, event.galleryModel, event.file);
@@ -49,32 +49,23 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
   }
 
   Stream<GalleryState> createGallery(String uid, GalleryModel galleryModel, File file) async* {
-    final currentState = state;
-    if (currentState is GalleryLoadState) {
-      yield currentState.copyWith(isUploading: true);
-    }
+    yield state.copyWith(isUploading: true);
     StorageReference ref = FirebaseStorage.instance.ref().child('gallery').child(uid).child(galleryModel.id);
     StorageUploadTask task = ref.putFile(file);
     task.events.listen((event) async* {
       double progress = event.snapshot.bytesTransferred.toDouble();
       print(progress);
 
-      if (currentState is GalleryLoadState) {
-        yield currentState.copyWith(uploadProgress: progress);
-      }
+      yield state.copyWith(uploadProgress: progress);
     }).onError((error) async* {
       print(error.toString());
-      if (currentState is GalleryLoadState) {
-        yield currentState.copyWith(isUploading: false);
-      }
+      yield state.copyWith(isUploading: false);
     });
     StorageTaskSnapshot snap = await task.onComplete;
     dynamic url = await snap.ref.getDownloadURL();
     galleryModel.image = url.toString();
     await service.createGallery(uid, galleryModel);
-    if (currentState is GalleryLoadState) {
-      yield currentState.copyWith(isUploading: false);
-    }
+    yield state.copyWith(isUploading: false);
     yield GallerySuccess();
   }
 
