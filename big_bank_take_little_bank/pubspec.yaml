@@ -80,7 +80,7 @@ dependencies:
   animated_text_kit: ^2.4.1
   animated_widgets: ^1.0.6
   apple_sign_in: ^0.1.0
-
+  google_maps_flutter: ^1.0.6
 dev_dependencies:
   image_res: ^0.2.3
   flutter_test:

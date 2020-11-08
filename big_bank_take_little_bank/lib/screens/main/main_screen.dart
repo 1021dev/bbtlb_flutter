@@ -15,6 +15,7 @@ import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profil
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/chat_list_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/newar_by/map_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
@@ -655,7 +656,7 @@ class _MainScreenContentState extends State<MainScreenContent>
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
       case 3:
-        return Container();
+        return MapScreen();
       case 4:
         return HomeScreen(
           homeContext: context,

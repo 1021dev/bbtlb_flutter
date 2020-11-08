@@ -21,6 +21,8 @@
         android:name=".Application"
         android:label="BigBankTakeLittleBank"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA9BTVAM4cgpEJzIni1LC5DqF2RmxlK0Eo"/>
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-8790458672355136~4448279269"/>
