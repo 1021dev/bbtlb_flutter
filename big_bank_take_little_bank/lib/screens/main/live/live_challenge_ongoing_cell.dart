@@ -76,7 +76,7 @@ class _LiveChallengeOnGoingCellState extends State<LiveChallengeOnGoingCell> {
               m = 0;
             }
             return GestureDetector(
-              onTap: widget.onTap(widget.challengeModel),
+              onTap: widget.onTap,
               child: Container(
                 width: width,
                 height: height,
@@ -114,7 +114,19 @@ class _LiveChallengeOnGoingCellState extends State<LiveChallengeOnGoingCell> {
                         bottom: 12,
                         right: 12,
                       ),
-                      child: Row(
+                    ),
+                    Positioned(
+                      child: Image.asset('assets/images/ic_live_vs.png'),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 24),
+                      padding: EdgeInsets.only(
+                        left: 6,
+                        top: 6,
+                        bottom: 12,
+                        right: 12,
+                      ),
+                      child:  Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
@@ -191,9 +203,6 @@ class _LiveChallengeOnGoingCellState extends State<LiveChallengeOnGoingCell> {
                           )
                         ],
                       ),
-                    ),
-                    Positioned(
-                      child: Image.asset('assets/images/ic_live_vs.png'),
                     ),
                     Positioned(
                       left: 0,

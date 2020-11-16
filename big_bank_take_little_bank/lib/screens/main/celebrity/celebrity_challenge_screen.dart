@@ -1,35 +1,33 @@
+import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
-import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
-import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/live/live_challenge_finished_cell.dart';
+import 'package:big_bank_take_little_bank/screens/main/live/live_challenge_ongoing_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/message_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_request_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_scheduled_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:page_transition/page_transition.dart';
 
-import 'live_challenge_finished_cell.dart';
-import 'live_challenge_ongoing_cell.dart';
-
-class LiveChallengeScreen extends StatefulWidget {
+class CelebrityChallengeScreen extends StatefulWidget {
   final MainScreenBloc screenBloc;
   final BuildContext homeContext;
-  LiveChallengeScreen({Key key, this.screenBloc, this.homeContext}) : super(key: key);
+  CelebrityChallengeScreen({Key key, this.screenBloc, this.homeContext}) : super(key: key);
 
   @override
-  _LiveChallengeScreenState createState() => _LiveChallengeScreenState();
+  _CelebrityChallengeScreenState createState() => _CelebrityChallengeScreenState();
 }
 
-class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
+class _CelebrityChallengeScreenState extends State<CelebrityChallengeScreen> with TickerProviderStateMixin {
   ChallengeBloc challengeBloc;
 // a key to set on our Text widget, so we can measure later
   GlobalKey myTextKey = GlobalKey();
@@ -38,6 +36,10 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
   final TextEditingController messageController = new TextEditingController();
   final FocusNode messageFocus = new FocusNode();
 
+  AnimationController _controller;
+  AnimationController ringsController;
+  Animation<double> ringTransition;
+
   int currentChallengeType = 0;
   int currentIndex = 0;
   bool isPrivate = false;
@@ -45,13 +47,37 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
   @override
   void initState() {
     challengeBloc = BlocProvider.of<ChallengeBloc>(Global.instance.homeContext);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _recordSize());
+    _controller = new AnimationController(
+      vsync: this,
+    );
+    ringsController = new AnimationController(vsync: this);
+    ringTransition = Tween<double>(
+      begin: 0.0,
+      end: -2 * pi,
+    ).animate(
+      CurvedAnimation(
+        parent: ringsController,
+        curve: Curves.linear,
+      ),
+    );
+    _startAnimation();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _startAnimation() {
+    // _controller.stop();
+    // _controller.reset();
+    _controller.repeat(
+      period: Duration(seconds: 1),
+    );
+    ringsController.repeat(
+      period: Duration(seconds: 2),
+    );
   }
 
   @override
@@ -63,19 +89,11 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
       child: BlocBuilder<ChallengeBloc, ChallengeState>(
         cubit: challengeBloc,
         builder: (BuildContext context, ChallengeState state) {
-          return Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/bg_home.png"),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              resizeToAvoidBottomPadding: true,
-              resizeToAvoidBottomInset: true,
-              body: _body(state),
-            ),
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            resizeToAvoidBottomPadding: true,
+            resizeToAvoidBottomInset: true,
+            body: _body(state),
           );
         },
       ),
@@ -93,11 +111,46 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
     return Stack(
       fit: StackFit.expand,
       children: [
+        Container(
+          width: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xff040404),
+                Color(0xffc9291c),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        AnimatedBuilder(
+          animation: ringsController,
+          builder: (context, builder) {
+            return Transform(
+              transform: Matrix4.identity()..translate(
+                30.0 * cos(ringTransition.value),
+                30.0 * sin(ringTransition.value),
+              ),
+              child: Container(
+                // width: MediaQuery.of(context).size.height * 1.2,
+                // height: MediaQuery.of(context).size.height * 1.2,
+                decoration: MakeCircle(
+                  animation: ringTransition,
+                  strokeWidth: 36,
+                  strokeCap: StrokeCap.square,
+                ),
+                // child: Image.asset('assets/images/rings.png', fit: BoxFit.cover,),
+              ),
+            );
+          },
+        ),
         Positioned(
           top: 0,
           right: 0,
           left: 0,
-          child: Image.asset('assets/images/bg_top_bar_trans.png', fit: BoxFit.fill,),
+          child: Image.asset('assets/images/celebrity_top_bar.png', fit: BoxFit.fill,),
         ),
         SafeArea(
           child: Stack(
@@ -110,10 +163,10 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
                 bottom: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/bg_stats.png',),
-                      fit: BoxFit.fill,
-                    )
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/celebrity_challenge_body.png',),
+                        fit: BoxFit.fill,
+                      )
                   ),
                   padding: EdgeInsets.only(left: 16, right: 16, top: 16),
                   child: Column(
@@ -291,7 +344,7 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
                         ),
                       ): Container(),
                       Expanded(
-                        child: _challengeListWidget(state)
+                          child: _challengeListWidget(state)
                       ),
                     ],
                   ),
@@ -300,125 +353,9 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
               Positioned(
                 top: 8,
                 width: MediaQuery.of(context).size.width * 0.8,
-                child: Column(
-                  children: [
-                    Text(
-                      'CHALLENGES',
-                      key: myTextKey,
-                      style: new TextStyle(
-                        fontSize: 28.0,
-                        fontWeight: FontWeight.bold,
-                        foreground: Paint()..shader = getTextGradient(myTextRenderBox),
-                        letterSpacing: 2,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black54,
-                            offset: Offset(2.0, 2.0),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              currentChallengeType = 0;
-                            });
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            height: MediaQuery.of(context).size.width * 0.26,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('assets/images/bg_rect.png'),
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(top: 8),
-                                  child: Opacity(
-                                    opacity: currentChallengeType == 0 ? 1: 0.5,
-                                    child: Image.asset('assets/images/ic_live.png', width: 32, height: 32,),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: AppButtonLabel(
-                                    title: 'LIVE',
-                                    shadow: true,
-                                    fontSize: 18,
-                                    color: currentChallengeType == 0 ? Colors.white : Colors.white60,
-                                    shadowColor: currentChallengeType == 0 ? Colors.black87 : Colors.black38,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              currentChallengeType = 1;
-                            });
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            height: MediaQuery.of(context).size.width * 0.26,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('assets/images/bg_rect.png'),
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(top: 8),
-                                  child: Opacity(
-                                    opacity: currentChallengeType == 1 ? 1: 0.5,
-                                    child: Image.asset('assets/images/ic_timer.png', width: 32, height: 32,),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: AppButtonLabel(
-                                    title: 'SCHEDULED',
-                                    shadow: true,
-                                    fontSize: 18,
-                                    color: currentChallengeType == 1 ? Colors.white : Colors.white60,
-                                    shadowColor: currentChallengeType == 1 ? Colors.black87 : Colors.black38,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                child: Image.asset('assets/images/ic_celebrity_header.png'),
               ),
             ],
-          ),
-        ),
-        Positioned(
-          top: 44,
-          left: 8,
-          width: 44,
-          height: 44,
-          child: MaterialButton(
-            child: Image.asset('assets/images/ic_back.png', ),
-            shape: CircleBorder(),
-            minWidth: 0,
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              Navigator.pop(context);
-            },
           ),
         ),
         state.isChatMode ? Positioned(
@@ -442,56 +379,39 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
           ),
         ): Container(),
         state.isChatMode ? Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('assets/images/bg_input_message.png'),
-                    fit: BoxFit.fill
-                ),
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/images/bg_input_message.png'),
+                  fit: BoxFit.fill
               ),
-              child: Row(
-                children: [
-                  Flexible(
-                    child: TextField(
-                      focusNode: messageFocus,
-                      controller: messageController,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.send,
-                      style: TextStyle(
-                        fontFamily: 'BackToSchool',
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all( 16),
-                        prefixIcon: Image.asset('assets/images/pencil.png'),
-                        hintText: 'Enter your message',
-                        hintStyle: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                        border: InputBorder.none,
-                      ),
-                      onSubmitted: (val) {
-                        if (val != '') {
-                          BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
-                              SendChallengeMessageEvent(
-                                type: isPrivate ? 'private': 'public',
-                                message: messageController.text,
-                                userId: Global.instance.userId,
-                                userName: Global.instance.userModel.name,
-                                userImage: Global.instance.userModel.image,
-                              )
-                          );
-                        }
-                        messageController.clear();
-                      },
+            ),
+            child: Row(
+              children: [
+                Flexible(
+                  child: TextField(
+                    focusNode: messageFocus,
+                    controller: messageController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.send,
+                    style: TextStyle(
+                      fontFamily: 'BackToSchool',
+                      color: Colors.white,
+                      fontSize: 18,
                     ),
-                  ),
-                  MaterialButton(
-                    onPressed: () {
-                      if (messageController.text != '') {
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all( 16),
+                      prefixIcon: Image.asset('assets/images/pencil.png'),
+                      hintText: 'Enter your message',
+                      hintStyle: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: (val) {
+                      if (val != '') {
                         BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
                             SendChallengeMessageEvent(
                               type: isPrivate ? 'private': 'public',
@@ -504,15 +424,32 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
                       }
                       messageController.clear();
                     },
-                    padding: EdgeInsets.zero,
-                    minWidth: 0,
-                    height: 50,
-                    shape: CircleBorder(),
-                    child: Image.asset('assets/images/btn_send.png', width: 50, height: 50,),
                   ),
-                ],
-              ),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    if (messageController.text != '') {
+                      BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(
+                          SendChallengeMessageEvent(
+                            type: isPrivate ? 'private': 'public',
+                            message: messageController.text,
+                            userId: Global.instance.userId,
+                            userName: Global.instance.userModel.name,
+                            userImage: Global.instance.userModel.image,
+                          )
+                      );
+                    }
+                    messageController.clear();
+                  },
+                  padding: EdgeInsets.zero,
+                  minWidth: 0,
+                  height: 50,
+                  shape: CircleBorder(),
+                  child: Image.asset('assets/images/btn_send.png', width: 50, height: 50,),
+                ),
+              ],
             ),
+          ),
         ): Container(),
         state.isLoading ? Positioned(
           height: MediaQuery.of(context).size.height,
@@ -538,14 +475,13 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
             ChallengeModel challengeModel = state.liveChallengeList[index];
             return LiveChallengeOnGoingCell(
               challengeModel: challengeModel,
-              onTap: () {
-                BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
-                setState(() {
-                  isPrivate = false;
-                });
+              onTap: (ChallengeModel model) {
+                if (model.sender == Global.instance.userId || model.receiver == Global.instance.userId) {
+
+                } else {
+                }
               },
               tapUser: (user) {
-                print(user);
                 Navigator.push(
                   context,
                   PageTransition(
@@ -634,6 +570,7 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
               return LiveChallengeFinishedCell(
                 challengeModel: challengeModel,
                 onTap: () {
+
                 },
                 tapUser: (user) {
                   Navigator.push(
@@ -651,21 +588,16 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
             } else {
               return ScheduleChallengeScheduledCell(
                 challengeModel: challengeModel,
-                onTap: () async {
+                onTap: (user) {
                   if (challengeModel.sender == Global.instance.userId || challengeModel.receiver == Global.instance.userId) {
                     int remain = (challengeModel.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
                     if (remain < 60 && remain > 0) {
-                      String uid = state.selectedChallenge.sender;
-                      if (state.selectedChallenge.sender == Global.instance.userId) {
-                        uid = state.selectedChallenge.receiver;
-                      }
-                      UserModel user = await FirestoreService().getUserWithId(uid);
                       Navigator.push(
                         context,
                         PageTransition(
                           child: GameInScreen(
                             userModel: user,
-                            challengeModel: state.selectedChallenge,
+                            challengeModel: challengeModel,
                           ),
                           type: PageTransitionType.fade,
                           duration: Duration(milliseconds: 300),
@@ -742,11 +674,11 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
         children: [
           currentChallengeType == 0 ? LiveChallengeOnGoingCell(
             challengeModel: state.selectedChallenge,
-            onTap: () {
-              if (state.selectedChallenge.sender == Global.instance.userId || state.selectedChallenge.receiver == Global.instance.userId) {
+            onTap: (ChallengeModel model) {
+              if (model.sender == Global.instance.userId || model.receiver == Global.instance.userId) {
 
               } else {
-                BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: state.selectedChallenge));
+                BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: model));
                 setState(() {
                   isPrivate = false;
                 });
@@ -766,15 +698,10 @@ class _LiveChallengeScreenState extends State<LiveChallengeScreen> {
             },
           ) : ScheduleChallengeScheduledCell(
             challengeModel: state.selectedChallenge,
-            onTap: () async {
+            onTap: (user) {
               if (state.selectedChallenge.sender == Global.instance.userId || state.selectedChallenge.receiver == Global.instance.userId) {
                 int remain = (state.selectedChallenge.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
                 if (remain < 60 && remain > 0) {
-                  String uid = state.selectedChallenge.sender;
-                  if (state.selectedChallenge.sender == Global.instance.userId) {
-                    uid = state.selectedChallenge.receiver;
-                  }
-                  UserModel user = await FirestoreService().getUserWithId(uid);
                   Navigator.push(
                     context,
                     PageTransition(

@@ -11,7 +11,6 @@ import 'package:big_bank_take_little_bank/models/message_model.dart';
 import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/utils/app_constant.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
@@ -44,11 +43,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     } else if (event is RequestChallengeEvent) {
       yield* requestChallenge(event.type, event.userModel, event.challengeTime);
     } else if (event is LoadedRequestedChallengeEvent) {
-      if (event.challengeList.length > 0 || state.receivedRequestList.length > 0) {
-        yield state.copyWith(isGamePlay: true, pendingRequestList: event.challengeList);
-      } else {
-        yield state.copyWith(isGamePlay: false, pendingRequestList: event.challengeList);
-      }
+      yield state.copyWith(pendingRequestList: event.challengeList);
       ChallengeModel scheduleChallenge, liveChallenge, standardChallenge;
       List list1 = event.challengeList.where((element) => element.type == 'schedule').toList();
       if (list1.length > 0) {
@@ -69,11 +64,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
         }
       }
     } else if (event is LoadedReceivedChallengeEvent) {
-      if (event.challengeList.length > 0 || state.pendingRequestList.length > 0) {
-        yield state.copyWith(isGamePlay: true, pendingRequestList: event.challengeList);
-      } else {
-        yield state.copyWith(isGamePlay: false, receivedRequestList: event.challengeList);
-      }
+      yield state.copyWith(receivedRequestList: event.challengeList);
       ChallengeModel scheduleChallenge, liveChallenge, standardChallenge;
       List list1 = event.challengeList.where((element) => element.type == 'schedule').toList();
       if (list1.length > 0) {

@@ -1,11 +1,11 @@
 
-import 'dart:io';
 import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
+import 'package:big_bank_take_little_bank/screens/main/celebrity/celebrity_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_requested_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/daily_rewards/daily_rewards_screen.dart';
@@ -14,12 +14,10 @@ import 'package:big_bank_take_little_bank/screens/main/friends/friends_screen.da
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/message/chat_list_screen.dart';
-import 'package:big_bank_take_little_bank/screens/main/message/messages_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/newar_by/map_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/settings/settings_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/stats/stats_screen.dart';
 import 'package:big_bank_take_little_bank/utils/ad_manager.dart';
-import 'package:big_bank_take_little_bank/utils/notification_handle.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
 import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:big_bank_take_little_bank/widgets/pulse_widget.dart';
@@ -488,6 +486,15 @@ class _MainScreenContentState extends State<MainScreenContent>
         ),
         BlocBuilder<ChallengeBloc, ChallengeState>(
           builder: (BuildContext ctx, ChallengeState challengeState) {
+            print('Challenge List: ${challengeState.challengeList}');
+            print('pendingRequestList List: ${challengeState.pendingRequestList}');
+            print('receivedRequestList List: ${challengeState.receivedRequestList}');
+            print('liveChallengeResultList List: ${challengeState.liveChallengeResultList}');
+            print('liveChallenge: ${challengeState.liveChallenge}');
+            print('liveChallengeList List: ${challengeState.liveChallengeList}');
+            print('scheduleChallengeList List: ${challengeState.scheduleChallengeList}');
+            print('scheduleChallengeRequestList List: ${challengeState.scheduleChallengeRequestList}');
+            print('scheduleChallenge: ${challengeState.scheduleChallenge}');
             if (challengeState.receivedRequestList.length > 0) {
               ChallengeModel model = challengeState.receivedRequestList.first;
               return FutureBuilder(
@@ -510,7 +517,6 @@ class _MainScreenContentState extends State<MainScreenContent>
                                 userModel: snapshot.data,
                                 challengeModel: model,
                                 onProfile: () {
-                                  Navigator.pop(cctx);
                                   Navigator.push(
                                     cctx,
                                     PageTransition(
@@ -656,7 +662,10 @@ class _MainScreenContentState extends State<MainScreenContent>
           screenBloc: BlocProvider.of<MainScreenBloc>(context),
         );
       case 3:
-        return MapScreen();
+        return CelebrityChallengeScreen(
+          homeContext: context,
+          screenBloc: BlocProvider.of<MainScreenBloc>(context),
+        );
       case 4:
         return HomeScreen(
           homeContext: context,

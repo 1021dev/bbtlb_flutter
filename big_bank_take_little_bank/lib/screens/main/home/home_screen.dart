@@ -7,6 +7,7 @@ import 'package:big_bank_take_little_bank/screens/main/challenge/choose_challeng
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/home/home_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/live_challenge_screen.dart';
+import 'package:big_bank_take_little_bank/screens/main/newar_by/map_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/add_points_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/profile/profile_screen.dart';
 import 'package:big_bank_take_little_bank/utils/app_helper.dart';
@@ -98,7 +99,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         InkWell(
                           onTap: () {
-
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: MapScreen(
+                                ),
+                                type: PageTransitionType.fade,
+                                duration: Duration(microseconds: 3000),
+                              ),
+                            );
                           },
                           child: Container(
                             width: MediaQuery.of(context).size.width / 4,
