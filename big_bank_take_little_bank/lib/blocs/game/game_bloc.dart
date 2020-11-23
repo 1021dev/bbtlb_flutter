@@ -26,14 +26,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (event is GameInEvent) {
       if (event.userModel != null) {
         yield GameInState(
-            challengeModel: event.challengeModel, userModel: event.userModel);
+            challengeModel: event.challengeModel, userModel: event.userModel, startTime: DateTime.now());
       } else {
         yield* getGameResult(event.challengeModel);
       }
     } else if (event is GameAcceptEvent) {
       if (event.userModel != null) {
         yield GameInState(
-            challengeModel: event.challengeModel, userModel: event.userModel);
+            challengeModel: event.challengeModel, userModel: event.userModel, startTime: DateTime.now());
       } else {
         yield* getGameResult(event.challengeModel);
       }

@@ -8,11 +8,11 @@ import 'package:big_bank_take_little_bank/widgets/profile_avatar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ScheduleChallengeRequestCell extends StatelessWidget {
+class ScheduleChallengeFinishedCell extends StatelessWidget {
   final ChallengeModel challengeModel;
   final Function onTap;
   final Function tapUser;
-  ScheduleChallengeRequestCell({
+  ScheduleChallengeFinishedCell({
     this.challengeModel,
     this.onTap,
     this.tapUser,

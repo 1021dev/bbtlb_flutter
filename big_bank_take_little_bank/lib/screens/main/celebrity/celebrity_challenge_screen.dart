@@ -1,15 +1,17 @@
 import 'dart:math';
 
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
+import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
 import 'package:big_bank_take_little_bank/models/message_model.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/friends/other_user_profile_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/live_challenge_finished_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/live_challenge_ongoing_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/message_cell.dart';
-import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_request_cell.dart';
+import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_finished_cell.dart';
 import 'package:big_bank_take_little_bank/screens/main/live/schedule_challenge_scheduled_cell.dart';
 import 'package:big_bank_take_little_bank/widgets/app_text.dart';
 import 'package:big_bank_take_little_bank/widgets/make_circle.dart';
@@ -475,13 +477,14 @@ class _CelebrityChallengeScreenState extends State<CelebrityChallengeScreen> wit
             ChallengeModel challengeModel = state.liveChallengeList[index];
             return LiveChallengeOnGoingCell(
               challengeModel: challengeModel,
-              onTap: (ChallengeModel model) {
-                if (model.sender == Global.instance.userId || model.receiver == Global.instance.userId) {
-
-                } else {
-                }
+              onTap: () {
+                BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
+                setState(() {
+                  isPrivate = false;
+                });
               },
               tapUser: (user) {
+                print(user);
                 Navigator.push(
                   context,
                   PageTransition(
@@ -535,10 +538,41 @@ class _CelebrityChallengeScreenState extends State<CelebrityChallengeScreen> wit
         child: ListView.separated(
           shrinkWrap: false,
           itemBuilder: (context, index) {
-            return ScheduleChallengeRequestCell(
-              challengeModel: state.scheduleChallengeList[index],
-              onTap: () {
-
+            ChallengeModel challengeModel = state.scheduleChallengeList[index];
+            return ScheduleChallengeScheduledCell(
+              challengeModel: challengeModel,
+              onTap: () async {
+                if (challengeModel.sender == Global.instance.userId || challengeModel.receiver == Global.instance.userId) {
+                  int remain = (challengeModel.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+                  if (remain < 60 && remain > 0) {
+                    String uid = state.selectedChallenge.sender;
+                    if (state.selectedChallenge.sender == Global.instance.userId) {
+                      uid = state.selectedChallenge.receiver;
+                    }
+                    UserModel user = await FirestoreService().getUserWithId(uid);
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        child: GameInScreen(
+                          userModel: user,
+                          challengeModel: state.selectedChallenge,
+                        ),
+                        type: PageTransitionType.fade,
+                        duration: Duration(milliseconds: 300),
+                      ),
+                    );
+                  } else {
+                    BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
+                    setState(() {
+                      isPrivate = false;
+                    });
+                  }
+                } else {
+                  BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
+                  setState(() {
+                    isPrivate = false;
+                  });
+                }
               },
               tapUser: (user) {
                 Navigator.push(
@@ -565,76 +599,29 @@ class _CelebrityChallengeScreenState extends State<CelebrityChallengeScreen> wit
         child: ListView.separated(
           shrinkWrap: false,
           itemBuilder: (context, index) {
-            ChallengeModel challengeModel = state.scheduleChallengeRequestList[index];
-            if (challengeModel.status == 'completed') {
-              return LiveChallengeFinishedCell(
-                challengeModel: challengeModel,
-                onTap: () {
-
-                },
-                tapUser: (user) {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      child: OtherUserProfileScreen(
-                        screenBloc: widget.screenBloc,
-                        userModel: user,
-                      ),
-                      type: PageTransitionType.fade,
+            ChallengeModel challengeModel = state.scheduleChallengeResultList[index];
+            return LiveChallengeFinishedCell(
+              challengeModel: challengeModel,
+              onTap: () {
+              },
+              tapUser: (user) {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: OtherUserProfileScreen(
+                      screenBloc: widget.screenBloc,
+                      userModel: user,
                     ),
-                  );
-                },
-              );
-            } else {
-              return ScheduleChallengeScheduledCell(
-                challengeModel: challengeModel,
-                onTap: (user) {
-                  if (challengeModel.sender == Global.instance.userId || challengeModel.receiver == Global.instance.userId) {
-                    int remain = (challengeModel.challengeTime.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
-                    if (remain < 60 && remain > 0) {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          child: GameInScreen(
-                            userModel: user,
-                            challengeModel: challengeModel,
-                          ),
-                          type: PageTransitionType.fade,
-                          duration: Duration(milliseconds: 300),
-                        ),
-                      );
-                    } else {
-                      BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
-                      setState(() {
-                        isPrivate = false;
-                      });
-                    }
-                  } else {
-                    BlocProvider.of<ChallengeBloc>(Global.instance.homeContext).add(ShowChatEvent(selectedChallenge: challengeModel));
-                    setState(() {
-                      isPrivate = false;
-                    });
-                  }
-                },
-                tapUser: (user) {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      child: OtherUserProfileScreen(
-                        screenBloc: widget.screenBloc,
-                        userModel: user,
-                      ),
-                      type: PageTransitionType.fade,
-                    ),
-                  );
-                },
-              );
-            }
+                    type: PageTransitionType.fade,
+                  ),
+                );
+              },
+            );
           },
           separatorBuilder: (context, index) {
             return Divider(color: Colors.transparent, height: 4,);
           },
-          itemCount: state.scheduleChallengeRequestList.length,
+          itemCount: state.scheduleChallengeResultList.length,
         ),
       );
     } else {

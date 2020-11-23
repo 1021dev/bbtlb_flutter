@@ -14,12 +14,13 @@ class ChallengeState extends Equatable {
   final List<ChallengeModel> liveChallengeList;
   final List<ChallengeModel> liveChallengeResultList;
   final List<ChallengeModel> scheduleChallengeList;
-  final List<ChallengeModel> scheduleChallengeRequestList;
+  final List<ChallengeModel> scheduleChallengeResultList;
 
   final ChallengeModel selectedChallenge;
   final List<MessageModel> publicMessages;
   final List<MessageModel> privateMessages;
   final bool isChatMode;
+  final ChallengeModel currentChallenge;
   final ChallengeModel standardChallenge;
   final ChallengeModel liveChallenge;
   final ChallengeModel scheduleChallenge;
@@ -35,7 +36,7 @@ class ChallengeState extends Equatable {
     this.liveChallengeList = const [],
     this.liveChallengeResultList = const [],
     this.scheduleChallengeList = const [],
-    this.scheduleChallengeRequestList = const [],
+    this.scheduleChallengeResultList = const [],
     this.selectedChallenge,
     this.publicMessages = const [],
     this.privateMessages = const [],
@@ -43,6 +44,7 @@ class ChallengeState extends Equatable {
     this.standardChallenge,
     this.liveChallenge,
     this.scheduleChallenge,
+    this.currentChallenge,
   });
 
   @override
@@ -57,7 +59,7 @@ class ChallengeState extends Equatable {
     liveChallengeResultList,
     liveChallengeList,
     scheduleChallengeList,
-    scheduleChallengeRequestList,
+    scheduleChallengeResultList,
     selectedChallenge,
     publicMessages,
     privateMessages,
@@ -65,6 +67,7 @@ class ChallengeState extends Equatable {
     standardChallenge,
     liveChallenge,
     scheduleChallenge,
+    currentChallenge,
   ];
   ChallengeState copyWith({
     bool isLoading,
@@ -77,7 +80,7 @@ class ChallengeState extends Equatable {
     List<ChallengeModel> liveChallengeList,
     List<ChallengeModel> liveChallengeResultList,
     List<ChallengeModel> scheduleChallengeList,
-    List<ChallengeModel> scheduleChallengeRequestList,
+    List<ChallengeModel> scheduleChallengeResultList,
     ChallengeModel selectedChallenge,
     List<MessageModel> publicMessages,
     List<MessageModel> privateMessages,
@@ -85,6 +88,7 @@ class ChallengeState extends Equatable {
     ChallengeModel standardChallenge,
     ChallengeModel liveChallenge,
     ChallengeModel scheduleChallenge,
+    ChallengeModel currentChallenge,
   }) {
     return ChallengeState(
       isLoading: isLoading ?? this.isLoading,
@@ -97,7 +101,7 @@ class ChallengeState extends Equatable {
       liveChallengeList: liveChallengeList ?? this.liveChallengeList,
       liveChallengeResultList: liveChallengeResultList ?? this.liveChallengeResultList,
       scheduleChallengeList: scheduleChallengeList ?? this.scheduleChallengeList,
-      scheduleChallengeRequestList: scheduleChallengeRequestList ?? this.scheduleChallengeRequestList,
+      scheduleChallengeResultList: scheduleChallengeResultList ?? this.scheduleChallengeResultList,
       selectedChallenge: selectedChallenge ?? this.selectedChallenge,
       publicMessages: publicMessages ?? this.publicMessages,
       privateMessages: privateMessages ?? this.privateMessages,
@@ -105,6 +109,7 @@ class ChallengeState extends Equatable {
       standardChallenge: standardChallenge ?? this.standardChallenge,
       liveChallenge: liveChallenge ?? this.liveChallenge,
       scheduleChallenge: scheduleChallenge ?? this.scheduleChallenge,
+      currentChallenge: currentChallenge ?? this.currentChallenge,
     );
   }
 }

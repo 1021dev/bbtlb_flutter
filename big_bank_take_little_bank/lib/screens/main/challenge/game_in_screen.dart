@@ -18,7 +18,8 @@ import 'package:page_transition/page_transition.dart';
 class GameInScreen extends StatefulWidget {
   final ChallengeModel challengeModel;
   final UserModel userModel;
-  GameInScreen({this.challengeModel, this.userModel});
+  final DateTime startTime;
+  GameInScreen({this.challengeModel, this.userModel, this.startTime,});
   @override
   State<StatefulWidget> createState() {
     return _GameInScreenState();
@@ -40,19 +41,25 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
 
     gameBloc = BlocProvider.of<GameBloc>(Global.instance.homeContext);
     int countDown = 10;
-    if (widget.challengeModel.type == 'live') {
-      countDown = 120;
-    } else if (widget.challengeModel.type == 'schedule') {
-      DateTime challengeTime = widget.challengeModel.challengeTime;
-      int duration = challengeTime.difference(DateTime.now()).inSeconds;
+    if (widget.startTime != null) {
+      DateTime challengeTime = widget.startTime;
+      int duration = DateTime.now().difference(challengeTime).inSeconds;
       countDown = duration;
+    } else {
+      if (widget.challengeModel.type == 'live') {
+        countDown = 120;
+      } else if (widget.challengeModel.type == 'schedule') {
+        countDown = 120;
+      }
     }
     _animationController = new AnimationController(vsync: this, duration: Duration(seconds: countDown))..addListener(() {
       setState(() {});
     })..addStatusListener((status)async {
       if(status == AnimationStatus.completed){
-        _animationController.dispose();
-        print('resykt');
+        if (_animationController != null) {
+          _animationController.dispose();
+        }
+        print('rest');
         BlocProvider.of<GameBloc>(Global.instance.homeContext).add(GameResultEvent(model: widget.challengeModel, userModel: widget.userModel));
       }
     });
@@ -77,6 +84,9 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
 
   @override
   void dispose() {
+    if (_animationController != null) {
+      _animationController.dispose();
+    }
     super.dispose();
   }
 
@@ -274,6 +284,18 @@ class _GameInScreenState extends State<GameInScreen> with TickerProviderStateMix
                         shadow: true,
                       ),
                     ],
+                  ),
+                ),
+                Positioned(
+                  right: 16,
+                  top: 20,
+                  child: MaterialButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    minWidth: 0,
+                    padding: EdgeInsets.zero,
+                    child: Image.asset('assets/images/ic_close_outline.png', width: 36, height: 36,),
                   ),
                 ),
               ],

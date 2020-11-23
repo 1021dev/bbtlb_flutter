@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:big_bank_take_little_bank/blocs/bloc.dart';
 import 'package:big_bank_take_little_bank/firestore_service/firestore_service.dart';
 import 'package:big_bank_take_little_bank/models/challenge_model.dart';
+import 'package:big_bank_take_little_bank/models/user_model.dart';
 import 'package:big_bank_take_little_bank/provider/global.dart';
 import 'package:big_bank_take_little_bank/screens/main/celebrity/celebrity_challenge_screen.dart';
 import 'package:big_bank_take_little_bank/screens/main/challenge/game_in_screen.dart';
@@ -493,7 +494,7 @@ class _MainScreenContentState extends State<MainScreenContent>
             print('liveChallenge: ${challengeState.liveChallenge}');
             print('liveChallengeList List: ${challengeState.liveChallengeList}');
             print('scheduleChallengeList List: ${challengeState.scheduleChallengeList}');
-            print('scheduleChallengeRequestList List: ${challengeState.scheduleChallengeRequestList}');
+            print('scheduleChallengeRequestList List: ${challengeState.scheduleChallengeResultList}');
             print('scheduleChallenge: ${challengeState.scheduleChallenge}');
             if (challengeState.receivedRequestList.length > 0) {
               ChallengeModel model = challengeState.receivedRequestList.first;
@@ -536,9 +537,12 @@ class _MainScreenContentState extends State<MainScreenContent>
                                     Duration duration = DateTime.now().difference(dateTime);
                                     int seconds = (duration.inSeconds - 120);
                                     if (seconds < 0) {
-                                      BlocProvider.of<ChallengeBloc>(context)..add(ResponseChallengeRequestEvent(
-                                          challengeModel: model, response: 'accept'
-                                      ));
+                                      BlocProvider.of<ChallengeBloc>(context)..add(
+                                        ResponseChallengeRequestEvent(
+                                          challengeModel: model,
+                                          response: 'accept',
+                                        ),
+                                      );
                                     }
                                   }
                                 },
@@ -549,9 +553,12 @@ class _MainScreenContentState extends State<MainScreenContent>
                                     Duration duration = DateTime.now().difference(dateTime);
                                     int seconds = (duration.inSeconds - 120);
                                     if (seconds < 0) {
-                                      BlocProvider.of<ChallengeBloc>(context).add(ResponseChallengeRequestEvent(
-                                          challengeModel: model, response: 'decline'
-                                      ));
+                                      BlocProvider.of<ChallengeBloc>(context).add(
+                                        ResponseChallengeRequestEvent(
+                                          challengeModel: model,
+                                          response: 'decline',
+                                        ),
+                                      );
                                     }
                                   }
                                 },
@@ -630,6 +637,63 @@ class _MainScreenContentState extends State<MainScreenContent>
                   );
                 },
               );
+            }
+            return Container();
+          },
+        ),
+        BlocBuilder<GameBloc, GameState>(
+          builder: (BuildContext ctx, GameState gstate) {
+            if (gstate is GameInState) {
+              if (gstate.challengeModel != null) {
+                ChallengeModel model = gstate.challengeModel;
+                print(gstate.startTime);
+                return FutureBuilder(
+                  future: FirestoreService().getUserWithId(model.sender),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
+                      return Container();
+                    }
+                    UserModel user = snapshot.data;
+                    return Positioned(
+                      top: 24,
+                      right: 8,
+                      child: CustomPaint(
+                        painter: PulseWidget(_controller),
+                        child: GestureDetector(
+                          onTap: () {
+                            print(gstate.startTime);
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: GameInScreen(
+                                  challengeModel: model,
+                                  userModel: user,
+                                  startTime: gstate.startTime,
+                                ),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 64.0,
+                            height: 64.0,
+                            child: Center(
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: ProfileAvatar(
+                                  image: snapshot.data.image ?? '',
+                                  avatarSize: 50,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
             }
             return Container();
           },

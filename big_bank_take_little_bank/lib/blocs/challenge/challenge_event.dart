@@ -83,11 +83,11 @@ class LiveChallengeScreenLoadedEvent extends ChallengeEvent {
 
 class ScheduleChallengeScreenLoadedEvent extends ChallengeEvent {
   final List<ChallengeModel> scheduleChallengeList;
-  final List<ChallengeModel> scheduleChallengeRequestList;
+  final List<ChallengeModel> scheduleChallengeResultList;
 
   ScheduleChallengeScreenLoadedEvent({
     this.scheduleChallengeList,
-    this.scheduleChallengeRequestList,
+    this.scheduleChallengeResultList,
   });
 }
 
@@ -122,4 +122,10 @@ class SendChallengeMessageEvent extends ChallengeEvent {
     this.userImage,
     this.type,
   });
+}
+
+class UpdateCurrentChallengeEvent extends ChallengeEvent {
+  final ChallengeModel challengeModel;
+
+  UpdateCurrentChallengeEvent({this.challengeModel});
 }

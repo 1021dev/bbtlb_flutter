@@ -92,7 +92,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     } else if (event is LiveChallengeScreenLoadedEvent) {
       yield state.copyWith(liveChallengeList: event.liveChallengeList, liveChallengeResultList: event.liveChallengeResultList);
     } else if (event is ScheduleChallengeScreenLoadedEvent) {
-      yield state.copyWith(scheduleChallengeList: event.scheduleChallengeList, scheduleChallengeRequestList: event.scheduleChallengeRequestList);
+      yield state.copyWith(scheduleChallengeList: event.scheduleChallengeList, scheduleChallengeResultList: event.scheduleChallengeResultList);
     } else if (event is ShowChatEvent) {
       yield state.copyWith(isChatMode: true, selectedChallenge: event.selectedChallenge, privateMessages: [], publicMessages: []);
       yield* loadChallengeChat(event.selectedChallenge);
@@ -103,6 +103,8 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       yield* sendMessage(event);
     } else if (event is LoadChallengeChatEvent) {
       yield state.copyWith(privateMessages: event.privateMessages, publicMessages: event.publicMessage);
+    } else if (event is UpdateCurrentChallengeEvent) {
+      yield state.copyWith(currentChallenge: event.challengeModel);
     }
   }
 
@@ -219,23 +221,23 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
     _streamSubscriptionScheduleChallenge = service.streamScheduleChallenges(Global.instance.userId).listen((event) {
       if (event.size > 0) {
         List<ChallengeModel> scheduleChallenges = [];
-        List<ChallengeModel> scheduleChallengesRequest = [];
+        List<ChallengeModel> scheduleChallengeResultList = [];
         event.docs.forEach((element) {
           ChallengeModel challengeModel = ChallengeModel.fromJson(element.data());
           if (challengeModel.sender == Global.instance.userId || challengeModel.receiver == Global.instance.userId) {
             if (challengeModel.receiver == Global.instance.userId) {
-              if (challengeModel.status == 'pending' ) {
+              if (challengeModel.status == 'accept' ) {
                 scheduleChallenges.add(challengeModel);
               }
             }
           }
-          if (challengeModel.status == 'accept' || challengeModel.status == 'completed') {
-            scheduleChallengesRequest.add(challengeModel);
+          if (challengeModel.status == 'completed') {
+            scheduleChallengeResultList.add(challengeModel);
           }
         });
-        add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: scheduleChallenges, scheduleChallengeRequestList: scheduleChallengesRequest));
+        add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: scheduleChallenges, scheduleChallengeResultList: scheduleChallengeResultList));
       } else {
-        add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: [], scheduleChallengeRequestList: []));
+        add(ScheduleChallengeScreenLoadedEvent(scheduleChallengeList: [], scheduleChallengeResultList: []));
       }
     });
   }
