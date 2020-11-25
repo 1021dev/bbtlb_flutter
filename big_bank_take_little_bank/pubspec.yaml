@@ -1,0 +1,121 @@
+name: big_bank_take_little_bank
+description: A new Flutter application.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: '>=2.7.0 <3.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.0
+  http:
+  shared_preferences: ^0.5.12
+  path_provider: ^1.6.18
+  page_transition: ^1.1.7+2
+  chartjs: ^0.5.2
+  flutter_sparkline: ^0.1.0
+  flutter_svg: ^0.19.0
+  auto_size_text: ^2.1.0
+  intl: ^0.16.1
+  url_launcher: ^5.7.2
+  device_info: ^0.4.2+8
+  uuid: ^2.2.2
+  flutter_masked_text: ^0.8.0
+  autocomplete_textfield: ^1.7.3
+  numberpicker: ^1.2.1
+  cron: ^0.2.3
+  flutter_webview_plugin: ^0.3.11
+  webview_flutter: 1.0.5
+  flutter_pagewise: ^1.2.3
+  carousel_slider: ^2.3.1
+  flutter_swiper: ^1.1.6
+  dio: ^3.0.10
+  image_picker: ^0.6.7+11
+  provider: ^4.3.2+2
+  package_info: ^0.4.3
+  blurrycontainer: ^0.0.1
+  event_bus: ^1.1.1
+  cached_network_image: ^2.3.2+1
+  rxdart: ^0.24.1
+  flutter_local_notifications: ^2.0.0+1
+  flutter_spinkit: ^4.1.2+1
+  firebase_core: ^0.5.0+1
+  firebase_crashlytics: ^0.2.1+1
+  firebase_auth: ^0.18.1+2
+  cloud_firestore: ^0.14.1+3
+  firebase_messaging: ^7.0.3
+  firebase_storage: ^4.0.1
+  firebase_admob: ^0.10.0+2
+  google_sign_in: ^4.5.3
+  flutter_facebook_auth: ^0.3.0
+  flutter_twitter_login:
+    git:
+      url: https://github.com/Kiruel/flutter_twitter_login
+  flutter_bloc: ^6.0.6
+  equatable: ^1.2.5
+  flutter_tags: ^0.4.9
+  date_format: ^1.0.9
+  pull_to_refresh: ^1.6.2
+  dropdown_formfield: ^0.1.3
+  image_cropper: ^1.3.1
+  smooth_star_rating: ^1.1.1
+  date_range_picker: ^1.0.6
+  toast: any
+  keyboard_visibility: ^0.5.6
+  circular_menu: ^1.1.0
+  contacts_service: ^0.4.6
+  bordered_text: 1.0.0
+  google_fonts: ^1.1.0
+  grouped_list: ^3.5.0
+  timeago: ^2.0.27
+  extended_image: ^1.2.0
+#  photo_manager: ^0.5.8
+  align_positioned: ^1.2.8
+  flip_panel: 1.0.1
+  flutter_localizations:
+    sdk: flutter
+  spritewidget: ^0.9.24
+  flutter_slidable: ^0.5.7
+  sprintf: ^5.0.0
+  animated_text_kit: ^2.4.1
+  animated_widgets: ^1.0.6
+  apple_sign_in: ^0.1.0
+  google_maps_flutter: ^1.0.6
+dev_dependencies:
+  image_res: ^0.2.3
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  test: any
+  ff_annotation_route: any
+  chewie: ^0.9.10
+  video_player: 0.10.11+1
+  flutter_simple_video_player: ^0.0.9
+  photo_manager:
+    git:
+      url: https://github.com/CaiJingLong/flutter_photo_manager
+
+flutter:
+  uses-material-design: true
+  assets:
+  - assets/images/
+  - assets/gif/
+  - assets/sounds/
+  - assets/font/
+  fonts:
+  - family: BackToSchool
+    fonts:
+    - asset: assets/font/backtoschoolfont.ttf
+  - family: Cavier
+    fonts:
+    - asset: assets/font/caviernomal.ttf
+  - family: Cavier-Bold
+    fonts:
+    - asset: assets/font/cavierbold.ttf
+  - family: Lucky
+    fonts:
+    - asset: assets/font/luckyfont.ttf
+flutter_icons:
+  android: false
+  ios: false

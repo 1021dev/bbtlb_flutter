@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>216981814626-okc56gk3unsgpsuguvl0nhajcigmbpg0.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.216981814626-okc56gk3unsgpsuguvl0nhajcigmbpg0</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAuWJze9titc2GECWbpxgzyjvaSW7ECklU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>216981814626</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.saigais.BBTLB</string>
+	<key>PROJECT_ID</key>
+	<string>bigbanktakelittlebank-95940</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bigbanktakelittlebank-95940.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:216981814626:ios:0c9079c3263c4552bf403b</string>
+	<key>DATABASE_URL</key>
+	<string>https://bigbanktakelittlebank-95940.firebaseio.com</string>
+	<key>ADMOB_APP_ID</key>
+	<string>ca-app-pub-8790458672355136~8614073145</string>
+</dict>
+</plist>
